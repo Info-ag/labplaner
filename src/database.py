@@ -1,8 +1,7 @@
 #pylint: disable-all
 import _mysql as mariadb
 from ConfigParser import ConfigParser
-from sqlite3 import connect
-from os.path import isfile
+from hashlib import sha256
 
 class Database(object):
 
