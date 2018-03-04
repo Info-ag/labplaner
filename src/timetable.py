@@ -3,6 +3,11 @@ class Timetable(object):
         self.__ag = ""
         self.events = []
 
+    def create_event(self):
+        new_event = ""  # TODO: Database access
+        self.events.append(new_event)
+        self.save()
+
     def save(self):
         # TODO: Database access
         pass

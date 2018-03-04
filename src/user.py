@@ -31,6 +31,11 @@ class User(object):
                 self.data[user] = None
     ###############################################################
 
+    def select_event(self, event):
+        self.__events.append(event)
+        event.get_selected(self)
+        self.save()
+
     def save(self):
         # TODO: Database access
         pass
