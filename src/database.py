@@ -9,10 +9,9 @@ class Database(object):
 
         self.connection = mariadb.connect(host=Configuration.host(), port=Configuration.port(), user=Configuration.user(), passwd=Configuration.password(),db=Configuration.database())
 
-        
+        def load_users(self):
+            self.users = dict()
 
-        def load(self):
-            self.data = dict()
             for userset in self.connection.execute('SELECT * FROM user'):
                 self.data[userset[0]] = { 'name': userset[0], 'password': userset[1], 'id': userset[2], 'userid': userset[3]}
                 return self.data
