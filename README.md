@@ -1,6 +1,13 @@
 # Labplaner
 Der Labplaner ist eine Webaplikation mit dem Ziel, Terminabsprachen zu Vereinfachen.
 
+## Installation
+sudo apt install python3 
+sudo python3 -m pip install --upgrade pip 
+sudo apt install mysql-server mysql-client libmysqlclient-dev -y  ODER  sudo apt install mariadb-server mariadb-client libmariadbclient-dev -y
+sudo -H pip3 install -r requirements.txt
+
+(mariadb repository: https://downloads.mariadb.org/mariadb/repositories/)
 
 ## Lizenz
 

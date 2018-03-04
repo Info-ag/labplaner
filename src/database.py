@@ -1,17 +1,15 @@
 #pylint: disable-all
-from sqlite3 import connect
-from os.path import isfile
+import _mysql as mariadb
+from ConfigParser import ConfigParser
 from hashlib import sha256
 
 class Database(object):
 
     def __init__(self):
 
-        if not isfile('data.db'):
-            self.connection = connect('data.db')
-            self.connection.execute('CREATE TABLE user (name TEXT, password TEXT, id TEXT, userid TEXT)')
-        else:
-            self.connection = connect('data.db')
+        self.connection = mariadb.connect(host=Configuration.host(), port=Configuration.port(), user=Configuration.user(), passwd=Configuration.password(),db=Configuration.database())
+
+        
 
         def load(self):
             self.data = dict()
@@ -27,6 +25,28 @@ class Database(object):
                 data.append((self.data[user]['name'], self.data[user]['password'], self.data[user]['id'], self.data[user]['userid']))
             data = tuple(data)
             self.connection.executemany('INSERT INTO user VALUES(?,?,?,?,?)', data)
+
+class Configuration(object):
+
+    def __init__(self):
+        self.config = ConfigParser()
+        self.config.read('config.ini')
+
+    def user(self):
+        return self.config['User']
+
+    def password(self):
+        return str(self.config['Password'])
+
+    def database(self):
+        return self.config['Database']
+
+    def host(self):
+        return self.config['Host']
+
+    def port(self):
+        return int(self.config['Port'])
+
 
 if __name__ == '__main__':
     pass
