@@ -1,7 +1,19 @@
-#pylint: disable-all
+from hashlib import sha256
 
 class User(object):
 
+    def __init__(self, name):
+        data = self.__load(name)
+
+        self.__username = name
+        self.__hashed_password = data["password"]
+        self.__id = data[""]
+        self.__uuid = data["userid"]
+        self.__events = []
+        self.__mentor_of = []
+        self.__ag = []
+
+    # Move to Database class #####################################
     def add(self, data, name, password):
         password = password.encode('UTF-8')
         rawid = 0
@@ -17,3 +29,13 @@ class User(object):
         for user in self.data:
             if self.data[user]['userid'] == userid:
                 self.data[user] = None
+    ###############################################################
+
+    def save(self):
+        # TODO: Database access
+        pass
+
+    @staticmethod
+    def __load(username):
+        # TODO: Database access
+        pass
