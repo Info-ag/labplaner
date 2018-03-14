@@ -1,3 +1,5 @@
 flask
 bcrypt
 mysqlclient
+alembic
+sqlalchemy
