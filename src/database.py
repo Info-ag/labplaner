@@ -57,13 +57,62 @@ class User(Database):
         insert.execute(firstname=firstname, lastname=lastname, mail=mail, password=password, birthday=birthday, pgids=pgids, isadmin=isadmin, ismentor=ismentor, ismember=ismember)
         return 'Added successfully %s %s' % (firstname, lastname)
 
-    def get_password(self, firstname, lastname):
-        '''Search for the password of a given user.'''
+    def get(self, uid=None, firstname=None, lastname=None, mail=None, password=None, birthday=None, pgids=None, isadmin=None, ismentor=None, ismember=None):
+        '''Search for user datas that fits to the values.'''
 
-        select = self.users.select().where(and_(self.users.c.firstname == firstname, self.users.c.lastname == lastname))
-        rowselected = select.execute()
-        for row in rowselected:
-            return row.password
+        if uid:
+            return self.users.select().where(self.users.c.uid == uid).execute().fetchone()
+        elif firstname:
+            return self.users.select().where(self.users.c.firstname == firstname).execute().fetchall()
+        elif lastname:
+            return self.users.select().where(self.users.c.lastname == lastname).execute().fetchall()
+        elif mail:
+            return self.users.select().where(self.users.c.mail == mail).execute().fetchall()
+        elif password:
+            return self.users.select().where(self.users.c.password == password).execute().fetchall()
+        elif birthday:
+            return self.users.select().where(self.users.c.birthday == birthday).execute().fetchall()
+        elif pgids:
+            return self.users.select().where(self.users.c.pgids == pgids).execute().fetchall()
+        elif isadmin:
+            return self.users.select().where(self.users.c.isadmin == isadmin).execute().fetchall()
+        elif ismentor:
+            return self.users.select().where(self.users.c.ismentor == firstname).execute().fetchall()
+        elif ismember:
+            return self.users.select().where(self.users.c.ismember == ismember).execute().fetchall()
+
+    def get_all(self):
+        '''Search for all user datas.'''
+
+        return self.users.select().execute().fetchall()
+
+    def patch(self, uid, name, value):
+        '''Updates data of a user.'''
+
+        if name == 'firstname':
+            return self.users.select().where(self.users.c.uid == uid).execute(firstname=value)
+        elif name == 'lastname':
+            return self.users.select().where(self.users.c.uid == uid).execute(lastname=value)
+        elif name == 'mail':
+            return self.users.select().where(self.users.c.uid == uid).execute(mail=value)
+        elif name == 'password':
+            return self.users.select().where(self.users.c.uid == uid).execute(password=value)
+        elif name == 'birthday':
+            return self.users.select().where(self.users.c.uid == uid).execute(birthday=value)
+        elif name == 'pgids':
+            return self.users.select().where(self.users.c.uid == uid).execute(pgids=value)
+        elif name == 'isadmin':
+            return self.users.select().where(self.users.c.uid == uid).execute(isadmin=value)
+        elif name == 'ismentor':
+            return self.users.select().where(self.users.c.uid == uid).execute(ismentor=value)
+        elif name == 'ismember':
+            return self.users.select().where(self.users.c.uid == uid).execute(ismember=value)
+
+    def delete(self, uid):
+        '''Deletes a user from database.'''
+
+        return self.user.delete().where(self.users.c.uid == uid).execute().fetchall()
+
 
 
 class ProjectGroup(Database):
@@ -122,6 +171,44 @@ class Dates(Database):
         column_name = column.compile(dialect=engine.dialect)
         column_type = column.type.compile(engine.dialect)
         self.database.execute('ALTER TABLE %s ADD COLUMN %s %s' % (table_name, column_name, column_type))
+
+
+class APIS(Database):
+
+    def __init__(self):
+        super().__init__()
+        self.load()
+
+    def create(self):
+        '''Creates the default table for api data.'''
+
+        self.apis = Table('apis', self.metadata,
+            Column('aid', Integer, primary_key=True),
+            Column('client_id', String(20)), #TODO Ideal String lengths
+            Column('secret_key', String(15)),
+            Column('level', Integer),
+            )
+        self.apis.create()
+
+    def load(self):
+        '''Loads all apis data.'''
+
+        try:
+            self.users = Table('apis', self.metadata, autoload=True)
+        except exc.NoSuchTableError:
+            self.create()
+
+
+    def add(self, client_id, secret_key, level):
+        '''Creates a new apis.'''
+
+        insert = self.apis.insert()
+        insert.execute(client_id=client_id, secret_key=secret_key, level=level)
+
+    def get(self, client_id, secret_key):
+        '''Return data if client exist, else None.'''
+
+        return self.apis.select().where(and_(self.apis.c.client_id == client_id, self.apis.c.secret_key == secret_key).execute().fetchone()
 
 
 class Configuration(object):
