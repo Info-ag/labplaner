@@ -1,5 +1,6 @@
 #pylint: disable-all
-from flask import Flask, render_template, make_response, redirect, request
+from flask import Flask, render_template, make_response, redirect, request, jsonify
+from flask.ext.api import status
 from hashlib import sha256
 from random import randint
 from bcrypt import hashpw, gensalt, checkpw
@@ -46,7 +47,55 @@ class FlaskSites(object):
             else:
                 return redirect(url_for('login'))
 
+
     @staticmethod
     @APP.route('/planer/<name>/')
     def planer():
         return render_template('login.html', warning='Something went wrong')
+
+
+    @staticmethod
+    @APP.route('/api/user/<uid>/')
+    def user(uid):
+        '''Returns all data of a user.'''
+        client_id = request.args.get('id')
+        secret_key = request.args.get('key')
+        if not client_id or not secret_key:     # TODO insert API validation check
+            return status.HTTP_401_UNAUTHORIZED
+
+        if request.method == "GET":
+            response = jsonify({}) # TODO access data
+            response.status_code = 201
+            return response
+        elif request.method == "DELETE":
+            pass
+
+
+    @staticmethod
+    @APP.route('/api/user/<uid>/<attribute>/')
+    def user(uid, value):
+        '''Returns a specified value of a user.'''
+        aid = request.args.get('api')
+        if not aid:     # TODO insert API validation check
+            return status.HTTP_401_UNAUTHORIZED
+
+        if request.method == "GET":
+            response = jsonify({}) # TODO access data
+            response.status_code = 201
+            return response
+        elif request.method == "PATCH":
+            pass
+
+
+    @staticmethod
+    @APP.route('/api/users/')
+    def user(uid, value):
+        '''Returns all datas of all users.'''
+        aid = request.args.get('api')
+        if not aid:     # TODO insert API validation check
+            return status.HTTP_401_UNAUTHORIZED
+
+        if request.method == "GET":
+            response = jsonify({}) # TODO access data
+            response.status_code = 201
+            return response
