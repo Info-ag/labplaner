@@ -208,7 +208,7 @@ class APIS(Database):
     def get(self, client_id, secret_key):
         '''Return data if client exist, else None.'''
 
-        return self.apis.select().where(and_(self.apis.c.client_id == client_id, self.apis.c.secret_key == secret_key).execute().fetchone()
+        return self.apis.select().where(and_(self.apis.c.client_id == client_id, self.apis.c.secret_key == secret_key).execute().fetchone())
 
 
 class Configuration(object):
