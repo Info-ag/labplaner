@@ -53,9 +53,25 @@ class FlaskSites(object):
     def planer():
         return render_template('login.html', warning='Something went wrong')
 
+    @staticmethod
+    @APP.route('/api/create/user', methods=['POST'])
+    def create_user():
+        data = request.data
+        users = User()
+        users.add(\
+                    firstname=data.get('lastname'),\
+                    lastname=data.get('lastname'),\
+                    mail=data.get('mail'),\
+                    password=data.get('password'),\
+                    birthday=data.get('birthday'),\
+                    pgids=data.get('pgids'),\
+                    ismentor=data.get('ismentor'),\
+                    ismember=data.get('ismentor'),\
+                    isadmin=data.get('isadmin'))
+
 
     @staticmethod
-    @APP.route('/api/user/<uid>/')
+    @APP.route('/api/user/<uid>/', methods=['GET', 'POST'])
     def user_by_uid(uid):
         '''Returns all data of a user.'''
         client_id = request.args.get('id')
@@ -83,11 +99,12 @@ class FlaskSites(object):
             response.status_code = 201
             return response
         elif request.method == "DELETE":
-            pass
+            users = User()
+            users.delete(uid=uid)
 
 
     @staticmethod
-    @APP.route('/api/user/<uid>/<attribute>/')
+    @APP.route('/api/user/<uid>/<attribute>/', methods=['GET'])
     def user_atrribute_by_uid(uid, attribute):
         '''Returns a specified value of a user.'''
         aid = request.args.get('api')
@@ -109,12 +126,25 @@ class FlaskSites(object):
             response = jsonify(value)
             response.status_code = 201
             return response
-        elif request.method == "PATCH":
-            pass
-
 
     @staticmethod
-    @APP.route('/api/users/')
+    @APP.route('/api/user/<uid>/<attribute>/<patch>', methods=['PATCH'])
+    def user_atrribute_by_uid(uid, attribute, patch):
+        '''Returns a specified value of a user.'''
+        aid = request.args.get('api')
+        if not aid:     # TODO insert API validation check
+            return abort(401)
+
+        if request.method == "PATCH":
+            users = User()
+
+            users.patch(uid=uid, name=attribute, value=patch)
+            response = jsonify({"success": True})
+            response.status_code = 201
+            return response
+
+    @staticmethod
+    @APP.route('/api/users/', methods=['GET'])
     def users():
         '''Returns all datas of all users.'''
         aid = request.args.get('api')
