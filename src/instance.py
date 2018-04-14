@@ -1,5 +1,5 @@
 #pylint: disable-all
-from flask import Flask, render_template, make_response, redirect, request, jsonify, abort
+from flask import Flask, render_template, make_response, redirect, request, jsonify, abort, url_for
 from hashlib import sha256
 from random import randint
 from bcrypt import hashpw, gensalt, checkpw
@@ -15,13 +15,21 @@ class FlaskSites(object):
 
     @staticmethod
     @APP.route('/')
-    def index():
-        return render_template('index.html')
+    def index(text=''):
+        return render_template('index.html', message=text)
 
     @staticmethod
     @APP.route('/login/')
     def login():
         return render_template('login.html', warning='')
+
+    @staticmethod
+    @APP.route('/logout/', methods=['POST', 'GET'])
+    def logout():
+        resp = make_response(render_template('logout.html'))
+        resp.set_cookie('userID', '')
+        resp.set_cookie('user', '')
+        return resp
 
     @staticmethod
     @APP.route('/dashboard/', methods=['POST', 'GET'])
@@ -43,9 +51,9 @@ class FlaskSites(object):
             return render_template('login.html', warning='Username or password wrong..')
         else:
             if request.cookies.get('user'):
-                return render_template('dashboard.html', name=request.cookies.get('user'))
-            else:
-                return redirect(url_for('login'))
+                if request.cookies.get('user') != '':
+                    return render_template('dashboard.html', name=request.cookies.get('user'))
+            return redirect(url_for('login'))
 
 
     @staticmethod
@@ -53,9 +61,25 @@ class FlaskSites(object):
     def planer():
         return render_template('login.html', warning='Something went wrong')
 
+    @staticmethod
+    @APP.route('/api/create/user', methods=['POST'])
+    def create_user():
+        data = request.data
+        users = User()
+        users.add(\
+                    firstname=data.get('lastname'),\
+                    lastname=data.get('lastname'),\
+                    mail=data.get('mail'),\
+                    password=data.get('password'),\
+                    birthday=data.get('birthday'),\
+                    pgids=data.get('pgids'),\
+                    ismentor=data.get('ismentor'),\
+                    ismember=data.get('ismentor'),\
+                    isadmin=data.get('isadmin'))
+
 
     @staticmethod
-    @APP.route('/api/user/<uid>/')
+    @APP.route('/api/user/<uid>/', methods=['GET', 'POST'])
     def user_by_uid(uid):
         '''Returns all data of a user.'''
         client_id = request.args.get('id')
@@ -64,10 +88,7 @@ class FlaskSites(object):
             return abort(401)
 
         if request.method == "GET":
-            users = User()
-            users.load()
-
-            user = users.get(uid=uid)
+            user = User().get(uid=uid)
             if not user:
                 return abort(404)
 
@@ -83,22 +104,20 @@ class FlaskSites(object):
             response.status_code = 201
             return response
         elif request.method == "DELETE":
-            pass
+            users = User()
+            users.delete(uid=uid)
 
 
     @staticmethod
-    @APP.route('/api/user/<uid>/<attribute>/')
-    def user_atrribute_by_uid(uid, attribute):
+    @APP.route('/api/user/<uid>/<attribute>/', methods=['GET'])
+    def user_attribute_by_uid(uid, attribute):
         '''Returns a specified value of a user.'''
         aid = request.args.get('api')
         if not aid:     # TODO insert API validation check
             return abort(401)
 
         if request.method == "GET":
-            users = User()
-            users.load()
-
-            user = users.get(uid=uid)
+            user = User().get(uid=uid)
             if not user:
                 return abort(404)
 
@@ -109,12 +128,25 @@ class FlaskSites(object):
             response = jsonify(value)
             response.status_code = 201
             return response
-        elif request.method == "PATCH":
-            pass
-
 
     @staticmethod
-    @APP.route('/api/users/')
+    @APP.route('/api/user/<uid>/<attribute>/<patch>', methods=['PATCH'])
+    def user_atrribute_by_uid(uid, attribute, patch):
+        '''Returns a specified value of a user.'''
+        aid = request.args.get('api')
+        if not aid:     # TODO insert API validation check
+            return abort(401)
+
+        if request.method == "PATCH":
+            users = User()
+
+            users.patch(uid=uid, name=attribute, value=patch)
+            response = jsonify({"success": True})
+            response.status_code = 201
+            return response
+
+    @staticmethod
+    @APP.route('/api/users/', methods=['GET'])
     def users():
         '''Returns all datas of all users.'''
         aid = request.args.get('api')
@@ -122,10 +154,7 @@ class FlaskSites(object):
             return abort(401)
 
         if request.method == "GET":
-            users = User()
-            users.load()
-
-            all_users = users.get_all()
+            all_users = User().get_all()
             if not all_users:
                 return abort(404)
 
