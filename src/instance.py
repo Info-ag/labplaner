@@ -72,7 +72,7 @@ class FlaskSites(object):
 
     @staticmethod
     @APP.route('/api/user/<uid>/<attribute>/')
-    def user_by_atrribute(uid, value):
+    def user_atrribute_by_uid(uid, value):
         '''Returns a specified value of a user.'''
         aid = request.args.get('api')
         if not aid:     # TODO insert API validation check
@@ -88,7 +88,7 @@ class FlaskSites(object):
 
     @staticmethod
     @APP.route('/api/users/')
-    def users(uid, value):
+    def users():
         '''Returns all datas of all users.'''
         aid = request.args.get('api')
         if not aid:     # TODO insert API validation check
