@@ -162,7 +162,7 @@ class Event(Database):
             Column('mentoruids', Integer), # TODO: Use relations for these
             Column('memberuids', Integer),
             Column('projectgroup', Integer),
-            Column('dateids', Integer)
+            Column('dateids', Integer),
             Column('deadline', Datetime)
             )
         self.events.create()
