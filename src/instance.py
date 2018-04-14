@@ -1,5 +1,5 @@
 #pylint: disable-all
-from flask import Flask, render_template, make_response, redirect, request, jsonify, abort
+from flask import Flask, render_template, make_response, redirect, request, jsonify, abort, url_for
 from hashlib import sha256
 from random import randint
 from bcrypt import hashpw, gensalt, checkpw
