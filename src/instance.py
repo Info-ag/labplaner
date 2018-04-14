@@ -15,12 +15,20 @@ class FlaskSites(object):
     @staticmethod
     @APP.route('/')
     def index():
-        return render_template('index.html')
+        return render_template('index.html', message='')
 
     @staticmethod
     @APP.route('/login/')
     def login():
         return render_template('login.html', warning='')
+
+    @staticmethod
+    @APP.route('/logout/')
+    def logout():
+        resp = make_response(render_template('index.html', name=user, message='You have been logged out..'))
+        resp.set_cookie('userID', '')
+        resp.set_cookie('user', '')
+        return resp
 
     @staticmethod
     @APP.route('/dashboard/', methods=['POST', 'GET'])
@@ -42,9 +50,9 @@ class FlaskSites(object):
             return render_template('login.html', warning='Username or password wrong..')
         else:
             if request.cookies.get('user'):
-                return render_template('dashboard.html', name=request.cookies.get('user'))
-            else:
-                return redirect(url_for('login'))
+                if request.cookies.get('user') != '':
+                    return render_template('dashboard.html', name=request.cookies.get('user'))
+            return redirect(url_for('login'))
 
 
     @staticmethod
@@ -72,7 +80,7 @@ class FlaskSites(object):
 
     @staticmethod
     @APP.route('/api/user/<uid>/<attribute>/')
-    def user_atrribute_by_uid(uid, value):
+    def user_attribute_by_uid(uid, value):
         '''Returns a specified value of a user.'''
         aid = request.args.get('api')
         if not aid:     # TODO insert API validation check
