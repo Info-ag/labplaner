@@ -1,6 +1,5 @@
 #pylint: disable-all
-from flask import Flask, render_template, make_response, redirect, request, jsonify
-from flask.ext.api import status
+from flask import Flask, render_template, make_response, redirect, request, jsonify, abort
 from hashlib import sha256
 from random import randint
 from bcrypt import hashpw, gensalt, checkpw
@@ -56,12 +55,12 @@ class FlaskSites(object):
 
     @staticmethod
     @APP.route('/api/user/<uid>/')
-    def user(uid):
+    def user_by_uid(uid):
         '''Returns all data of a user.'''
         client_id = request.args.get('id')
         secret_key = request.args.get('key')
         if not client_id or not secret_key:     # TODO insert API validation check
-            return status.HTTP_401_UNAUTHORIZED
+            return abort(401)
 
         if request.method == "GET":
             response = jsonify({}) # TODO access data
@@ -73,11 +72,11 @@ class FlaskSites(object):
 
     @staticmethod
     @APP.route('/api/user/<uid>/<attribute>/')
-    def user(uid, value):
+    def user_by_atrribute(uid, value):
         '''Returns a specified value of a user.'''
         aid = request.args.get('api')
         if not aid:     # TODO insert API validation check
-            return status.HTTP_401_UNAUTHORIZED
+            return abort(401)
 
         if request.method == "GET":
             response = jsonify({}) # TODO access data
@@ -89,11 +88,11 @@ class FlaskSites(object):
 
     @staticmethod
     @APP.route('/api/users/')
-    def user(uid, value):
+    def users(uid, value):
         '''Returns all datas of all users.'''
         aid = request.args.get('api')
         if not aid:     # TODO insert API validation check
-            return status.HTTP_401_UNAUTHORIZED
+            return abort(401)
 
         if request.method == "GET":
             response = jsonify({}) # TODO access data

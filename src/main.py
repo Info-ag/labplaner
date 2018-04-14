@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 #pylint: disable-all
-from route import FlaskSites, APP
+from instance import FlaskSites, APP
 
 
 class DoodleFramework(FlaskSites):
