@@ -122,6 +122,25 @@ class FlaskSites(object):
             return abort(401)
 
         if request.method == "GET":
-            response = jsonify({}) # TODO access data
+            users = User()
+            users.load()
+
+            all_users = users.get_all()
+            if not all_users:
+                return abort(404)
+
+            response_list = []
+            for user in all_users:
+                response_list.append({"uid": user.uid,
+                                    "firstname": user.firstname,
+                                    "lastname": user.lastname,
+                                    "mail": user.mail,
+                                    "birthday": user.birthday,
+                                    "pgids": user.pgids,
+                                    "isadmin": user.isadmin,
+                                    "ismentor": user.ismentor,
+                                    "ismember": user.ismember})
+
+            response = jsonify(response_list)
             response.status_code = 201
             return response
