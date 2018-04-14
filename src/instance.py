@@ -15,8 +15,8 @@ class FlaskSites(object):
 
     @staticmethod
     @APP.route('/')
-    def index():
-        return render_template('index.html', message='')
+    def index(text=''):
+        return render_template('index.html', message=text)
 
     @staticmethod
     @APP.route('/login/')
@@ -24,9 +24,9 @@ class FlaskSites(object):
         return render_template('login.html', warning='')
 
     @staticmethod
-    @APP.route('/logout/')
+    @APP.route('/logout/', methods=['POST', 'GET'])
     def logout():
-        resp = make_response(render_template('index.html', name=user, message='You have been logged out..'))
+        resp = make_response(render_template('logout.html'))
         resp.set_cookie('userID', '')
         resp.set_cookie('user', '')
         return resp

@@ -3,6 +3,9 @@ from sqlalchemy import create_engine, MetaData, Table, Integer, String, Column, 
 from configparser import ConfigParser
 from hashlib import sha256
 
+class AttributeNotFoundError(Exception):
+    pass
+
 class Database(object):
 
     def __init__(self):
@@ -107,6 +110,8 @@ class User(Database):
             return self.users.select().where(self.users.c.uid == uid).execute(ismentor=value)
         elif name == 'ismember':
             return self.users.select().where(self.users.c.uid == uid).execute(ismember=value)
+        else:
+            raise AttributeNotFoundError()
 
     def delete(self, uid):
         '''Deletes a user from database.'''
