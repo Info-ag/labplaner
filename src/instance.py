@@ -72,10 +72,7 @@ class FlaskSites(object):
             return abort(401)
 
         if request.method == "GET":
-            users = User()
-            users.load()
-
-            user = users.get(uid=uid)
+            user = User().get(uid=uid)
             if not user:
                 return abort(404)
 
@@ -96,17 +93,14 @@ class FlaskSites(object):
 
     @staticmethod
     @APP.route('/api/user/<uid>/<attribute>/')
-    def user_attribute_by_uid(uid, value):
+    def user_attribute_by_uid(uid, attribute):
         '''Returns a specified value of a user.'''
         aid = request.args.get('api')
         if not aid:     # TODO insert API validation check
             return abort(401)
 
         if request.method == "GET":
-            users = User()
-            users.load()
-
-            user = users.get(uid=uid)
+            user = User().get(uid=uid)
             if not user:
                 return abort(404)
 
@@ -130,10 +124,7 @@ class FlaskSites(object):
             return abort(401)
 
         if request.method == "GET":
-            users = User()
-            users.load()
-
-            all_users = users.get_all()
+            all_users = User().get_all()
             if not all_users:
                 return abort(404)
 
