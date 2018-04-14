@@ -141,6 +141,34 @@ class ProjectGroup(Database):
         except exc.NoSuchTableError:
             self.create()
 
+class Event(Database):
+
+    def __init__(self):
+        super().__init__()
+        self.load()
+
+    def create(self):
+        '''Creates the default table for event data.'''
+
+        self.events = Table('events', self.metadata,
+            Column('eventid', Integer, primary_key=True),
+            Column('name', String(20)),
+            Column('info', Text),
+            Column('mentoruids', Integer), # TODO: Use relations for these
+            Column('memberuids', Integer),
+            Column('projectgroup', Integer),
+            Column('dateids', Integer)
+            Column('deadline', Datetime)
+            )
+        self.events.create()
+
+    def load(self):
+        '''Loads all event data.'''
+
+        try:
+            self.events = Table('events', self.metadata, autoload=True)
+        except exc.NoSuchTableError:
+            self.create()
 
 class Dates(Database):
 
@@ -152,7 +180,11 @@ class Dates(Database):
         '''Creates the default table for project group data.'''
 
         self.dates = Table('dates', self.metadata,
-            Column('dateid', Integer, primary_key=True),  #TODO Create dates table structure
+            Column('dateid', Integer, primary_key=True),
+            Column('location', Text),
+            Column('start', Datetime),
+            Column('end', Datetime),
+            Column('event', Integer) # TODO: Use relations
             )
         self.dates.create()
 

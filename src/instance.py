@@ -16,12 +16,20 @@ class FlaskSites(object):
     @staticmethod
     @APP.route('/')
     def index():
-        return render_template('index.html')
+        return render_template('index.html', message='')
 
     @staticmethod
     @APP.route('/login/')
     def login():
         return render_template('login.html', warning='')
+
+    @staticmethod
+    @APP.route('/logout/')
+    def logout():
+        resp = make_response(render_template('index.html', name=user, message='You have been logged out..'))
+        resp.set_cookie('userID', '')
+        resp.set_cookie('user', '')
+        return resp
 
     @staticmethod
     @APP.route('/dashboard/', methods=['POST', 'GET'])
@@ -43,9 +51,9 @@ class FlaskSites(object):
             return render_template('login.html', warning='Username or password wrong..')
         else:
             if request.cookies.get('user'):
-                return render_template('dashboard.html', name=request.cookies.get('user'))
-            else:
-                return redirect(url_for('login'))
+                if request.cookies.get('user') != '':
+                    return render_template('dashboard.html', name=request.cookies.get('user'))
+            return redirect(url_for('login'))
 
 
     @staticmethod
@@ -80,10 +88,7 @@ class FlaskSites(object):
             return abort(401)
 
         if request.method == "GET":
-            users = User()
-            users.load()
-
-            user = users.get(uid=uid)
+            user = User().get(uid=uid)
             if not user:
                 return abort(404)
 
@@ -105,17 +110,14 @@ class FlaskSites(object):
 
     @staticmethod
     @APP.route('/api/user/<uid>/<attribute>/', methods=['GET'])
-    def user_atrribute_by_uid(uid, attribute):
+    def user_attribute_by_uid(uid, attribute):
         '''Returns a specified value of a user.'''
         aid = request.args.get('api')
         if not aid:     # TODO insert API validation check
             return abort(401)
 
         if request.method == "GET":
-            users = User()
-            users.load()
-
-            user = users.get(uid=uid)
+            user = User().get(uid=uid)
             if not user:
                 return abort(404)
 
@@ -152,10 +154,7 @@ class FlaskSites(object):
             return abort(401)
 
         if request.method == "GET":
-            users = User()
-            users.load()
-
-            all_users = users.get_all()
+            all_users = User().get_all()
             if not all_users:
                 return abort(404)
 
