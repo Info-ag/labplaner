@@ -1,8 +1,9 @@
 #pylint: disable-all
-from flask import Flask, render_template, make_response, redirect, request, jsonify, abort
+from flask import Flask, render_template, make_response, redirect, request, jsonify, abort, url_for
 from hashlib import sha256
 from random import randint
 from bcrypt import hashpw, gensalt, checkpw
+from database import User
 
 APP = Flask(__name__)
 USERDB = {'Simon': {'pw': b'$2b$12$dFZFqlDLXkPJyqRnTzPGhu6TqxkaWtiQ17WdE5P9o0ctFcMxYo2ge', 'id': '1', 'userid': '7ed586770508da0ffac6d19fe99750b083a1fe84235574f4d4c48f1f8d6f241a'}} #sha256(bytes('Simon' + '1', 'utf-8')).hexdigest() #hashpw(bytes('123456', 'UTF-8'), gensalt())
@@ -71,7 +72,22 @@ class FlaskSites(object):
             return abort(401)
 
         if request.method == "GET":
-            response = jsonify({}) # TODO access data
+            users = User()
+            users.load()
+
+            user = users.get(uid=uid)
+            if not user:
+                return abort(404)
+
+            response = jsonify({"uid": user.uid,
+                                "firstname": user.firstname,
+                                "lastname": user.lastname,
+                                "mail": user.mail,
+                                "birthday": user.birthday,
+                                "pgids": user.pgids,
+                                "isadmin": user.isadmin,
+                                "ismentor": user.ismentor,
+                                "ismember": user.ismember})
             response.status_code = 201
             return response
         elif request.method == "DELETE":
@@ -87,7 +103,18 @@ class FlaskSites(object):
             return abort(401)
 
         if request.method == "GET":
-            response = jsonify({}) # TODO access data
+            users = User()
+            users.load()
+
+            user = users.get(uid=uid)
+            if not user:
+                return abort(404)
+
+            value = user[attribute]
+            if not value:
+                return abort(404)
+
+            response = jsonify(value)
             response.status_code = 201
             return response
         elif request.method == "PATCH":
@@ -103,6 +130,25 @@ class FlaskSites(object):
             return abort(401)
 
         if request.method == "GET":
-            response = jsonify({}) # TODO access data
+            users = User()
+            users.load()
+
+            all_users = users.get_all()
+            if not all_users:
+                return abort(404)
+
+            response_list = []
+            for user in all_users:
+                response_list.append({"uid": user.uid,
+                                    "firstname": user.firstname,
+                                    "lastname": user.lastname,
+                                    "mail": user.mail,
+                                    "birthday": user.birthday,
+                                    "pgids": user.pgids,
+                                    "isadmin": user.isadmin,
+                                    "ismentor": user.ismentor,
+                                    "ismember": user.ismember})
+
+            response = jsonify(response_list)
             response.status_code = 201
             return response
