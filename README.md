@@ -20,6 +20,11 @@ sudo -H pip3 install -r requirements.txt
 
 (mariadb repository: https://downloads.mariadb.org/mariadb/repositories/)
 
+Setup Database with default User&Database
+```bash
+sudo sh src/setupdb.sh
+```
+
 ## Lizenz
 
    Copyright 2018 Life-Science-Lab <Informatik-ag@life-science-lab.net>
