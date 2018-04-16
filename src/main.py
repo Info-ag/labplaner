@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # pylint: disable-all
-from instance import FlaskSites, app
+from app import FlaskSites, app
 
 
 class DoodleFramework(FlaskSites):
