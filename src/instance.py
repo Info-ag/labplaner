@@ -67,16 +67,9 @@ class FlaskSites(object):
     def create_user():
         data = request.data
         users = User()
-        users.add( \
-            firstname=data.get('lastname'), \
-            lastname=data.get('lastname'), \
-            mail=data.get('mail'), \
-            password=data.get('password'), \
-            birthday=data.get('birthday'), \
-            pgids=data.get('pgids'), \
-            ismentor=data.get('ismentor'), \
-            ismember=data.get('ismentor'), \
-            isadmin=data.get('isadmin'))
+        users.add(firstname=data.get('lastname'), lastname=data.get('lastname'), mail=data.get('mail'),
+                  password=data.get('password'), birthday=data.get('birthday'), pgids=data.get('pgids'),
+                  ismentor=data.get('ismentor'), ismember=data.get('ismentor'), isadmin=data.get('isadmin'))
 
     @staticmethod
     @app.route('/api/user/<uid>/', methods=['GET', 'POST'])
@@ -106,6 +99,25 @@ class FlaskSites(object):
         elif request.method == "DELETE":
             users = User()
             users.delete(uid=uid)
+
+    @staticmethod
+    @app.route('/api/auth', method='POST')
+    def dashboard():
+        user = request.form['name']
+        password = request.form['password']
+
+        user = User()
+        user = user.get(mail=user)
+        try:
+            if checkpw(bytes(password, 'UTF-8'), user.password):
+                userid = USERDB[user]['userid']
+                resp = make_response(render_template('dashboard.html', name=user))
+                resp.set_cookie('userID', userid)
+                resp.set_cookie('user', user)
+                return resp
+        except KeyError:
+            pass
+        return render_template('login.html', warning='Username or password wrong..')
 
     @staticmethod
     @app.route('/api/user/<uid>/<attribute>/', methods=['GET'])

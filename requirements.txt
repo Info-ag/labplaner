@@ -1,4 +1,7 @@
 flask
+flask_restful
+flask-sqlalchemy
+flask-migrate
 bcrypt
 mysqlclient
 alembic
