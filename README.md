@@ -22,7 +22,7 @@ sudo -H pip3 install -r requirements.txt
 
 Setup Database with default User&Database
 ```bash
-sudo sh src/setupdb.sh
+sudo sh setupdb.sh
 ```
 
 ## Lizenz
