@@ -1,11 +1,27 @@
 # pylint: disable-all
-from flask import Flask, render_template, make_response, redirect, request, jsonify, abort, url_for
-from hashlib import sha256
-from random import randint
-from bcrypt import hashpw, gensalt, checkpw
+from flask import Flask, \
+    render_template, \
+    make_response, \
+    redirect, \
+    request, \
+    jsonify, \
+    abort, \
+    url_for
+from flask import Flask
+from flask_restful import Api
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+from bcrypt import checkpw
+
 from database import User
 
 app = Flask(__name__)
+app.config.from_object(config.Config)
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+api = Api(app)
+
+# TODO replace
 USERDB = {'Simon': {'pw': b'$2b$12$dFZFqlDLXkPJyqRnTzPGhu6TqxkaWtiQ17WdE5P9o0ctFcMxYo2ge', 'id': '1',
                     'userid': '7ed586770508da0ffac6d19fe99750b083a1fe84235574f4d4c48f1f8d6f241a'}}  # sha256(bytes('Simon' + '1', 'utf-8')).hexdigest() #hashpw(bytes('123456', 'UTF-8'), gensalt())
 
