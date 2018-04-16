@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-#pylint: disable-all
-from instance import FlaskSites, APP
+# pylint: disable-all
+from instance import FlaskSites, app
 
 
 class DoodleFramework(FlaskSites):
@@ -10,7 +10,6 @@ class DoodleFramework(FlaskSites):
         super(DoodleFramework, self).__init__()
 
 
-
 if __name__ == '__main__':
     DF = DoodleFramework()
-    APP.run(host='127.0.0.1', port=5000, debug=True)
+    app.run(host='127.0.0.1', port=5000, debug=True)
