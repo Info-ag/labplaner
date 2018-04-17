@@ -77,7 +77,7 @@ def planer():
 def create_user():
     data = request.data
     users = User()
-    users.add(firstname=data.get('lastname'), lastname=data.get('lastname'), mail=data.get('mail'),
+    users.add(firstname=data.get('firstname'), lastname=data.get('lastname'), mail=data.get('mail'),
               password=data.get('password'), birthday=data.get('birthday'), pgids=data.get('pgids'),
               ismentor=data.get('ismentor'), ismember=data.get('ismentor'), isadmin=data.get('isadmin'))
 
