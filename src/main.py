@@ -4,12 +4,12 @@
 from app import FlaskSites, app
 
 
-class DoodleFramework(FlaskSites):
+class LabplanerFramework(FlaskSites):
 
     def __init__(self):
-        super(DoodleFramework, self).__init__()
+        super(LabplanerFramework, self).__init__()
 
 
 if __name__ == '__main__':
-    DF = DoodleFramework()
+    LF = LabplanerFramework()
     app.run(host='127.0.0.1', port=5000, debug=True)
