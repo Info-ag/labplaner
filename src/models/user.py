@@ -71,7 +71,7 @@ class Session(db.Model):
         if cookie:
             pub = cookie.split("+")[0]
             session = Session.query.filter_by(public_token=pub).one()
-            if session and session.expires > datetime.now():
+            if session and session.expires > datetime.now() and not session.revoked:
                 dig = hmac.new(b'a_perfect_secret', msg=session.token.encode('utf-8'), digestmod=hashlib.sha256).digest()
                 str_dig = base64.b64encode(dig).decode()
                 cookie_dig = cookie[cookie.index("+")+1:]

@@ -18,6 +18,7 @@ def login():
     if g.session.authenticated:
         return redirect("/")
     user = User.query.filter_by(email=request.values["email"]).one()
+    # TODO check for email (@) symbol
     if user and user.check_password(request.values["password"]):
         g.session.revoked = True
         db.session.merge(g.session)

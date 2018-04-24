@@ -5,15 +5,8 @@ from flask_migrate import Migrate
 from flask_marshmallow import Marshmallow
 
 from flask import render_template, \
-    make_response, \
-    redirect, \
     request, \
-    g, \
-    jsonify, \
-    abort, \
-    url_for
-
-from bcrypt import checkpw
+    g
 
 import dbconfig
 
@@ -23,7 +16,7 @@ db = SQLAlchemy(app)
 ma = Marshmallow(app)
 migrate = Migrate(app, db)
 
-from blueprints.api import user
+from blueprints.api.v1 import user
 from blueprints import auth
 import utils
 from models.user import Session
@@ -55,18 +48,13 @@ def auth_middleware():
                             httponly=True, expires=g.session.expires)
 
 
-app.register_blueprint(user.bp, url_prefix="/api/user")
+app.register_blueprint(user.bp, url_prefix="/api/v1/user")
 app.register_blueprint(auth.bp, url_prefix="/auth")
 
 
 @app.route('/')
 def index(text=''):
     return render_template('index.html', message=text)
-
-
-# @app.route('/login/')
-# def login():
-#     return render_template('login.html', warning='')
 
 
 if __name__ == '__main__':

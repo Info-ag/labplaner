@@ -21,7 +21,7 @@ def add_user():
 
         return user_schema.jsonify(user), 200
     except:
-        return jsonify({"Status": "Failed"}), 500
+        return jsonify({"Status": "Failed"}), 406
 
 
 @bp.route("/<uid>", methods=["GET"])

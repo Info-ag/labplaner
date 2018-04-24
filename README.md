@@ -27,6 +27,7 @@ sudo sh setupdb.sh
 
 ```bash
 # when models have been changed
+FLASK_APP=src/app.py flask db init
 FLASK_APP=src/app.py flask db migrate -m "what was changed"
 FLASK_APP=src/app.py flask db upgrade
 
