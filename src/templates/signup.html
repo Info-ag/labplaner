@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <!-- <script src="/static/js/jquery.min.js"></script> -->
+  <script src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
+</head>
+<body>
+  <h1>Login</h1>
+  <p> {{ warning }} </p>
+  <form id="signUpForm" action="{{url_for('auth.login')}}" method="post">
+    <fieldset id="signUpFormFieldset">
+        <p><input id="name" type="text" pattern="^[A-Za-z0-9_-]{1,15}$" placeholder="Username hier eintragen" name="username" /> </p>
+        <p><input id="email" type="email" placeholder="eMail-Adresse eintragen" name="email" /> </p>
+        <p><input id="email_rpt" type="email" placeholder="eMail-Adresse wiederholen" /> </p>
+        <p><input id="password" type="password" required pattern=".{8,}" name="password" placeholder="Passwort hier eintragen" /></p>
+        <p><input id="password_rpt" type="password" placeholder="Passwort wiederholen" /></p>
+        <p><input type="submit" value="Enter" /> </p>
+    </fieldset>
+  </form>
+  <div id="formMessages">Hier werden sp&auml;ter Nachrichten stehen</div>
+<script>
+var signUpForm = $("#signUpForm");
+var formMessages = $("#formMessages");
+$(signUpForm).submit(function(event) {
+    // Stop the browser from submitting the form.
+    event.preventDefault();
+    if($("#mail").val() == $("#mail_rpt").val()){
+        if($("#password").val() == $("#password_rpt").val()){
+            var formData = $(signUpForm).serialize();
+            console.log(formData);
+            $.ajax({
+                type: 'POST',
+                url: $(signUpForm).attr('action'),
+                data: formData,
+                beforeSend: function(){
+                    $("#signUpFormFieldset").prop('disabled', true);
+                    formMessages.text("Anfrage wurde gesendet, es wird auf eine Antwort gewartet.");
+                    return true;
+                    },
+                statusCode: function(){
+
+                }
+            }).done(function(response) {
+                formMessages.text("Die Anfrage war erfolgreich:" + response);
+
+                signUpForm.trigger("reset");
+
+            }).fail(function(data){
+                formMessages.text("Irgendetwas lief falsch");
+            });
+        }else{
+            alert("Passwort stimmt nicht überein");
+            //Visualisieren statt dem Alert
+        }
+    }else{
+        alert("eMail stimmt nicht überein");
+        //Visualiesieren statt Alert
+    }
+
+});
+
+</script>
+</body>
+</html>
+
+
+<!--
+
+TO-DO:
+
+LiveÜberprüfung über übereinstimmung
+Abfangen richtiger Fehlercodes
+
+ -->
