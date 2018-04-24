@@ -1,5 +1,5 @@
 flask
+flask-sqlalchemy
+flask_marshmallow
+flask-migrate
 bcrypt
-mysqlclient
-alembic
-sqlalchemy

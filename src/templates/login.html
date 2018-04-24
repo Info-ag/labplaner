@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Loginseite</title>
+  <title>Login</title>
 </head>
 <body>
   <h1>Login</h1>
   <p> {{ warning }} </p>
-  <form action="/dashboard/" method="post">
-    <p> Enter name: <input type="text" name="name" /> </p>
-    <p> Enter password: <input type="password" name="password" /> </p>
+  <form action="{{url_for('auth.login')}}" method="post">
+    <p><input type="email" autocomplete="email" name="email" /> </p>
+    <p><input type="password" autocomplete="password" name="password" /> </p>
     <p><input type="submit" value="Enter" /> </p>
   </form>
 
