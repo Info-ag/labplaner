@@ -25,6 +25,15 @@ Setup Database with default User&Database
 sudo sh setupdb.sh
 ```
 
+```bash
+# when models have been changed
+FLASK_APP=src/app.py flask db migrate -m "what was changed"
+FLASK_APP=src/app.py flask db upgrade
+
+# run the app
+FLASK_APP=src/app.py flask run
+```
+
 ## Lizenz
 
    Copyright 2018 Life-Science-Lab <Informatik-ag@life-science-lab.net>
