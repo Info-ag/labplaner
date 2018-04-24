@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <script src="/static/js/jquery.min.js"></script>
+</head>
+<body>
+  <h1>Login</h1>
+  <p> {{ warning }} </p>
+  <form id="signUpForm" action="{{url_for('auth.login')}}" method="post">
+    <p><input type="text" pattern="^[A-Za-z0-9_-]{1,15}$" placeholder="Username hier eintragen" name="username" /> </p> 
+    <p><input type="email" name="email" /> </p>
+    <p><input type="email" name="email_rpt" /> </p>
+    <p><input type="password" required pattern=".{8,}" name="password" placeholder="Passwort hier eintragen" /></p>
+    <p><input type="password" required pattern=".{8,}" name="password_rpt" placeholder="Passwort wiederholen" /></p>
+    <p><input type="submit" value="Enter" /> </p>
+  </form>
+<script>
+var signUpForm = $("#signUpForm");
+
+</script>
+</body>
+</html>
