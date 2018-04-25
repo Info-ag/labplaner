@@ -22,7 +22,7 @@ var signUpForm = $("#signUpForm");
                 $("#signup").removeClass("loading");
                 $.ajax({
                     type: 'POST',
-                    url: '{{ url_for('auth.login') }}',
+                    url: '/auth/login',
                     data: formData,
                     dataType: "json",
                     cache: false
@@ -34,7 +34,7 @@ var signUpForm = $("#signUpForm");
                 $("#signUpFormFieldset").prop('disabled', false);
             });
         } else {
-            alert("Passwort stimmt nicht überein");
+            alert("Passwort stimmt nicht ï¿½berein");
             //Visualisieren statt dem Alert
         }
 

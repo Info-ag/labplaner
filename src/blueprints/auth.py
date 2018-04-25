@@ -32,7 +32,7 @@ def login():
             user = User.query.filter_by(email=email).one()
         else:
             user = User.query.filter_by(username=email).one()
-        
+
         if user and user.check_password(request.values.get("password")):
             g.session.revoked = True
             db.session.merge(g.session)
