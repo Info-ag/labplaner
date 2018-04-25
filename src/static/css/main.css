@@ -5,3 +5,12 @@
 .hero-fill {
     min-height: 100vh;
 }
+
+.navbar {
+    z-index: 100;
+    width: 100%;
+    right: 0;
+    left: 0;
+    top: 0;
+    box-shadow: 0 4px 16px rgba(12, 12, 13, .1);
+}

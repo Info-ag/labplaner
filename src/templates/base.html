@@ -19,7 +19,27 @@
     {% endblock %}
 </head>
 <body>
-<section id="content">{% block content %}{% endblock %}</section>
+<header class="navbar p-2 fixed">
+    <section class="navbar-section">
+        <a href="#" class="btn btn-link">Home</a>
+        <a href="#" class="btn btn-link">Polls</a>
+        <a href="#" class="btn btn-link">Calendar</a>
+    </section>
+    <section class="navbar-center">
+        <h3>
+            <small class="label">Lab-Planer</small>
+        </h3>
+    </section>
+    <section class="navbar-section">
+        {% if g['session']['authenticated'] %}
+            <a class="btn btn-link" href="{{ url_for('auth.logout') }}">Logout</a>
+        {% else %}
+            <a class="btn btn-link" href="{{ url_for('auth.login_get') }}">Login</a>
+            <a class="btn btn-link" href="{{ url_for('auth.signup_get') }}">Sign Up</a>
+        {% endif %}
+    </section>
+</header>
+<section id="content" style="margin-top:80px">{% block content %}{% endblock %}</section>
 <section class="hero footer bg-gray p-2 d-block" id="footer">
     <div class="container">
         <div class="columns">
@@ -34,7 +54,8 @@
                     </p>
                 {% else %}
                     <p>
-                        <a href="{{ url_for('auth.login_get') }}">Login</a> or <a href="{{ url_for('auth.signup_get') }}">Sign
+                        <a href="{{ url_for('auth.login_get') }}">Login</a> or <a
+                            href="{{ url_for('auth.signup_get') }}">Sign
                         Up</a>
                     </p>
                 {% endif %}
