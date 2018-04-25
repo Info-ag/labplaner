@@ -37,7 +37,7 @@ var signUpForm = $("#signUpForm");
         } else {
             $("#passwordP").text("your input must match your first password input");
             $("#password_rptGroup").addClass("has-error");
-            $("#password_rpt").change(function(){
+            $("#password_rpt").on("input", function(){
                 if($("#password").val() == $("#password_rpt").val()){      
                     $("#passwordP").text("");
                     $("#password_rptGroup").removeClass("has-error");
@@ -48,7 +48,7 @@ var signUpForm = $("#signUpForm");
                     $("#password_rptGroup").removeClass("has-success");
                     
                 }
-            })
+            });
             //Visualisieren statt dem Alert
         }
 
