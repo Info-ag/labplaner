@@ -82,8 +82,7 @@ function doneTyping() {
         dataType: "json",
         cache: false,
         beforeSend: function () {
-            $("#name-loading").removeClass("d-invisible");
-            $("#name-loading").addClass("d-visible");
+            $("#name-loading").show();
         }
     }).done(function (response) {
         if (response && response.hasOwnProperty('username')) {
