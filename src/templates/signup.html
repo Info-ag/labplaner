@@ -21,6 +21,14 @@
                         <small class="label">Lab-Planer</small>
                     </h3>
                 </div>
+                <ul class="step my-2">
+                    <li class="step-item active">
+                        <a>Create Account</a>
+                    </li>
+                    <li class="step-item">
+                        <a>Verify E-Mail</a>
+                    </li>
+                </ul>
                 <form id="signUpForm" action="{{ url_for('user_api.add_user') }}" method="post">
                     <fieldset id="signUpFormFieldset">
                         <div class="form-group">
@@ -141,8 +149,14 @@
             }).done(function (response) {
                 formMessages.text("Die Anfrage war erfolgreich:" + response);
                 $("#signup").removeClass("loading");
-                signUpForm.trigger("reset");
-
+                var formData = $(signUpForm).serialize();
+                $.ajax({
+                    type: 'POST',
+                    url: {{ url_for('auth.login') }},
+                    data: formData,
+                    dataType: "json",
+                    cache: false
+                })
             }).fail(function (data) {
                 $("#signup").removeClass("loading");
                 $("#signUpFormFieldset").prop('disabled', false);
@@ -158,13 +172,3 @@
 </script>
 </body>
 </html>
-
-
-<!--
-
-TO-DO:
-
-LiveÜberprüfung über übereinstimmung
-Abfangen richtiger Fehlercodes
-
- -->
