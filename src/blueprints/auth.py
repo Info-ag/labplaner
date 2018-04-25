@@ -25,18 +25,27 @@ def login_get():
 def login():
     if g.session.authenticated:
         return jsonify({"redirect": "/"}), 200
-    user = User.query.filter_by(email=request.values["email"]).one()
-    # TODO check for email (@) symbol
-    if user and user.check_password(request.values["password"]):
-        g.session.revoked = True
-        db.session.merge(g.session)
-        db.session.commit()
 
-        _session = Session(user)
-        db.session.add(_session)
-        db.session.commit()
-        g.session = _session
-        return jsonify({"redirect": "/"}), 200
+    try:
+        email = request.values["email"]
+        if "@" in email:
+            user = User.query.filter_by(email=email).one()
+        else:
+            user = User.query.filter_by(username=email).one()
+        
+        if user and user.check_password(request.values.get("password")):
+            g.session.revoked = True
+            db.session.merge(g.session)
+            db.session.commit()
+
+            _session = Session(user)
+            db.session.add(_session)
+            db.session.commit()
+            g.session = _session
+            return jsonify({"redirect": "/"}), 200
+        return jsonify({"Status": "Failed", "reason": "password"}), 400
+    except:
+        return jsonify({"Status": "Failed", "reason": "email"}), 400
 
     return jsonify({"Status": "Failed"}), 400
 
