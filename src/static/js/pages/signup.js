@@ -13,6 +13,7 @@ var signUpForm = $("#signUpForm");
                 beforeSend: function () {
                     $("#signUpFormFieldset").prop('disabled', true);
                     $("#passwordP").text("");
+                    $("#password_rptGroup").removeClass("has-error");
                     $("#signup").addClass("loading");
                     console.log("rest");
                     return true;
@@ -35,6 +36,7 @@ var signUpForm = $("#signUpForm");
             });
         } else {
             $("#passwordP").text("your input must match your first password input");
+            $("#password_rptGroup").addClass("has-error");
             //Visualisieren statt dem Alert
         }
 
