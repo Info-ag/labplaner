@@ -17,12 +17,12 @@ ma = Marshmallow(app)
 migrate = Migrate(app, db)
 
 from models.user import Session
+
 db.create_all()
 
 from blueprints.api.v1 import user
 from blueprints import auth
 import utils
-
 
 
 @app.after_request
@@ -39,8 +39,12 @@ def auth_middleware():
         session_result = Session.verify(sid)
         if session_result:
             g.session = session_result
+        else:
+            _session = Session()
+            db.session.add(_session)
+            db.session.commit()
+            g.session = _session
     else:
-        print("test")
         _session = Session()
         db.session.add(_session)
         db.session.commit()
@@ -62,4 +66,9 @@ def index(text=''):
 
 
 if __name__ == '__main__':
+    app.config.update(
+        DEBUG=True,
+        TESTING=True,
+        TEMPLATES_AUTO_RELOAD=True
+    )
     app.run(host='127.0.0.1', port=5000, debug=True)

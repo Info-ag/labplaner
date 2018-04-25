@@ -1,17 +1,7 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/css/spectre.min.css">
-    <link rel="stylesheet" href="/static/css/spectre-exp.min.css">
-    <link rel="stylesheet" href="/static/css/spectre-icons.min.css">
-
-    <title>Startseite</title>
-</head>
-<body>
-<h1>Homepage</h1>
-{{ message }}
-<p> Welcome to the page. <a href={{ url_for('auth.login') }}>Login</a></p>
-</body>
-</html>
+{% extends "base.html" %}
+{% block content %}
+    <h1>Index</h1>
+    <p>
+        Yay!
+    </p>
+{% endblock %}
