@@ -24,7 +24,7 @@ var signUpForm = $("#logInForm");
             window.location.href = response.redirect;
         }).fail(function (data) {
             $(".form-group").removeClass("has-error");
-            switch(data.reason) {
+            switch(data.responseJSON.reason) {
                 case "email":
                     $("#emailGroup").addClass("has-error");
                     break;
