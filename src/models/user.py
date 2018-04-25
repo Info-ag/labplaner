@@ -49,7 +49,7 @@ class Session(db.Model):
     authenticated = db.Column(db.Boolean, default=False)
     revoked = db.Column(db.Boolean, nullable=False, default=False)
 
-    def __init__(self, user: User=None, days=60):
+    def __init__(self, user: User = None, days=60):
         if user:
             self.uid = user.id
             self.authenticated = True
@@ -68,20 +68,20 @@ class Session(db.Model):
 
     @staticmethod
     def verify(cookie: str):
-        if cookie:
-            pub = cookie.split("+")[0]
-            session = db.session.query(Session).filter(Session.public_token == pub)
-            if not db.session.query(session.exists()):
-                return False
-            session = session.one()
-            if session.expires > datetime.now() and not session.revoked:
-                dig = hmac.new(b'a_perfect_secret',
-                               msg=session.token.encode('utf-8'),
-                               digestmod=hashlib.sha256).digest()
-                str_dig = base64.b64encode(dig).decode()
-                cookie_dig = cookie[cookie.index("+")+1:]
-                if secrets.compare_digest(str_dig, cookie_dig):
-                    return session
+        try:
+            if cookie:
+                pub = cookie.split("+")[0]
+                session = Session.query.filter_by(public_token=pub).one()
+                if session.expires > datetime.now() and not session.revoked:
+                    dig = hmac.new(b'a_perfect_secret',
+                                   msg=session.token.encode('utf-8'),
+                                   digestmod=hashlib.sha256).digest()
+                    str_dig = base64.b64encode(dig).decode()
+                    cookie_dig = cookie[cookie.index("+") + 1:]
+                    if secrets.compare_digest(str_dig, cookie_dig):
+                        return session
+        except:
+            return False
 
         return False
 
