@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="/static/css/spectre-icons.min.css">
 </head>
 <body>
-<section class="hero hero-fill">
+<section class="hero hero-fill d-block">
     <div class="container grid-xs p-2" style="background: white">
         <div class="columns">
             <div class="column">
@@ -70,7 +70,7 @@
         </div>
     </div>
 </section>
-<section class="hero footer bg-gray p-2">
+<section class="hero footer bg-gray p-2 d-block">
     <div class="container">
         <div class="columns">
             <div class="column col-3 col-md-12">
@@ -147,15 +147,15 @@
 
                 }
             }).done(function (response) {
-                formMessages.text("Die Anfrage war erfolgreich:" + response);
                 $("#signup").removeClass("loading");
-                var formData = $(signUpForm).serialize();
                 $.ajax({
                     type: 'POST',
-                    url: {{ url_for('auth.login') }},
+                    url: '{{ url_for('auth.login') }}',
                     data: formData,
                     dataType: "json",
                     cache: false
+                }).done(function (response) {
+                    window.location.href = response.redirect;
                 })
             }).fail(function (data) {
                 $("#signup").removeClass("loading");

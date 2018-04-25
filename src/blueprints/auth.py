@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, g, redirect, render_template, abort
+from flask import Blueprint, request, jsonify, g, redirect, render_template, abort, Response
 from models.user import User, Session
 from app import db
 
@@ -23,11 +23,15 @@ def login_get():
 
 @bp.route("/login", methods=["POST"])
 def login():
+    print("test")
+    print(request.values["email"])
+    print(request.values["password"])
     if g.session.authenticated:
-        return redirect("/")
+        return jsonify({"redirect": "/"}), 200
     user = User.query.filter_by(email=request.values["email"]).one()
     # TODO check for email (@) symbol
     if user and user.check_password(request.values["password"]):
+        print("all right")
         g.session.revoked = True
         db.session.merge(g.session)
         db.session.commit()
@@ -36,9 +40,9 @@ def login():
         db.session.add(_session)
         db.session.commit()
         g.session = _session
-        return redirect("/")
+        return jsonify({"redirect": "/"}), 200
 
-    return jsonify({"Status": "Failed"})
+    return jsonify({"Status": "Failed"}), 400
 
 
 @bp.route("/logout")
