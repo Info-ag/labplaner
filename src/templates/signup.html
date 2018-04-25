@@ -56,60 +56,13 @@
                                        placeholder="Password">
                             </div>
                             <div class="form-group float-right">
-                                <a class="btn btn-link" href="{{ url_for("auth.login_get") }}">Already have an account?</a>
+                                <a class="btn btn-link" href="{{ url_for("auth.login_get") }}">Already have an
+                                    account?</a>
                                 <button id="signup" type="submit" value="Enter" class="btn active">Signup</button>
                             </div>
                         </fieldset>
                     </form>
                 </div>
-<<<<<<< HEAD
-                <ul class="step my-2">
-                    <li class="step-item active">
-                        <a>Create Account</a>
-                    </li>
-                    <li class="step-item">
-                        <a>Verify E-Mail</a>
-                    </li>
-                </ul>
-                <form id="signUpForm" action="{{ url_for('user_api.add_user') }}" method="post">
-                    <fieldset id="signUpFormFieldset">
-                        <div class="form-group">
-                            <label class="form-label" for="email">Username</label>
-                            <input class="form-input" required autocomplete="username" type="text"
-                                   name="username"
-                                   id="name"
-                                   pattern="^[A-Za-z0-9_-]{1,15}$"
-                                   placeholder="Username">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label" for="email">E-Mail</label>
-                            <input class="form-input" required autocomplete="email" type="email"
-                                   name="email"
-                                   id="email"
-                                   placeholder="E-Mail">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label" for="password">Password</label>
-                            <input class="form-input" required pattern=".{8,}" autocomplete="password" type="password"
-                                   name="password"
-                                   id="password"
-                                   placeholder="Password">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label" for="password_rpt">Repeat Password</label>
-                            <input class="form-input" required pattern=".{8,}" autocomplete="password" type="password"
-                                   name="password"
-                                   id="password_rpt"
-                                   placeholder="Password">
-                        </div>
-                        <div class="form-group float-right">
-                            <a class="btn btn-link">Already have an account?</a>
-                            <button id="signup" type="submit" value="Enter" class="btn active">Signup</button>
-                        </div>
-                    </fieldset>
-                </form>
-=======
->>>>>>> 7fb7046aa7982e243ae3b3ec29c95329b21ee10e
             </div>
         </div>
     </section>

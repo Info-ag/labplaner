@@ -13,12 +13,11 @@ var signUpForm = $("#signUpForm");
                 beforeSend: function () {
                     $("#signUpFormFieldset").prop('disabled', true);
                     $("#signup").addClass("loading");
+                    console.log("rest");
                     return true;
-                },
-                statusCode: function () {
-
                 }
             }).done(function (response) {
+                console.log("rest");
                 $("#signup").removeClass("loading");
                 $.ajax({
                     type: 'POST',

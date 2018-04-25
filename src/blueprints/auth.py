@@ -43,11 +43,9 @@ def login():
             db.session.commit()
             g.session = _session
             return jsonify({"redirect": "/"}), 200
-        return jsonify({"Status": "Failed", "reason": "password"}), 400
+        return jsonify({"Status": "Failed", "reason": "password"}), 406
     except:
-        return jsonify({"Status": "Failed", "reason": "email"}), 400
-
-    return jsonify({"Status": "Failed"}), 400
+        return jsonify({"Status": "Failed", "reason": "email"}), 406
 
 
 @bp.route("/logout")
