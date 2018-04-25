@@ -10,4 +10,4 @@ def create_ag():
     if not g.session.authenticated:
         return redirect(url_for("auth.login"))
 
-    return render_template('ag/new.html')
+    return render_template('ag/.html')
