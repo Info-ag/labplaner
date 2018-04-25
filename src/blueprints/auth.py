@@ -5,6 +5,14 @@ from app import db
 bp = Blueprint("auth", __name__)
 
 
+@bp.route("/signup", methods=["GET"])
+def signup_get():
+    if g.session.authenticated:
+        return redirect("/")
+
+    return render_template('signup.html', warning='')
+
+
 @bp.route("/login", methods=["GET"])
 def login_get():
     if g.session.authenticated:
