@@ -12,20 +12,107 @@
     <link rel="stylesheet" href="/static/css/spectre-icons.min.css">
 </head>
 <body>
-<h1>Login</h1>
-<p> {{ warning }} </p>
-<form id="signUpForm" action="{{ url_for('user_api.add_user') }}" method="post">
-    <fieldset id="signUpFormFieldset">
-        <p><input id="name" type="text" pattern="^[A-Za-z0-9_-]{1,15}$" placeholder="Username hier eintragen"
-                  name="username"/></p>
-        <p><input id="email" type="email" placeholder="eMail-Adresse eintragen" name="email"/></p>
-        <p><input id="email_rpt" type="email" placeholder="eMail-Adresse wiederholen"/></p>
-        <p><input id="password" type="password" required pattern=".{8,}" name="password"
-                  placeholder="Passwort hier eintragen"/></p>
-        <p><input id="password_rpt" type="password" placeholder="Passwort wiederholen"/></p>
-        <p><input type="submit" value="Enter"/></p>
-    </fieldset>
-</form>
+<section class="hero hero-fill">
+    <div class="container grid-xs p-2" style="background: white">
+        <div class="columns">
+            <div class="column">
+                <div class="text-center my-2">
+                    <h3>Signup
+                        <small class="label">Lab-Planer</small>
+                    </h3>
+                </div>
+                <form id="signUpForm" action="{{ url_for('user_api.add_user') }}" method="post">
+                    <fieldset id="signUpFormFieldset">
+                        <div class="form-group">
+                            <label class="form-label" for="email">Username</label>
+                            <input class="form-input" required autocomplete="username" type="text"
+                                   name="username"
+                                   id="name"
+                                   pattern="^[A-Za-z0-9_-]{1,15}$"
+                                   placeholder="Username">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="email">E-Mail</label>
+                            <input class="form-input" required autocomplete="email" type="email"
+                                   name="email"
+                                   id="email"
+                                   placeholder="E-Mail">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="password">Password</label>
+                            <input class="form-input" required pattern=".{8,}" autocomplete="password" type="password"
+                                   name="password"
+                                   id="password"
+                                   placeholder="Password">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="password_rpt">Repeat Password</label>
+                            <input class="form-input" required pattern=".{8,}" autocomplete="password" type="password"
+                                   name="password"
+                                   id="password_rpt"
+                                   placeholder="Password">
+                        </div>
+                        <div class="form-group float-right">
+                            <button class="btn btn-link">Already have an account?</button>
+                            <button id="signup" type="submit" value="Enter" class="btn active">Signup</button>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="hero footer bg-gray p-2">
+    <div class="container">
+        <div class="columns">
+            <div class="column col-3 col-md-12">
+                <h3>
+                    <small class="label">Lab-Planer</small>
+                </h3>
+                <p>Create polls, invite your friends and manage the perfect event. All withing one place.</p>
+                <p><a href="{{ url_for('auth.login') }}">Login</a> or <a href="/auth/signup">Sign Up</a></p>
+            </div>
+            <div class="column col-2 col-md-12 col-ml-auto">
+                <ul class="nav">
+                    <h5>Where to go</h5>
+                    <li class="nav-item">
+                        <a href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#">Account</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#">AGs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#">Events</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="column col-2 col-md-12">
+                <ul class="nav">
+                    <h5>More</h5>
+                    <li class="nav-item">
+                        <a href="#">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#">Support</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#">Privacy</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#">Terms</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#">Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
 <div id="formMessages">Hier werden sp&auml;ter Nachrichten stehen</div>
 <script>
     var signUpForm = $("#signUpForm");
@@ -33,37 +120,37 @@
     $(signUpForm).submit(function (event) {
         // Stop the browser from submitting the form.
         event.preventDefault();
-        if ($("#mail").val() == $("#mail_rpt").val()) {
-            if ($("#password").val() == $("#password_rpt").val()) {
-                var formData = $(signUpForm).serialize();
-                console.log(formData);
-                $.ajax({
-                    type: 'POST',
-                    url: $(signUpForm).attr('action'),
-                    data: formData,
-                    beforeSend: function () {
-                        $("#signUpFormFieldset").prop('disabled', true);
-                        formMessages.text("Anfrage wurde gesendet, es wird auf eine Antwort gewartet.");
-                        return true;
-                    },
-                    statusCode: function () {
+        if ($("#password").val() == $("#password_rpt").val()) {
+            var formData = $(signUpForm).serialize();
+            console.log(formData);
+            $.ajax({
+                type: 'POST',
+                url: $(signUpForm).attr('action'),
+                data: formData,
+                dataType: "json",
+                cache: false,
+                beforeSend: function () {
+                    $("#signUpFormFieldset").prop('disabled', true);
+                    formMessages.text("Anfrage wurde gesendet, es wird auf eine Antwort gewartet.");
+                    $("#signup").addClass("loading");
+                    return true;
+                },
+                statusCode: function () {
 
-                    }
-                }).done(function (response) {
-                    formMessages.text("Die Anfrage war erfolgreich:" + response);
+                }
+            }).done(function (response) {
+                formMessages.text("Die Anfrage war erfolgreich:" + response);
+                $("#signup").removeClass("loading");
+                signUpForm.trigger("reset");
 
-                    signUpForm.trigger("reset");
-
-                }).fail(function (data) {
-                    formMessages.text("Irgendetwas lief falsch");
-                });
-            } else {
-                alert("Passwort stimmt nicht überein");
-                //Visualisieren statt dem Alert
-            }
+            }).fail(function (data) {
+                $("#signup").removeClass("loading");
+                $("#signUpFormFieldset").prop('disabled', false);
+                formMessages.text("Irgendetwas lief falsch");
+            });
         } else {
-            alert("eMail stimmt nicht überein");
-            //Visualiesieren statt Alert
+            alert("Passwort stimmt nicht überein");
+            //Visualisieren statt dem Alert
         }
 
     });
