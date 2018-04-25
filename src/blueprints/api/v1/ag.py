@@ -39,7 +39,7 @@ def add_ag():
         db.session.add(userag)
         db.session.commit()
 
-        return ag_schema.jsonify(ag), 200
+        return jsonify({"redirect": f"/ag/{name}/invite"}), 200
     except:
         return jsonify({"Status": "Failed"}), 406
 
