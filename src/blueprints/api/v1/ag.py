@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify, g
 from models.ag import AG, AGSchema
+from models.associations import UserAG
 from app import db
 
 bp = Blueprint("ag_api", __name__)
@@ -10,7 +11,7 @@ ags_schema = AGSchema(many=True)
 
 @bp.route("/", methods=["POST"])
 def add_ag():
-    if g.session.authenticated:
+    if not g.session.authenticated:
         return jsonify({"Status": "Failed"}), 406
     try:
         name = request.values["name"]
@@ -27,6 +28,15 @@ def add_ag():
         ag.description = request.values["description"]
 
         db.session.add(ag)
+        db.session.commit()
+
+        userag = UserAG()
+        userag.uid = g.session.uid
+        userag.agid = ag.id
+        userag.role = "MENTOR"
+        print(ag.id)
+
+        db.session.add(userag)
         db.session.commit()
 
         return ag_schema.jsonify(ag), 200

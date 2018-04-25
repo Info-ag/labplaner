@@ -1,6 +1,5 @@
 from app import db
 from app import ma
-import models.associations as ass
 
 
 class AG(db.Model):
@@ -10,8 +9,7 @@ class AG(db.Model):
     display_name = db.Column(db.String(48), unique=True, nullable=False)
     description = db.Column(db.String(140), nullable=False)
 
-    users = db.relationship("User", secondary=ass.user_ag_association,
-                            back_populates="ags")
+    users = db.relationship("User", secondary="user_ag_association")
 
     def __repr__(self):
         return f"<AG {self.name}>"

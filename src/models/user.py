@@ -9,7 +9,7 @@ from app import ma
 from models.ag import AG
 import bcrypt
 
-import models.associations as ass
+from models.associations import UserAG
 
 
 class User(db.Model):
@@ -19,8 +19,7 @@ class User(db.Model):
     email = db.Column(db.String(250), unique=True, nullable=False)
     password = db.Column(db.LargeBinary, nullable=False)
 
-    ags = db.relationship("AG", secondary=ass.user_ag_association,
-                          back_populates="users")
+    ags = db.relationship(AG, secondary="user_ag_association")
 
     sessions = db.relationship("Session", backref='persons', lazy=True)
 
