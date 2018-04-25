@@ -2,7 +2,7 @@
 Der Labplaner ist eine Webaplikation mit dem Ziel, Terminabsprachen zu Vereinfachen.
 
 ## Installation
-Python:
+Python >= 3.6:
 ```bash
 sudo apt install python3 python3-pip
 sudo python3 -m pip install --upgrade pip 
