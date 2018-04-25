@@ -20,7 +20,9 @@ from models.user import Session
 
 db.create_all()
 
+from blueprints.api.v1 import api
 from blueprints.api.v1 import user
+from blueprints.api.v1 import ag
 from blueprints import auth
 import utils
 
@@ -56,7 +58,9 @@ def auth_middleware():
                             httponly=True, expires=g.session.expires)
 
 
+app.register_blueprint(api.bp, url_prefix="/api/v1")
 app.register_blueprint(user.bp, url_prefix="/api/v1/user")
+app.register_blueprint(ag.bp, url_prefix="/api/v1/ag")
 app.register_blueprint(auth.bp, url_prefix="/auth")
 
 
