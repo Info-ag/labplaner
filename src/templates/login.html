@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/pages/signup.js"></script>
     <link rel="stylesheet" href="/static/css/main.css">
     <link rel="stylesheet" href="/static/css/spectre.min.css">
     <link rel="stylesheet" href="/static/css/spectre-exp.min.css">
@@ -20,7 +22,7 @@
                         <small class="label">Lab-Planer</small>
                     </h3>
                 </div>
-                <form action="{{ url_for('auth.login') }}" method="post">
+                <form id="logInForm" action="{{ url_for('auth.login') }}" method="post">
                     <div class="form-group">
                         <label class="form-label" for="login-email">E-Mail</label>
                         <input class="form-input" autocomplete="email" type="email" name="email" id="email"

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <script src="/static/js/jquery.min.js"></script>
-    <!--<script src="http://code.jquery.com/jquery-3.3.1.min.js"></script> Nur für Testzwecke-->
+    <script src="/static/js/pages/signup.js"></script>
     <link rel="stylesheet" href="/static/css/main.css">
     <link rel="stylesheet" href="/static/css/spectre.min.css">
     <link rel="stylesheet" href="/static/css/spectre-exp.min.css">
@@ -122,53 +122,5 @@
 </section>
 
 <div id="formMessages">Hier werden sp&auml;ter Nachrichten stehen</div>
-<script>
-    var signUpForm = $("#signUpForm");
-    var formMessages = $("#formMessages");
-    $(signUpForm).submit(function (event) {
-        // Stop the browser from submitting the form.
-        event.preventDefault();
-        if ($("#password").val() == $("#password_rpt").val()) {
-            var formData = $(signUpForm).serialize();
-            console.log(formData);
-            $.ajax({
-                type: 'POST',
-                url: $(signUpForm).attr('action'),
-                data: formData,
-                dataType: "json",
-                cache: false,
-                beforeSend: function () {
-                    $("#signUpFormFieldset").prop('disabled', true);
-                    formMessages.text("Anfrage wurde gesendet, es wird auf eine Antwort gewartet.");
-                    $("#signup").addClass("loading");
-                    return true;
-                },
-                statusCode: function () {
-
-                }
-            }).done(function (response) {
-                $("#signup").removeClass("loading");
-                $.ajax({
-                    type: 'POST',
-                    url: '{{ url_for('auth.login') }}',
-                    data: formData,
-                    dataType: "json",
-                    cache: false
-                }).done(function (response) {
-                    window.location.href = response.redirect;
-                })
-            }).fail(function (data) {
-                $("#signup").removeClass("loading");
-                $("#signUpFormFieldset").prop('disabled', false);
-                formMessages.text("Irgendetwas lief falsch");
-            });
-        } else {
-            alert("Passwort stimmt nicht überein");
-            //Visualisieren statt dem Alert
-        }
-
-    });
-
-</script>
 </body>
 </html>
