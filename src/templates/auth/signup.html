@@ -24,13 +24,14 @@
                     <form id="signUpForm" action="{{ url_for('user_api.add_user') }}" method="post">
                         <fieldset id="signUpFormFieldset">
                             <div class="form-group">
-                                <label data-tooltip="Maximum 15 characters & 'A-z,0-9,-,_'"
+                                <label data-tooltip="Maximum 16 characters & 'A-z,0-9,-,_'"
                                        class="form-label tooltip tooltip-top" for="name">Username*</label>
                                 <div class="has-icon-right" id="username-group">
                                     <input class="form-input" required autocomplete="username" type="text"
                                            name="username"
+                                           maxlength="16"
                                            id="name"
-                                           pattern="^[A-Za-z0-9_-]{1,15}$"
+                                           pattern="^[A-Za-z0-9_-]{1,16}$"
                                            placeholder="Username">
                                     <i id="name-loading" class="form-icon loading" style="display:none"></i>
                                     <i id="name-check" class="form-icon icon icon-check" style="display:none"></i>
@@ -40,6 +41,7 @@
                                 <label class="form-label" for="email">E-Mail*</label>
                                 <input class="form-input" required autocomplete="email" type="email"
                                        name="email"
+                                       maxlength="48"
                                        id="email"
                                        placeholder="E-Mail">
                                 <p id="email-error" class="form-input-hint" style="display:none">User with this E-Mail
