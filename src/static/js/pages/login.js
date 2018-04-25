@@ -27,13 +27,13 @@ var signUpForm = $("#logInForm");
             $(".form-input-hint").addClass("d-invisible");
             console.log(data.responseJSON.reason);
             switch(data.responseJSON.reason) {
-                case "email":
-                    $("#emailGroup").addClass("has-error");
+                case "email":      
                     $("#emailP").removeClass("d-invisible");
+                    $("#emailGroup").addClass("has-error");
                     break;
                 case "password":
-                    $("#passwordGroup").addClass("has-error");
                     $("#passwordP").removeClass("d-invisible");
+                    $("#passwordGroup").addClass("has-error");
                     break;
                 default:
                     alert("something went wrong entirely");
