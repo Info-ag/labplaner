@@ -33,7 +33,7 @@ var signUpForm = $("#signUpForm");
                 $("#signUpFormFieldset").prop('disabled', false);
             });
         } else {
-            alert("Passwort stimmt nicht �berein");
+            alert("Passwort stimmt nicht ?berein");
             //Visualisieren statt dem Alert
         }
 

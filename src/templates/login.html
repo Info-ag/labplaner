@@ -16,16 +16,17 @@
                     </div>
                     <form id="logInForm" action="{{ url_for('auth.login') }}" method="post">
                         <fieldset id="logInFormFieldset">
-                        <div class="form-group">
+                        <div id="emailGroup" class="form-group">
                             <label class="form-label" for="login-email">E-Mail</label>
-                            <input class="form-input" autocomplete="email" type="email" name="email" id="email"
-                                   placeholder="E-Mail">
+                            <input class="form-input" name="email" id="email"
+                                   placeholder="E-Mail/Username">
                         <p class="form-input-hint">The name is invalid.</p>
                         </div>
-                        <div class="form-group">
+                        <div id="passwordGroup" class="form-group">
                             <label class="form-label" for="login-password">Password</label>
                             <input class="form-input" autocomplete="password" type="password" name="password"
                                    id="password"
+                                   pattern=".{8,}"
                                    placeholder="Password">
                         <p class="form-input-hint">The name is invalid.</p>
                         </div>
