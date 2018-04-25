@@ -34,6 +34,7 @@ var signUpForm = $("#logInForm");
                     break;
                 default:
                     alert("something went wrong entirely");
+            }
             $("#login").removeClass("loading");
             $("#signUpFormFieldset").prop('disabled', false);
         });
