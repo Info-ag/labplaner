@@ -1,97 +1,40 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% extends "base.html" %}
+{% block head %}
+    {{ super() }}
     <script src="/static/js/jquery.min.js"></script>
     <script src="/static/js/pages/signup.js"></script>
-    <link rel="stylesheet" href="/static/css/main.css">
-    <link rel="stylesheet" href="/static/css/spectre.min.css">
-    <link rel="stylesheet" href="/static/css/spectre-exp.min.css">
-    <link rel="stylesheet" href="/static/css/spectre-icons.min.css">
-    <title>Login</title>
-</head>
-<body>
-<section class="hero hero-fill">
-    <div class="container grid-xs p-2" style="background: white">
-        <div class="columns">
-            <div class="column">
-                <div class="text-center my-2">
-                    <h3>Login
-                        <small class="label">Lab-Planer</small>
-                    </h3>
+{% endblock %}
+{% block content %}
+    <section class="hero hero-fill d-block">
+        <div class="container grid-xs p-2" style="background: white">
+            <div class="columns">
+                <div class="column">
+                    <div class="text-center my-2">
+                        <h3>Login
+                            <small class="label">Lab-Planer</small>
+                        </h3>
+                    </div>
+                    <form id="logInForm" action="{{ url_for('auth.login') }}" method="post">
+                        <div class="form-group">
+                            <label class="form-label" for="login-email">E-Mail</label>
+                            <input class="form-input" autocomplete="email" type="email" name="email" id="email"
+                                   placeholder="E-Mail">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="login-password">Password</label>
+                            <input class="form-input" autocomplete="password" type="password" name="password"
+                                   id="password"
+                                   placeholder="Password">
+                        </div>
+                        <div class="form-group float-right">
+                            <a href="{{ url_for("auth.signup_get") }}">
+                                <button type="button" role="link" class="btn btn-link">Create Account</button>
+                            </a>
+                            <button type="submit" id="login" class="btn active">Login</button>
+                        </div>
+                    </form>
                 </div>
-                <form id="logInForm" action="{{ url_for('auth.login') }}" method="post">
-                    <div class="form-group">
-                        <label class="form-label" for="login-email">E-Mail</label>
-                        <input class="form-input" autocomplete="email" type="email" name="email" id="email"
-                               placeholder="E-Mail">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="login-password">Password</label>
-                        <input class="form-input" autocomplete="password" type="password" name="password" id="password"
-                               placeholder="Password">
-                    </div>
-                    <div class="form-group float-right">
-                        <button class="btn btn-link">Create Account</button>
-                        <button type="submit" class="btn active">Login</button>
-                    </div>
-                </form>
             </div>
         </div>
-    </div>
-</section>
-<section class="hero footer bg-gray p-2">
-    <div class="container">
-        <div class="columns">
-            <div class="column col-3 col-md-12">
-                <h3>
-                    <small class="label">Lab-Planer</small>
-                </h3>
-                <p>Create polls, invite your friends and manage the perfect event. All withing one place.</p>
-                <p><a href="{{ url_for('auth.login') }}">Login</a> or <a href="/auth/signup">Sign Up</a></p>
-            </div>
-            <div class="column col-2 col-md-12 col-ml-auto">
-                <ul class="nav">
-                    <h5>Where to go</h5>
-                    <li class="nav-item">
-                        <a href="#">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#">Account</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#">AGs</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#">Events</a>
-                    </li>
-                </ul>
-            </div>
-            <div class="column col-2 col-md-12">
-                <ul class="nav">
-                    <h5>More</h5>
-                    <li class="nav-item">
-                        <a href="#">About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#">Support</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#">Privacy</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#">Terms</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#">Contact</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</section>
-
-</body>
-</html>
+    </section>
+{% endblock %}
