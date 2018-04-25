@@ -56,23 +56,13 @@ var doneTypingInterval = 1000;
 var $username = $('#name');
 var $pwd = $('#password_rpt');
 
-var value = "";
-
-$username.on('keyup', function () {
-    if ($username.val() === value) return;
-    value = $username.val();
+$username.on('input', function () {
     resetName();
     clearTimeout(typingTimer);
     typingTimer = setTimeout(doneTyping, doneTypingInterval);
 });
-$username.on('keydown', function () {
-    if ($username.val() === value) return;
-    value = $username.val();
-    resetName();
-    clearTimeout(typingTimer);
-});
 
-$pwd.on('change keyup keydown', function () {
+$pwd.on('input', function () {
     if ($pwd.val() !== $("#password").val()) {
         $("#password_rpt").addClass("is-error");
         $("#password_rpt-error").show();
