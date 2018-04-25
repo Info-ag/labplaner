@@ -24,19 +24,22 @@ var signUpForm = $("#logInForm");
             window.location.href = response.redirect;
         }).fail(function (data) {
             $(".form-group").removeClass("has-error");
+            $(".form-input-hint").addClass("d-invisible");
             console.log(data.responseJSON.reason);
             switch(data.responseJSON.reason) {
                 case "email":
                     $("#emailGroup").addClass("has-error");
+                    $("#passwordP").addClass("d-visible");
                     break;
                 case "password":
                     $("#passwordGroup").addClass("has-error");
+                    $("#passwordP").addClass("d-visible");
                     break;
                 default:
                     alert("something went wrong entirely");
             }
             $("#login").removeClass("loading");
-            $("#signUpFormFieldset").prop('disabled', false);
+            $("#logInFormFieldset").prop('disabled', false);
         });
 
     });
