@@ -25,7 +25,11 @@ class User(db.Model):
     sessions = db.relationship("Session", backref='persons', lazy=True)
 
     def __repr__(self):
+<<<<<<< HEAD
         return f'<User {self.username}>'
+=======
+        return f"<User {self.username}>"
+>>>>>>> cb5359e8849e42be255df1516f640ccaceb0d22f
 
     def set_password(self, password):
         self.password = bcrypt.hashpw(password.encode(), bcrypt.gensalt(12))
@@ -64,7 +68,11 @@ class Session(db.Model):
     def get_string_cookie(self):
         dig = hmac.new(b'a_perfect_secret', msg=self.token.encode('utf-8'), digestmod=hashlib.sha256).digest()
         str_dig = base64.b64encode(dig).decode()
+<<<<<<< HEAD
         return f'{self.public_token}+{str_dig}'
+=======
+        return f"{self.public_token}+{str_dig}"
+>>>>>>> cb5359e8849e42be255df1516f640ccaceb0d22f
 
     @staticmethod
     def verify(cookie: str):
@@ -81,4 +89,8 @@ class Session(db.Model):
         return False
 
     def __repr__(self):
+<<<<<<< HEAD
         return f'<Session {self.id}>'
+=======
+        return f"<Session {self.id}>"
+>>>>>>> cb5359e8849e42be255df1516f640ccaceb0d22f
