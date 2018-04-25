@@ -48,7 +48,7 @@ $name.on('input', function () {
 
 
 function doneTyping() {
-    if (!$username.val()) return;
+    if (!$name.val()) return;
     $.ajax({
         type: 'GET',
         url: '/api/v1/ag/name/' + $name.val(),
