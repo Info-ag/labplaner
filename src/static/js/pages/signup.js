@@ -12,6 +12,7 @@ var signUpForm = $("#signUpForm");
                 cache: false,
                 beforeSend: function () {
                     $("#signUpFormFieldset").prop('disabled', true);
+                    $("#passwordP").text("");
                     $("#signup").addClass("loading");
                     console.log("rest");
                     return true;
@@ -33,7 +34,7 @@ var signUpForm = $("#signUpForm");
                 $("#signUpFormFieldset").prop('disabled', false);
             });
         } else {
-            alert("Passwort stimmt nicht ?berein");
+            $("#passwordP").text("your input must match your first password input");
             //Visualisieren statt dem Alert
         }
 
