@@ -15,12 +15,12 @@
                     </div>
                     <form id="logInForm" action="{{ url_for('auth.login') }}" method="post">
                         <fieldset id="logInFormFieldset">
-<<<<<<< HEAD
                             <div id="emailGroup" class="form-group">
                                 <label class="form-label" for="login-email">E-Mail or username</label>
                                 <input class="form-input" name="email" id="email"
                                        placeholder="E-Mail or username">
-                                <p id="email-error" class="form-input-hint" style="display:none">Incorrect E-Mail or username</p>
+                                <p id="email-error" class="form-input-hint" style="display:none">Incorrect E-Mail or
+                                    username</p>
                             </div>
                             <div id="passwordGroup" class="form-group">
                                 <label class="form-label" for="login-password">Password</label>
@@ -36,28 +36,6 @@
                                 </a>
                                 <button type="submit" id="login" class="btn active">Login</button>
                             </div>
-=======
-                        <div id="emailGroup" class="form-group">
-                            <label class="form-label" for="login-email">E-Mail</label>
-                            <input class="form-input" name="email" id="email"
-                                   placeholder="E-Mail/Username">
-                        <p id="emailP" class="form-input-hint"></p>
-                        </div>
-                        <div id="passwordGroup" class="form-group">
-                            <label class="form-label" for="login-password">Password</label>
-                            <input class="form-input" autocomplete="password" type="password" name="password"
-                                   id="password"
-                                   pattern=".{8,}"
-                                   placeholder="Password">
-                        <p id="passwordP" class="form-input-hint"></p>
-                        </div>
-                        <div class="form-group float-right">
-                            <a class="btn btn-link" href="{{ url_for("auth.signup_get") }}">
-                                Create Account
-                            </a>
-                            <button type="submit" id="login" class="btn active">Login</button>
-                        </div>
->>>>>>> 51b3b8f88146a2cb89fe89b7bcbe29d4fd020f37
                         </fieldset>
                     </form>
                 </div>
