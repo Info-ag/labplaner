@@ -24,6 +24,7 @@
                     <form id="signUpForm" action="{{ url_for('user_api.add_user') }}" method="post">
                         <fieldset id="signUpFormFieldset">
                             <div class="form-group">
+<<<<<<< HEAD
                                 <label class="form-label" for="name">Username</label>
                                 <div class="has-icon-right" id="username-group">
                                     <input class="form-input" required autocomplete="username" type="text"
@@ -34,9 +35,17 @@
                                     <i id="name-loading" class="form-icon loading" style="display:none"></i>
                                     <i id="name-check" class="form-icon icon icon-check" style="display:none"></i>
                                 </div>
+=======
+                                <label data-tooltip="Please choose a username which is maximum 15 characters long and only consist of numbers, letters, '_' and '-' " class="form-label tooltip tooltip-top" for="email">Username*</label>
+                                <input class="form-input" required autocomplete="username" type="text"
+                                       name="username"
+                                       id="name"
+                                       pattern="^[A-Za-z0-9_-]{1,15}$"
+                                       placeholder="Username">
+>>>>>>> 51b3b8f88146a2cb89fe89b7bcbe29d4fd020f37
                             </div>
                             <div class="form-group">
-                                <label class="form-label" for="email">E-Mail</label>
+                                <label class="form-label" for="email">E-Mail*</label>
                                 <input class="form-input" required autocomplete="email" type="email"
                                        name="email"
                                        id="email"
@@ -45,7 +54,7 @@
                                     already exists</p>
                             </div>
                             <div class="form-group">
-                                <label class="form-label" for="password">Password</label>
+                                <label class="form-label tooltip tooltip-top" data-tooltip="Please choose a password which is at least 8 characters long." for="password">Password*</label>
                                 <input class="form-input" required pattern=".{8,}" autocomplete="password"
                                        type="password"
                                        name="password"
@@ -54,16 +63,21 @@
                                 <p id="password-error" class="form-input-hint" style="display:none">Password has less
                                     than 8 characters</p>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label" for="password_rpt">Repeat Password</label>
+                            <div id="password_rptGroup" class="form-group">
+                                <label class="form-label" for="password_rpt">Repeat Password*</label>
                                 <input class="form-input" required pattern=".{8,}" autocomplete="password"
                                        type="password"
                                        name="password"
                                        id="password_rpt"
                                        placeholder="Password">
+<<<<<<< HEAD
                                 <p id="password_rpt-error" class="form-input-hint" style="display:none">Passwords don't
                                     match</p>
+=======
+                                <p id="passwordP" class="form-input-hint"></p>
+>>>>>>> 51b3b8f88146a2cb89fe89b7bcbe29d4fd020f37
                             </div>
+                            <p class="form-input-hint">All fields marked with an asterix (*) are required fields.</p>
                             <div class="form-group float-right">
                                 <a class="btn btn-link" href="{{ url_for("auth.login_get") }}">Already have an
                                     account?</a>
