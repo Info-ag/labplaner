@@ -3,5 +3,3 @@ flask-sqlalchemy
 flask_marshmallow
 flask-migrate
 bcrypt
-secrets
-
