@@ -81,4 +81,4 @@ class Session(db.Model):
         return False
 
     def __repr__(self):
-        return f"<Session {self.id}>"
+        return '<Session {self.id}>'
