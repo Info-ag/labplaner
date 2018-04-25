@@ -37,7 +37,7 @@ var signUpForm = $("#signUpForm");
         } else {
             $("#passwordP").text("your input must match your first password input");
             $("#password_rptGroup").addClass("has-error");
-            $("#password_rpt").onchange(function(){
+            $("#password_rpt").change(function(){
                 if($("#password").val() == $("#password_rpt").val()){      
                     $("#passwordP").text("");
                     $("#password_rptGroup").removeClass("has-error");
