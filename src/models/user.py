@@ -25,7 +25,7 @@ class User(db.Model):
     sessions = db.relationship("Session", backref='persons', lazy=True)
 
     def __repr__(self):
-        return f'<User {self.username}>'
+        return '<User {self.username}>'
 
     def set_password(self, password):
         self.password = bcrypt.hashpw(password.encode(), bcrypt.gensalt(12))
