@@ -10,7 +10,7 @@ var signUpForm = $("#logInForm");
             dataType: "json",
             cache: false,
             beforeSend: function () {
-                $("#signUpFormFieldset").prop('disabled', true);
+                $("#logInFormFieldset").prop('disabled', true);
                 $("#login").addClass("loading");
                 return true;
             },
@@ -20,6 +20,7 @@ var signUpForm = $("#logInForm");
         }).done(function (response) {
             $("#login").removeClass("loading");
             console.log(response);
+            window.location.href = response.redirect;
         }).fail(function (data) {
             console.log(data);
             $("#login").removeClass("loading");

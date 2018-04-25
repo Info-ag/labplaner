@@ -2,7 +2,7 @@
 {% block head %}
     {{ super() }}
     <script src="/static/js/jquery.min.js"></script>
-    <script src="/static/js/pages/signup.js"></script>
+    <script src="/static/js/pages/login.js"></script>
 {% endblock %}
 {% block content %}
     <section class="hero hero-fill d-block">
@@ -15,6 +15,7 @@
                         </h3>
                     </div>
                     <form id="logInForm" action="{{ url_for('auth.login') }}" method="post">
+                        <fieldset id="logInFormFieldset">
                         <div class="form-group">
                             <label class="form-label" for="login-email">E-Mail</label>
                             <input class="form-input" autocomplete="email" type="email" name="email" id="email"
@@ -27,11 +28,12 @@
                                    placeholder="Password">
                         </div>
                         <div class="form-group float-right">
-                            <a href="{{ url_for("auth.signup_get") }}">
-                                <button type="button" role="link" class="btn btn-link">Create Account</button>
+                            <a class="btn btn-link" href="{{ url_for("auth.signup_get") }}">
+                                Create Account
                             </a>
                             <button type="submit" id="login" class="btn active">Login</button>
                         </div>
+                        </fieldset>
                     </form>
                 </div>
             </div>
