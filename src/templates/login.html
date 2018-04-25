@@ -20,12 +20,14 @@
                             <label class="form-label" for="login-email">E-Mail</label>
                             <input class="form-input" autocomplete="email" type="email" name="email" id="email"
                                    placeholder="E-Mail">
+                        <p class="form-input-hint">The name is invalid.</p>
                         </div>
                         <div class="form-group">
                             <label class="form-label" for="login-password">Password</label>
                             <input class="form-input" autocomplete="password" type="password" name="password"
                                    id="password"
                                    placeholder="Password">
+                        <p class="form-input-hint">The name is invalid.</p>
                         </div>
                         <div class="form-group float-right">
                             <a class="btn btn-link" href="{{ url_for("auth.signup_get") }}">
