@@ -24,16 +24,16 @@ var signUpForm = $("#logInForm");
             window.location.href = response.redirect;
         }).fail(function (data) {
             $(".form-group").removeClass("has-error");
-            $(".form-input-hint").addClass("d-invisible");
+            $(".form-input-hint").text("");
             console.log(data.responseJSON.reason);
             switch(data.responseJSON.reason) {
                 case "email":      
                     $("#emailP").removeClass("d-invisible");
-                    $("#emailGroup").addClass("has-error");
+                    $("#emailGroup").text("Name/E-Mail is invalid.");
                     break;
                 case "password":
                     $("#passwordP").removeClass("d-invisible");
-                    $("#passwordGroup").addClass("has-error");
+                    $("#passwordGroup").addClass("Password is invalid.");
                     break;
                 default:
                     alert("something went wrong entirely");
