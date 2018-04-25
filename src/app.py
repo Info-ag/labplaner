@@ -16,10 +16,13 @@ db = SQLAlchemy(app)
 ma = Marshmallow(app)
 migrate = Migrate(app, db)
 
+from models.user import Session
+db.create_all()
+
 from blueprints.api.v1 import user
 from blueprints import auth
 import utils
-from models.user import Session
+
 
 
 @app.after_request
@@ -37,6 +40,7 @@ def auth_middleware():
         if session_result:
             g.session = session_result
     else:
+        print("test")
         _session = Session()
         db.session.add(_session)
         db.session.commit()
