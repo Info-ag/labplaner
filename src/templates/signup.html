@@ -4,13 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login</title>
-  <!-- <script src="/static/js/jquery.min.js"></script> -->
-  <script src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
+   <script src="/static/js/jquery.min.js"></script> 
+  <!--<script src="http://code.jquery.com/jquery-3.3.1.min.js"></script> Nur für Testzwecke-->
+  <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="stylesheet" href="/static/css/spectre.min.css">
+    <link rel="stylesheet" href="/static/css/spectre-exp.min.css">
+    <link rel="stylesheet" href="/static/css/spectre-icons.min.css">
 </head>
 <body>
   <h1>Login</h1>
   <p> {{ warning }} </p>
-  <form id="signUpForm" action="{{url_for('auth.login')}}" method="post">
+  <form id="signUpForm" action="/api/v1/user" method="post">
     <fieldset id="signUpFormFieldset">
         <p><input id="name" type="text" pattern="^[A-Za-z0-9_-]{1,15}$" placeholder="Username hier eintragen" name="username" /> </p>
         <p><input id="email" type="email" placeholder="eMail-Adresse eintragen" name="email" /> </p>
