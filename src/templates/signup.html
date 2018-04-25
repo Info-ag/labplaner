@@ -14,7 +14,7 @@
 <body>
   <h1>Login</h1>
   <p> {{ warning }} </p>
-  <form id="signUpForm" action="{{url_for('auth.login')}}" method="post">
+  <form id="signUpForm" action="/api/v1/user" method="post">
     <fieldset id="signUpFormFieldset">
         <p><input id="name" type="text" pattern="^[A-Za-z0-9_-]{1,15}$" placeholder="Username hier eintragen" name="username" /> </p>
         <p><input id="email" type="email" placeholder="eMail-Adresse eintragen" name="email" /> </p>
