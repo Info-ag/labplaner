@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block head %}
+    {{ super() }}
+    <script src="/static/js/jquery.min.js"></script>
+{% endblock %}
+{% block content %}
+    <section class="hero hero-fill d-block">
+        <div class="container grid-xs p-2" style="background: white">
+            <div class="columns">
+                <div class="column">
+                    <div class="text-center my-2">
+                        <h3>Signup
+                            <small class="label">Lab-Planer</small>
+                        </h3>
+                    </div>
+                    <ul class="step my-2">
+                        <li class="step-item active">
+                            <a>Create AG</a>
+                        </li>
+                        <li class="step-item">
+                            <a>Invite People</a>
+                        </li>
+                    </ul>
+                    <form id="agAddForm" action="{{ url_for('ag_api.add_ag') }}" method="post">
+                        <fieldset id="agAddFormFieldset">
+                            <div class="form-group">
+                                <label data-tooltip="Maximum 15 characters & 'A-z,0-9,-,_'"
+                                       class="form-label tooltip tooltip-top" for="name">Displayname*</label>
+                                <input class="form-input" required autocomplete="displayname" type="text"
+                                           name="displayname"
+                                           id="displayname"
+                                           pattern="^[A-Za-z0-9_- ]{1,48}$"
+                                           placeholder="Displayname">
+                            </div>
+                            <div class="form-group">
+                                <label data-tooltip="Maximum 15 characters & 'A-z,0-9,-,_'"
+                                       class="form-label tooltip tooltip-top" for="name">Identifier (e.g. info-ag)*</label>
+                                <div class="has-icon-right" id="name-group">
+                                    <input class="form-input" required autocomplete="name" type="text"
+                                           name="name"
+                                           id="name"
+                                           pattern="^[A-Za-z0-9_- ]{1,16}$"
+                                           placeholder="Identifier (e.g. info-ag)">
+                                    <i id="name-loading" class="form-icon loading" style="display:none"></i>
+                                    <i id="name-check" class="form-icon icon icon-check" style="display:none"></i>
+                                </div>
+                                <p id="name-error" class="form-input-hint" style="display:none">AG with this Identifier already exist!</p>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="description">Description*</label>
+                                <textarea class="form-input" required maxlength="140" autocomplete="description" name="description" id="description" placeholder="Description"></textarea>
+                            </div>
+                            <p class="form-input-hint">All fields marked with an asterix (*) are required fields.</p>
+                            <div class="form-group float-right">
+                                <button id="addag" type="submit" value="Enter" class="btn active">Signup</button>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+{% block scripts %}
+    <script src="/static/js/pages/auth/createag.js"></script>
+{% endblock %}
