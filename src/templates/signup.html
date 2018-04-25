@@ -1,26 +1,68 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+{% extends "base.html" %}
+{% block head %}
+    {{ super() }}
     <script src="/static/js/jquery.min.js"></script>
     <script src="/static/js/pages/signup.js"></script>
-    <link rel="stylesheet" href="/static/css/main.css">
-    <link rel="stylesheet" href="/static/css/spectre.min.css">
-    <link rel="stylesheet" href="/static/css/spectre-exp.min.css">
-    <link rel="stylesheet" href="/static/css/spectre-icons.min.css">
-</head>
-<body>
-<section class="hero hero-fill d-block">
-    <div class="container grid-xs p-2" style="background: white">
-        <div class="columns">
-            <div class="column">
-                <div class="text-center my-2">
-                    <h3>Signup
-                        <small class="label">Lab-Planer</small>
-                    </h3>
+{% endblock %}
+{% block content %}
+    <section class="hero hero-fill d-block">
+        <div class="container grid-xs p-2" style="background: white">
+            <div class="columns">
+                <div class="column">
+                    <div class="text-center my-2">
+                        <h3>Signup
+                            <small class="label">Lab-Planer</small>
+                        </h3>
+                    </div>
+                    <ul class="step my-2">
+                        <li class="step-item active">
+                            <a>Create Account</a>
+                        </li>
+                        <li class="step-item">
+                            <a>Verify E-Mail</a>
+                        </li>
+                    </ul>
+                    <form id="signUpForm" action="{{ url_for('user_api.add_user') }}" method="post">
+                        <fieldset id="signUpFormFieldset">
+                            <div class="form-group">
+                                <label class="form-label" for="email">Username</label>
+                                <input class="form-input" required autocomplete="username" type="text"
+                                       name="username"
+                                       id="name"
+                                       pattern="^[A-Za-z0-9_-]{1,15}$"
+                                       placeholder="Username">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="email">E-Mail</label>
+                                <input class="form-input" required autocomplete="email" type="email"
+                                       name="email"
+                                       id="email"
+                                       placeholder="E-Mail">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="password">Password</label>
+                                <input class="form-input" required pattern=".{8,}" autocomplete="password"
+                                       type="password"
+                                       name="password"
+                                       id="password"
+                                       placeholder="Password">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="password_rpt">Repeat Password</label>
+                                <input class="form-input" required pattern=".{8,}" autocomplete="password"
+                                       type="password"
+                                       name="password"
+                                       id="password_rpt"
+                                       placeholder="Password">
+                            </div>
+                            <div class="form-group float-right">
+                                <a class="btn btn-link" href="{{ url_for("auth.login_get") }}">Already have an account?</a>
+                                <button id="signup" type="submit" value="Enter" class="btn active">Signup</button>
+                            </div>
+                        </fieldset>
+                    </form>
                 </div>
+<<<<<<< HEAD
                 <ul class="step my-2">
                     <li class="step-item active">
                         <a>Create Account</a>
@@ -66,10 +108,9 @@
                         </div>
                     </fieldset>
                 </form>
+=======
+>>>>>>> 7fb7046aa7982e243ae3b3ec29c95329b21ee10e
             </div>
         </div>
-    </div>
-</section>
-
-</body>
-</html>
+    </section>
+{% endblock %}
