@@ -29,11 +29,11 @@ var signUpForm = $("#logInForm");
             switch(data.responseJSON.reason) {
                 case "email":
                     $("#emailGroup").addClass("has-error");
-                    $("#passwordP").addClass("d-visible");
+                    $("#emailP").removeClass("d-invisible");
                     break;
                 case "password":
                     $("#passwordGroup").addClass("has-error");
-                    $("#passwordP").addClass("d-visible");
+                    $("#passwordP").removeClass("d-invisible");
                     break;
                 default:
                     alert("something went wrong entirely");
