@@ -23,9 +23,8 @@
                     </ul>
                     <form id="signUpForm" action="{{ url_for('user_api.add_user') }}" method="post">
                         <fieldset id="signUpFormFieldset">
-                            <p class="form-input-hint">All fields marked with an asterix (*) are required fields.</p>
                             <div class="form-group">
-                                <label data-tooltip="Please choose a username which is maximum 15 characters long and only consist of numbers, letters, '_' and '-' " class="form-label tooltip tooltip-right" for="email">Username*</label>
+                                <label data-tooltip="Please choose a username which is maximum 15 characters long and only consist of numbers, letters, '_' and '-' " class="form-label tooltip tooltip-top" for="email">Username*</label>
                                 <input class="form-input" required autocomplete="username" type="text"
                                        name="username"
                                        id="name"
@@ -40,7 +39,7 @@
                                        placeholder="E-Mail">
                             </div>
                             <div class="form-group">
-                                <label class="form-label tooltip tooltip-right" data-tooltip="Please choose a password which is at least 8 characters long." for="password">Password*</label>
+                                <label class="form-label tooltip tooltip-top" data-tooltip="Please choose a password which is at least 8 characters long." for="password">Password*</label>
                                 <input class="form-input" required pattern=".{8,}" autocomplete="password"
                                        type="password"
                                        name="password"
@@ -56,6 +55,7 @@
                                        placeholder="Password">
                                 <p id="passwordP" class="form-input-hint"></p>
                             </div>
+                            <p class="form-input-hint">All fields marked with an asterix (*) are required fields.</p>
                             <div class="form-group float-right">
                                 <a class="btn btn-link" href="{{ url_for("auth.login_get") }}">Already have an
                                     account?</a>
