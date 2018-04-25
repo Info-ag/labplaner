@@ -64,7 +64,7 @@ class Session(db.Model):
     def get_string_cookie(self):
         dig = hmac.new(b'a_perfect_secret', msg=self.token.encode('utf-8'), digestmod=hashlib.sha256).digest()
         str_dig = base64.b64encode(dig).decode()
-        return f"{self.public_token}+{str_dig}"
+        return '{self.public_token}+{str_dig}'
 
     @staticmethod
     def verify(cookie: str):
