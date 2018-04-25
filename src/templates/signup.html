@@ -2,7 +2,6 @@
 {% block head %}
     {{ super() }}
     <script src="/static/js/jquery.min.js"></script>
-    <script src="/static/js/pages/signup.js"></script>
 {% endblock %}
 {% block content %}
     <section class="hero hero-fill d-block">
@@ -66,4 +65,7 @@
             </div>
         </div>
     </section>
+{% endblock %}
+{% block scripts %}
+    <script src="/static/js/pages/signup.js"></script>
 {% endblock %}
