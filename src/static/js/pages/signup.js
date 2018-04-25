@@ -37,6 +37,18 @@ var signUpForm = $("#signUpForm");
         } else {
             $("#passwordP").text("your input must match your first password input");
             $("#password_rptGroup").addClass("has-error");
+            $("#password_rpt").onchange(function(){
+                if($("#password").val() == $("#password_rpt").val()){      
+                    $("#passwordP").text("");
+                    $("#password_rptGroup").removeClass("has-error");
+                    $("#password_rptGroup").addClass("has-success");
+                }else{
+                    $("#passwordP").text("your input must match your first password input");
+                    $("#password_rptGroup").addClass("has-error");
+                    $("#password_rptGroup").removeClass("has-success");
+                    
+                }
+            })
             //Visualisieren statt dem Alert
         }
 
