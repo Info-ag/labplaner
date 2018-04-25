@@ -10,7 +10,7 @@ def signup_get():
     if g.session.authenticated:
         return redirect("/")
 
-    return render_template('signup.html', warning='')
+    return render_template('auth/signup.html', warning='')
 
 
 @bp.route("/login", methods=["GET"])
@@ -18,7 +18,7 @@ def login_get():
     if g.session.authenticated:
         return redirect("/")
 
-    return render_template('login.html', warning='')
+    return render_template('auth/login.html', warning='')
 
 
 @bp.route("/login", methods=["POST"])
