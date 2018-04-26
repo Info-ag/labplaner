@@ -1,7 +1,44 @@
 {% extends "base.html" %}
 {% block content %}
-    <h1>Index</h1>
-    <p>
-        Yay!
-    </p>
+    <section id="content" class="hero hero-fill bg-gray" style="padding-top:80px">
+        <div class="empty">
+            <div class="empty-icon">
+                <i class="icon icon-4x icon-time"></i>
+            </div>
+            <p class="empty-title h2">Lab-Planer</p>
+            <p class="empty-subtitle">Create polls, invite your friends and manage the perfect event. All withing one
+                place.</p>
+            <div class="empty-action">
+                {% if g['session']['authenticated'] %}
+                    <a href="{{ url_for('cal.get') }}" class="btn btn-link">See your calendar</a>
+                {% else %}
+                    <a href="{{ url_for('auth.login_get') }}" class="btn btn-primary">Signup</a>
+                    <a href="{{ url_for('auth.signup_get') }}" class="btn btn-link">Login</a>
+                {% endif %}
+
+            </div>
+        </div>
+    </section>
+    <section class="hero bg-primary p-2" style="padding-top:80px">
+        <div class="container p-2">
+            <div class="columns">
+                <div class="column col-2 col-mx-auto">
+                    <h3 class="text-center">Polls</h3>
+                    <p class="text-center">Create polls and invite people. Plan the perfect meeting and let Lab-Planer
+                        suggest you a
+                        date.</p>
+                </div>
+                <div class="column col-2 col-mx-auto">
+                    <h3 class="text-center">AGs</h3>
+                    <p class="text-center">Organize your work in AGs. Together with AG Members, you can create polls
+                        and discuss your
+                        work.</p>
+                </div>
+                <div class="column col-2 col-mx-auto">
+                    <h3 class="text-center">Calendar</h3>
+                    <p class="text-center">All your upcoming meetings in one place. See your personal calendar.</p>
+                </div>
+            </div>
+        </div>
+    </section>
 {% endblock %}

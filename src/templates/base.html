@@ -19,6 +19,7 @@
     {% endblock %}
 </head>
 <body>
+
 <header class="navbar p-2 fixed" style="background: white">
     <section class="navbar-section">
         <a href="#" class="btn btn-link">Home</a>
@@ -39,7 +40,9 @@
         {% endif %}
     </section>
 </header>
-<section id="content" style="margin-top:80px">{% block content %}{% endblock %}</section>
+
+{% block content %}{% endblock %}
+
 <section class="hero footer bg-gray p-2 d-block" id="footer">
     <div class="container">
         <div class="columns">
@@ -100,6 +103,8 @@
         </div>
     </div>
 </section>
+
 {% block scripts %}{% endblock %}
+
 </body>
 </html>

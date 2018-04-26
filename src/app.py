@@ -25,6 +25,7 @@ from blueprints.api.v1 import user
 from blueprints.api.v1 import ag as ag_api
 from blueprints import auth
 from blueprints import ag
+from blueprints import cal
 import utils
 
 
@@ -64,6 +65,7 @@ app.register_blueprint(user.bp, url_prefix="/api/v1/user")
 app.register_blueprint(ag_api.bp, url_prefix="/api/v1/ag")
 app.register_blueprint(auth.bp, url_prefix="/auth")
 app.register_blueprint(ag.bp, url_prefix="/ag")
+app.register_blueprint(cal.bp, url_prefix="/cal")
 
 
 @app.route('/')

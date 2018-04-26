@@ -45,8 +45,23 @@ def get_user_by_username(username):
     return user_schema.jsonify(user)
 
 
+def query_by_username(query: str, count=5):
+    print("im here")
+    if count > 20:
+        count = 20
+
+    users: list = User.query.filter(
+        User.username.ilike("%" + "%".join(query[i:i + 1] for i in range(0, len(query), 1)) + "%")).all()
+    return users_schema.jsonify(users[:len(users) if len(users) < count else count])
+
+
 @bp.route("/", methods=["GET"])
 def get_all_users():
+    if request.args.get('query', default=None, type=str) is not None:
+        return query_by_username(
+            request.args.get('query', default=None, type=str),
+            count=request.args.get('count', default=5, type=int)
+        )
     all_users = User.query.all()
     result = users_schema.dump(all_users)
     return jsonify(result)
