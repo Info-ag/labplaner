@@ -5,15 +5,8 @@ from flask_migrate import Migrate
 from flask_marshmallow import Marshmallow
 
 from flask import render_template, \
-    make_response, \
-    redirect, \
     request, \
-    g, \
-    jsonify, \
-    abort, \
-    url_for
-
-from bcrypt import checkpw
+    g
 
 import dbconfig
 
@@ -23,10 +16,16 @@ db = SQLAlchemy(app)
 ma = Marshmallow(app)
 migrate = Migrate(app, db)
 
-from blueprints.api import user
-from blueprints import auth
-import utils
 from models.user import Session
+
+db.create_all()
+
+from blueprints.api.v1 import api
+from blueprints.api.v1 import user
+from blueprints.api.v1 import ag as ag_api
+from blueprints import auth
+from blueprints import ag
+import utils
 
 
 @app.after_request
@@ -43,6 +42,11 @@ def auth_middleware():
         session_result = Session.verify(sid)
         if session_result:
             g.session = session_result
+        else:
+            _session = Session()
+            db.session.add(_session)
+            db.session.commit()
+            g.session = _session
     else:
         _session = Session()
         db.session.add(_session)
@@ -55,8 +59,11 @@ def auth_middleware():
                             httponly=True, expires=g.session.expires)
 
 
-app.register_blueprint(user.bp, url_prefix="/api/user")
+app.register_blueprint(api.bp, url_prefix="/api/v1")
+app.register_blueprint(user.bp, url_prefix="/api/v1/user")
+app.register_blueprint(ag_api.bp, url_prefix="/api/v1/ag")
 app.register_blueprint(auth.bp, url_prefix="/auth")
+app.register_blueprint(ag.bp, url_prefix="/ag")
 
 
 @app.route('/')
@@ -64,10 +71,10 @@ def index(text=''):
     return render_template('index.html', message=text)
 
 
-# @app.route('/login/')
-# def login():
-#     return render_template('login.html', warning='')
-
-
 if __name__ == '__main__':
+    app.config.update(
+        DEBUG=True,
+        TESTING=True,
+        TEMPLATES_AUTO_RELOAD=True
+    )
     app.run(host='127.0.0.1', port=5000, debug=True)

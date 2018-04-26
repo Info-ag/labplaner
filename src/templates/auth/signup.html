@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block head %}
+    {{ super() }}
+    <script src="/static/js/jquery.min.js"></script>
+{% endblock %}
+{% block content %}
+    <section class="hero hero-fill d-block">
+        <div class="container grid-xs p-2" style="background: white">
+            <div class="columns">
+                <div class="column">
+                    <div class="text-center my-2">
+                        <h3>Signup
+                            <small class="label">Lab-Planer</small>
+                        </h3>
+                    </div>
+                    <ul class="step my-2">
+                        <li class="step-item active">
+                            <a>Create Account</a>
+                        </li>
+                        <li class="step-item">
+                            <a>Verify E-Mail</a>
+                        </li>
+                    </ul>
+                    <form id="signUpForm" action="{{ url_for('user_api.add_user') }}" method="post">
+                        <fieldset id="signUpFormFieldset">
+                            <div class="form-group">
+                                <label data-tooltip="Maximum 16 characters & 'A-z,0-9,-,_'"
+                                       class="form-label tooltip tooltip-top" for="name">Username*</label>
+                                <div class="has-icon-right" id="username-group">
+                                    <input class="form-input" required autocomplete="username" type="text"
+                                           name="username"
+                                           maxlength="16"
+                                           id="name"
+                                           pattern="^[A-Za-z0-9_-]{1,16}$"
+                                           placeholder="Username">
+                                    <i id="name-loading" class="form-icon loading" style="display:none"></i>
+                                    <i id="name-check" class="form-icon icon icon-check" style="display:none"></i>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="email">E-Mail*</label>
+                                <input class="form-input" required autocomplete="email" type="email"
+                                       name="email"
+                                       maxlength="48"
+                                       id="email"
+                                       placeholder="E-Mail">
+                                <p id="email-error" class="form-input-hint" style="display:none">User with this E-Mail
+                                    already exists</p>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label tooltip tooltip-top"
+                                       data-tooltip="Minimum 8 characters"
+                                       for="password">Password*</label>
+                                <input class="form-input" required pattern=".{8,}" autocomplete="password"
+                                       type="password"
+                                       name="password"
+                                       id="password"
+                                       placeholder="Password">
+                                <p id="password-error" class="form-input-hint" style="display:none">Password has less
+                                    than 8 characters</p>
+                            </div>
+                            <div id="password_rptGroup" class="form-group">
+                                <label class="form-label" for="password_rpt">Repeat Password*</label>
+                                <input class="form-input" required pattern=".{8,}" autocomplete="password"
+                                       type="password"
+                                       name="password"
+                                       id="password_rpt"
+                                       placeholder="Password">
+                                <p id="password_rpt-error" class="form-input-hint" style="display:none">Passwords don't
+                                    match</p>
+                            </div>
+                            <p class="form-input-hint">All fields marked with an asterix (*) are required fields.</p>
+                            <div class="form-group float-right">
+                                <a class="btn btn-link" href="{{ url_for("auth.login_get") }}">Already have an
+                                    account?</a>
+                                <button id="signup" type="submit" value="Enter" class="btn active">Signup</button>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+{% block scripts %}
+    <script src="/static/js/pages/auth/signup.js"></script>
+{% endblock %}
