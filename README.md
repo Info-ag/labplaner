@@ -61,7 +61,7 @@ Follow the same steps as in **Usage**. You migth need to `merge` and `upgrade` t
 ```
 
 ### Contribute
-Push requests are alyways welcome! Feel free to fork the project and improve it.
+Pull requests are alyways welcome! Feel free to fork the project and improve it.
 ## License
 
    Copyright 2018 Life-Science Lab <Informatik-ag@life-science-lab.net>
