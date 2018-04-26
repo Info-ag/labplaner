@@ -10,12 +10,12 @@ What you need:
 
 Make sure the requirements are installed using `pip`:
 ```bash
-sudo python3 -m pip install -r requirements.txt
+python3 -m pip install -r requirements.txt
 ```
 
 You might want to setup the MySQL Database:
 ```bash
-sudo sh setupdb.sh
+./setupdb.sh
 ```
 
 Prepare the database:
@@ -32,6 +32,11 @@ FLASK_APP=src/app.py python3 -m flask run
 
 ## Development
 Follow the same steps as in **Usage**. You migth need to `merge` and `upgrade` the database everytime you change the model.
+
+For a clean setup run:
+```bash
+./clear-db.sh
+```
 
 ### Structure
 ```text
