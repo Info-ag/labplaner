@@ -4,43 +4,45 @@
     <script src="/static/js/jquery.min.js"></script>
 {% endblock %}
 {% block content %}
-    <section class="hero hero-fill d-block">
-        <div class="container grid-xs p-2" style="background: white">
-            <div class="columns">
-                <div class="column">
-                    <div class="text-center my-2">
-                        <h3>Login
-                            <small class="label">Lab-Planer</small>
-                        </h3>
+    <section id="content" style="padding-top:80px">
+        <section class="hero hero-fill d-block">
+            <div class="container grid-xs p-2" style="background: white">
+                <div class="columns">
+                    <div class="column">
+                        <div class="text-center my-2">
+                            <h3>Login
+                                <small class="label">Lab-Planer</small>
+                            </h3>
+                        </div>
+                        <form id="logInForm" action="{{ url_for('auth.login') }}" method="post">
+                            <fieldset id="logInFormFieldset">
+                                <div id="emailGroup" class="form-group">
+                                    <label class="form-label" for="login-email">E-Mail or username</label>
+                                    <input class="form-input" name="email" id="email"
+                                           placeholder="E-Mail or username">
+                                    <p id="email-error" class="form-input-hint" style="display:none">Incorrect E-Mail or
+                                        username</p>
+                                </div>
+                                <div id="passwordGroup" class="form-group">
+                                    <label class="form-label" for="login-password">Password</label>
+                                    <input class="form-input" autocomplete="password" type="password" name="password"
+                                           id="password"
+                                           pattern=".{8,}"
+                                           placeholder="Password">
+                                    <p class="form-input-hint"><a href="#">Forgot your password?</a></p>
+                                </div>
+                                <div class="form-group float-right">
+                                    <a class="btn btn-link" href="{{ url_for("auth.signup_get") }}">
+                                        Create Account
+                                    </a>
+                                    <button type="submit" id="login" class="btn active">Login</button>
+                                </div>
+                            </fieldset>
+                        </form>
                     </div>
-                    <form id="logInForm" action="{{ url_for('auth.login') }}" method="post">
-                        <fieldset id="logInFormFieldset">
-                            <div id="emailGroup" class="form-group">
-                                <label class="form-label" for="login-email">E-Mail or username</label>
-                                <input class="form-input" name="email" id="email"
-                                       placeholder="E-Mail or username">
-                                <p id="email-error" class="form-input-hint" style="display:none">Incorrect E-Mail or
-                                    username</p>
-                            </div>
-                            <div id="passwordGroup" class="form-group">
-                                <label class="form-label" for="login-password">Password</label>
-                                <input class="form-input" autocomplete="password" type="password" name="password"
-                                       id="password"
-                                       pattern=".{8,}"
-                                       placeholder="Password">
-                                <p class="form-input-hint"><a href="#">Forgot your password?</a></p>
-                            </div>
-                            <div class="form-group float-right">
-                                <a class="btn btn-link" href="{{ url_for("auth.signup_get") }}">
-                                    Create Account
-                                </a>
-                                <button type="submit" id="login" class="btn active">Login</button>
-                            </div>
-                        </fieldset>
-                    </form>
                 </div>
             </div>
-        </div>
+        </section>
     </section>
 {% endblock %}
 {% block scripts %}
