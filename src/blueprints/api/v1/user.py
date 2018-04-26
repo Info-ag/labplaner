@@ -46,7 +46,6 @@ def get_user_by_username(username):
 
 
 def query_by_username(query: str, count=5):
-    print("im here")
     if count > 20:
         count = 20
 
