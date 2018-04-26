@@ -1,43 +1,68 @@
 # Labplaner
-Der Labplaner ist eine Webaplikation mit dem Ziel, Terminabsprachen zu Vereinfachen.
+Labplaner is a web application specifically build for the [Life-Science Lab Heidelberg](https://www.life-science-lab.org).  
+It combines multiple polls into one to avoid conflicts and provides you with an optimal date for the next meeting.
 
-## Installation
-Python >= 3.6:
+## Usage
+Clone or download the repository.  
+What you need:
+ - *Python >= 3.6*
+ - *MySQL* or SQLite
+
+Make sure the requirements are installed using `pip`:
 ```bash
-sudo apt install python3 python3-pip
-sudo python3 -m pip install --upgrade pip 
-```
-Install MySQL:
-```bash
-sudo apt install mysql-server mysql-client libmysqlclient-dev -y
-# OR
-sudo apt install mariadb-server mariadb-client libmariadbclient-dev -y
-```
-Install requirements using `pip`:
-```bash
-sudo -H pip3 install -r requirements.txt
+sudo python3 -m pip install -r requirements.txt
 ```
 
-(mariadb repository: https://downloads.mariadb.org/mariadb/repositories/)
-
-Setup Database with default User&Database
+You might want to setup the MySQL Database:
 ```bash
 sudo sh setupdb.sh
 ```
 
+Prepare the database:
 ```bash
-# when models have been changed
-FLASK_APP=src/app.py flask db init
-FLASK_APP=src/app.py flask db migrate -m "what was changed"
-FLASK_APP=src/app.py flask db upgrade
-
-# run the app
-FLASK_APP=src/app.py flask run
+FLASK_APP=src/app.py python3 -m flask db init
+FLASK_APP=src/app.py python3 -m flask db merge -m "init"
+FLASK_APP=src/app.py python3 -m flask db upgrade
 ```
 
-## Lizenz
+Finally, you can run the server:
+```bash
+FLASK_APP=src/app.py python3 -m flask run
+```
 
-   Copyright 2018 Life-Science-Lab <Informatik-ag@life-science-lab.net>
+## Development
+Follow the same steps as in *Usage*. You migth need to `merge` and `upgrade` the database everytime you change the model.
+
+### Structure
+```text
+├── LICENSE
+├── README.md
+├── clear-db.sh
+├── requirements.txt
+├── setupdb.sh
+└── src                         # Main source code
+    ├── algorithm.py            # Algorithm for finding the best date
+    ├── app.py                  # Entry point
+    ├── blueprints              # Routes
+    │   ├── auth.py
+    │   └── api
+    │       └── v1
+    │           └── api.py
+    ├── dbconfig.py             # DB configuration
+    ├── models                  # DB models
+    │   └── user.py
+    ├── static                  # Static files
+    │   ├── css
+    │   └── js
+    ├── templates               # Jinja Templates
+    │   ├── base.html
+    │   └── index.html
+    └── utils.py                # Helper functions
+```
+
+## License
+
+   Copyright 2018 Life-Science Lab <Informatik-ag@life-science-lab.net>
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
