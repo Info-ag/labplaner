@@ -5,8 +5,8 @@ It combines multiple polls into one to avoid conflicts and provides you with an 
 ## Usage
 Clone or download the repository.  
 What you need:
- - *Python >= 3.6*
- - *MySQL* or SQLite
+ - **Python >= 3.6**
+ - **MySQL** or SQLite
 
 Make sure the requirements are installed using `pip`:
 ```bash
@@ -31,7 +31,7 @@ FLASK_APP=src/app.py python3 -m flask run
 ```
 
 ## Development
-Follow the same steps as in *Usage*. You migth need to `merge` and `upgrade` the database everytime you change the model.
+Follow the same steps as in **Usage**. You migth need to `merge` and `upgrade` the database everytime you change the model.
 
 ### Structure
 ```text
