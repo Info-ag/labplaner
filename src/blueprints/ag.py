@@ -11,3 +11,10 @@ def create_ag():
         return redirect(url_for("auth.login"))
 
     return render_template('ag/add.html')
+
+@bp.route("/invite", methods=["GET"])
+def invite_ag():
+    if not g.session.authenticated:
+        return redirect(url_for("auth.login"))
+
+    return render_template('ag/invite.html')
