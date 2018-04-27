@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block head %}
+    {{ super() }}
+    <script src="/static/js/jquery.min.js"></script>
+{% endblock %}
+{% block content %}
+    <section id="content" style="padding-top:80px">
+        <section class="hero hero-fill d-block">
+            <div class="container grid-xs p-2" style="background: white">
+                <div class="columns">
+                    <div class="column">
+                        <div class="text-center my-2">
+                            <h3>Create AG
+                                <small class="label">Lab-Planer</small>
+                            </h3>
+                        </div>
+                        <ul class="step my-2">
+                            <li class="step-item">
+                                <a>Create AG</a>
+                            </li>
+                            <li class="step-item active">
+                                <a>Invite People</a>
+                            </li>
+                        </ul>
+                        <div class="form-autocomplete">
+                          <!-- autocomplete input container -->
+                          <div class="form-autocomplete-input form-input">
+                        
+                            <!-- autocomplete chips -->
+                            <div class="chip">
+                              <img src="img/avatar-1.png" class="avatar avatar-sm" alt="Thor Odinson">
+                              Thor Odinson
+                              <a href="#" class="btn btn-clear" aria-label="Close" role="button"></a>
+                            </div>
+                        
+                            <!-- autocomplete real input box -->
+                            <input class="form-input" type="text" placeholder="typing here">
+                          </div>
+                        
+                          <!-- autocomplete suggestion list -->
+                          <ul class="menu">
+                            <!-- menu list chips -->
+                            <li class="menu-item">
+                              <a href="#">
+                                <div class="tile tile-centered">
+                                  <div class="tile-icon">
+                                    <img src="img/avatar-4.png" class="avatar avatar-sm" alt="Steve Rogers">
+                                  </div>
+                                  <div class="tile-content">
+                                    Steve Rogers
+                                  </div>
+                                </div>
+                              </a>
+                            </li>
+                          </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </section>
+{% endblock %}
+{% block scripts %}
+    <script src="/static/js/pages/ag/add.js"></script>
+{% endblock %}
