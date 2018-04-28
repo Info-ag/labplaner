@@ -8,12 +8,14 @@ from flask import render_template, \
     request, \
     redirect, \
     url_for, \
+    flash, \
     g
 
 import dbconfig
 
 app = Flask(__name__)
 app.config.from_object(dbconfig.DBConfig)
+app.secret_key = b'(^4#2c3A0J8\d8eQ+7'
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
 migrate = Migrate(app, db)
@@ -76,9 +78,10 @@ app.register_blueprint(cal.bp, url_prefix="/cal")
 @app.route('/')
 def index():
     if not g.session.authenticated:
+        flash(u'You need to be logged in', 'error')
         return redirect(url_for("auth.login_get"))
 
-    return render_template('index.html')
+    return render_template('index.html', title="Dashboard")
 
 
 if __name__ == '__main__':

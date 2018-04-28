@@ -10,4 +10,4 @@ users_schema = UserSchema(many=True)
 
 @bp.route("/", methods=["GET"])
 def index():
-    return render_template("api/v1/index.html")
+    return render_template("api/v1/index.html", title="API v1")

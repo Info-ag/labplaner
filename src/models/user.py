@@ -6,8 +6,7 @@ from datetime import datetime, timedelta
 import bcrypt
 from sqlalchemy.sql import exists
 
-from app import db
-from app import ma
+from app import app, ma, db
 
 from models.ag import AG, AGSchema
 from models.date import Date
@@ -84,7 +83,7 @@ class Session(db.Model):
         Generate a custom string cookie that includes both the public as well as the private token.
         :return: Cookie string
         """
-        dig = hmac.new(b'a_perfect_secret', msg=self.token.encode('utf-8'), digestmod=hashlib.sha256).digest()
+        dig = hmac.new(app.secret_key, msg=self.token.encode('utf-8'), digestmod=hashlib.sha256).digest()
         str_dig = base64.b64encode(dig).decode()
         return f'{self.public_token}+{str_dig}'
 

@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, g, redirect, render_template, abort, Response
+from flask import Blueprint, request, jsonify, g, redirect, render_template, flash
 from models.user import User, Session
 from app import db
 
@@ -8,17 +8,19 @@ bp = Blueprint("auth", __name__)
 @bp.route("/signup", methods=["GET"])
 def signup_get():
     if g.session.authenticated:
+        flash(u'You are already logged in', 'success')
         return redirect("/")
 
-    return render_template('auth/signup.html', warning='')
+    return render_template('auth/signup.html', title="Signup")
 
 
 @bp.route("/login", methods=["GET"])
 def login_get():
     if g.session.authenticated:
+        flash(u'You are already logged in', 'success')
         return redirect("/")
 
-    return render_template('auth/login.html', warning='')
+    return render_template('auth/login.html', title="Login")
 
 
 @bp.route("/login", methods=["POST"])

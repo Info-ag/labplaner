@@ -1,4 +1,4 @@
-from flask import Blueprint, g, redirect, render_template, url_for
+from flask import Blueprint, g, redirect, render_template, url_for, flash
 from sqlalchemy.sql import exists
 from werkzeug.exceptions import NotFound, Unauthorized
 from models.associations import UserAG
@@ -14,9 +14,10 @@ ags_schema = AGSchema(many=True)
 @bp.route("/add", methods=["GET"])
 def create_ag():
     if not g.session.authenticated:
+        flash(u'You need to be logged in', 'error')
         return redirect(url_for("auth.login"))
 
-    return render_template('ag/add.html')
+    return render_template('ag/add.html', title="Create AG")
 
 
 @bp.route("/<ag_name>", methods=["GET"])
@@ -31,7 +32,7 @@ def ag_dashboard(ag_name):
             if user_ag.role != "NONE":
                 schema = AGSchema()
                 schema.context = {"ag_id": ag.id}
-                return render_template('ag/dashboard.html', ag=schema.dump(ag))
+                return render_template('ag/dashboard.html', ag=schema.dump(ag), title=ag.display_name)
 
         return Unauthorized()
 
@@ -49,7 +50,7 @@ def invite_ag(ag_name):
         if db.session.query(exists().where(UserAG.uid == g.session.uid and UserAG.ag_id == ag.id)).scalar():
             user_ag = UserAG.query.filter_by(uid=g.session.uid, ag_id=ag.id).scalar()
             if user_ag.role == "MENTOR":
-                return render_template('ag/invite.html', ag=ag_schema.dump(ag))
+                return render_template('ag/invite.html', ag=ag_schema.dump(ag), title=f"Invite {ag.display_name}")
 
         return Unauthorized()
 

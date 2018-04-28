@@ -10,20 +10,51 @@
         <link rel="stylesheet" href="/static/css/docs.min.css">
         <link rel="stylesheet" href="/static/css/spectre-exp.min.css">
         <link rel="stylesheet" href="/static/css/spectre-icons.min.css">
-        <title>{% block title %}{% endblock %}Lab-Planer</title>
+        <title>{{ title }} - Lab-Planer</title>
 
         <meta name="application-name" content="Lab-Planer">
         <meta name="description" content="{% block description %}{% endblock %} - Yay we have a description">
         <meta name="theme-color" content="#454d5d">
 
         <meta http-equiv="x-ua-compatible" content="ie=edge">
+        {% if get_flashed_messages() %}
+            <script src="/static/js/jquery.min.js"></script>
+        {% endif %}
     {% endblock %}
 </head>
 <body>
 
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <ul class="flash">
+            {% for category, message in messages %}
+                <li>
+                    <div class="toast toast-{{ category }}">
+                        <button id="flash-btn" class="btn btn-clear float-right"></button>
+                        {{ message }}
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}
+
 {% block body %}{% endblock %}
 
 {% block scripts %}{% endblock %}
-
+{% if get_flashed_messages() %}
+    <script>
+        setTimeout(function() {
+            $(".flash").fadeOut(function() {
+                $(".flash").remove();
+            });
+        }, 2000);
+        $("#flash-btn").on("click", function () {
+            $(this).parent().fadeOut(function() {
+                $(this).remove();
+            });
+        })
+    </script>
+{% endif %}
 </body>
 </html>

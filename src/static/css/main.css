@@ -9,3 +9,17 @@
 .nav-sidebar {
     margin: 12px 32px;
 }
+
+.flash {
+    position: fixed;
+    right: 4px;
+    top: 4px;
+    list-style: none;
+    z-index: 1000;
+}
+
+.flash > li > .toast {
+    display: block;
+    min-width: 200px;
+    z-index: 1000;
+}
