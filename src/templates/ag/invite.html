@@ -10,8 +10,8 @@
                 <div class="columns">
                     <div class="column">
                         <div class="text-center my-2">
-                            <h3>Create AG
-                                <small class="label">Lab-Planer</small>
+                            <h3>Invite
+                                <small class="label">{{ ag.data.display_name }}</small>
                             </h3>
                         </div>
                         <ul class="step my-2">
@@ -22,20 +22,19 @@
                                 <a>Invite People</a>
                             </li>
                         </ul>
-                        <div class="form-autocomplete">
-                            <!-- autocomplete input container -->
-                            <div class="form-autocomplete-input form-input has-icon-right">
-
-
-                                <!-- autocomplete real input box -->
-                                <input class="form-input" id="usernameInput" type="text" placeholder="typing here">
-                                <i class="form-icon loading" id="input-loading" style="display: none"></i>
+                        <form id="invite-form" action="/api/v1/ag/{{ ag.data.id }}/invite" method="post">
+                            <div class="form-autocomplete my-2">
+                                <div class="form-autocomplete-input form-input has-icon-right">
+                                    <input autocomplete="off" class="form-input" id="usernameInput" type="text" placeholder="typing here">
+                                    <i class="form-icon loading" id="input-loading" style="display: none"></i>
+                                </div>
+                                <ul id="menu-anker" class="menu" style="display: none">
+                                </ul>
                             </div>
-
-                            <!-- autocomplete suggestion list -->
-                            <ul id="menu-anker" class="menu" style="display: none">
-                            </ul>
-                        </div>
+                            <div class="form-group float-right">
+                                <button type="submit" id="invite" class="btn active">Invite</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
