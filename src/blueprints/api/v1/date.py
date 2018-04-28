@@ -13,14 +13,14 @@ dates_schema = DateSchema(many=True)
 @bp.route("/date/id/<dtid>", methods=["GET"])   #REVIEW Is the date/ neccessary? Same question for events.py
 def get_date_by_id(dtid):
     fdate = Date.query.get(dtid)
-    return event_schema.jsonify(fdate)
+    return date_schema.jsonify(fdate)
 
 
 @bp.route("/date/name/<rdate>", methods=["GET"])
 def get_date_by_date(rdate):
     odate = date(int(rdate[4:]), int(rdate[2:4]), int(rdate[:2]))
     fdate = Date.query.filter_by(day=odate).scalar()
-    return event_schema.jsonify(fdate)
+    return date_schema.jsonify(fdate)
 
 
 @bp.route("/date/", methods=["GET"])

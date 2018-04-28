@@ -61,6 +61,6 @@ def get_all_users():
             request.args.get('query', default=None, type=str),
             count=request.args.get('count', default=5, type=int)
         )
+    count = request.args.get('count', default=5, type=int)
     all_users = User.query.all()
-    result = users_schema.dump(all_users)
-    return jsonify(result)
+    return users_schema.jsonify(all_users[:len(all_users) if len(all_users) < count else count])

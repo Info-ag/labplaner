@@ -31,7 +31,7 @@ def add_ag():
         ag.description = request.values["description"]
 
         db.session.add(ag)
-        db.session.commit()
+        db.session.flush()
 
         user_ag = UserAG()
         user_ag.uid = g.session.uid
