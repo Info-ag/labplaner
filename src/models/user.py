@@ -40,12 +40,21 @@ class User(db.Model):
 class UserSchema(ma.Schema):
     ags = ma.Nested(AGSchema, many=True, exclude=('users',))
     picture = ma.Method("get_picture")
+    ag_role = ma.Method("get_role_for_ag")
+
+    def get_role_for_ag(self, obj: User):
+        ag_id = self.context.get("ag_id")
+        if ag_id and db.session.query(exists().where(UserAG.uid == obj.id and UserAG.ag_id == ag_id)).scalar():
+            user_ag: UserAG = UserAG.query.filter_by(uid=obj.id, ag_id=ag_id).scalar()
+            return user_ag.role
+        else:
+            return "NONE"
 
     def get_picture(self, obj: User):
         return "https://www.gravatar.com/avatar/" + hashlib.md5(obj.email.lower().encode()).hexdigest() + "?d=mm"
 
     class Meta:
-        fields = ('id', 'username', "ags", "picture")
+        fields = ('id', 'username', "ags", "picture", "ag_role")
 
 
 class Session(db.Model):

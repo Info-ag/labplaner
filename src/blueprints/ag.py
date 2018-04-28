@@ -29,7 +29,9 @@ def ag_dashboard(ag_name):
         if db.session.query(exists().where(UserAG.uid == g.session.uid and UserAG.ag_id == ag.id)).scalar():
             user_ag = UserAG.query.filter_by(uid=g.session.uid, ag_id=ag.id).scalar()
             if user_ag.role != "NONE":
-                return render_template('ag/dashboard.html', ag=ag_schema.dump(ag))
+                schema = AGSchema()
+                schema.context = {"ag_id": ag.id}
+                return render_template('ag/dashboard.html', ag=schema.dump(ag))
 
         return Unauthorized()
 
