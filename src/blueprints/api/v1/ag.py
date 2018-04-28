@@ -22,6 +22,7 @@ def add_ag():
         if len(request.values["description"]) > 140:
             return jsonify({"Status": "Failed", "reason": "description"}), 406
 
+
         ag = AG()
         ag.name = name
         ag.display_name = request.values["displayname"]

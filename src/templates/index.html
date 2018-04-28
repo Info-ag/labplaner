@@ -12,8 +12,8 @@
                 {% if g['session']['authenticated'] %}
                     <a href="{{ url_for('cal.get') }}" class="btn btn-link">See your calendar</a>
                 {% else %}
-                    <a href="{{ url_for('auth.login_get') }}" class="btn btn-primary">Signup</a>
-                    <a href="{{ url_for('auth.signup_get') }}" class="btn btn-link">Login</a>
+                    <a href="{{ url_for('auth.signup_get') }}" class="btn btn-primary">Signup</a>
+                    <a href="{{ url_for('auth.login_get') }}" class="btn btn-link">Login</a>
                 {% endif %}
 
             </div>

@@ -8,9 +8,15 @@ from sqlalchemy.sql import exists
 
 from app import db
 from app import ma
+<<<<<<< HEAD
 from models.ag import AG, AGSchema
+=======
+from models.ag import AG
+from models.date import Date
+import bcrypt
+>>>>>>> 9ee87f146c7ad81d480cad54f686413f2f3dabaa
 
-from models.associations import UserAG
+from models.associations import UserAG, DateUser
 
 
 class User(db.Model):
@@ -21,6 +27,8 @@ class User(db.Model):
     password = db.Column(db.LargeBinary, nullable=False)
 
     ags = db.relationship(AG, secondary="user_ag_association")
+
+    #dates = db.relationship(Date, secondary="user_date_asscociation")
 
     sessions = db.relationship("Session", backref='persons', lazy=True)
 

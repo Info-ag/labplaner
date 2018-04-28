@@ -26,28 +26,20 @@
                           <!-- autocomplete input container -->
                           <div class="form-autocomplete-input form-input">
                         
-                            <!-- autocomplete chips -->
-                            <div class="chip">
-                              <img src="img/avatar-1.png" class="avatar avatar-sm" alt="Thor Odinson">
-                              Thor Odinson
-                              <a href="#" class="btn btn-clear" aria-label="Close" role="button"></a>
-                            </div>
+                            
                         
                             <!-- autocomplete real input box -->
-                            <input class="form-input" type="text" placeholder="typing here">
+                            <input class="form-input" id="usernameInput" type="text" placeholder="typing here">
                           </div>
                         
                           <!-- autocomplete suggestion list -->
-                          <ul class="menu">
+                          <ul id="menu-anker" class="menu">
                             <!-- menu list chips -->
                             <li class="menu-item">
                               <a href="#">
                                 <div class="tile tile-centered">
-                                  <div class="tile-icon">
-                                    <img src="img/avatar-4.png" class="avatar avatar-sm" alt="Steve Rogers">
-                                  </div>
                                   <div class="tile-content">
-                                    Steve Rogers
+                                    Geben sie die Benutzernamen der Personen ein, die sie einladen wollen und klicken sie im Folgenden auf die Vorschläge um dne richtigen Benutzer auszuwählen.
                                   </div>
                                 </div>
                               </a>
@@ -61,5 +53,5 @@
     </section>
 {% endblock %}
 {% block scripts %}
-    <script src="/static/js/pages/ag/add.js"></script>
+    <script src="/static/js/pages/ag/invite.js"></script>
 {% endblock %}
