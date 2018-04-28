@@ -23,7 +23,7 @@ class User(db.Model):
 
     ags = db.relationship(AG, secondary="user_ag_association")
 
-    #dates = db.relationship(Date, secondary="user_date_asscociation")
+    # dates = db.relationship(Date, secondary="user_date_asscociation")
 
     sessions = db.relationship("Session", backref='persons', lazy=True)
 
@@ -39,9 +39,13 @@ class User(db.Model):
 
 class UserSchema(ma.Schema):
     ags = ma.Nested(AGSchema, many=True, exclude=('users',))
+    picture = ma.Method("get_picture")
+
+    def get_picture(self, obj: User):
+        return "https://www.gravatar.com/avatar/" + hashlib.md5(obj.email.lower().encode()).hexdigest() + "?d=mm"
 
     class Meta:
-        fields = ('id', 'username', "ags")
+        fields = ('id', 'username', "ags", "picture")
 
 
 class Session(db.Model):
