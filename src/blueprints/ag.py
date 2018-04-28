@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, g, redirect, render_template, url_for
+from flask import Blueprint, g, redirect, render_template, url_for
 from sqlalchemy.sql import exists
 from werkzeug.exceptions import NotFound, Unauthorized
 from models.associations import UserAG
