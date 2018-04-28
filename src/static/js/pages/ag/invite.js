@@ -14,7 +14,7 @@ Array.prototype.removeObject = function (needle) {
     }
     return false;
 }
-
+var hasSuggestion = false;
 var users = Array();
 
 var usernameInput = $("#usernameInput");
@@ -23,6 +23,7 @@ var timeout;
 
 usernameInput.on("input", function () {
     timeout = setTimeout(function () {
+        hasSuggestion = false;
         if (!usernameInput.val()) {
             $("#menu-anker").hide();
             return;
@@ -63,6 +64,8 @@ usernameInput.on("input", function () {
             }
             if (!objCount) {
                 showEmpty();
+            }else{
+                hasSuggestion = true;
             }
         });
     }, timeoutLength);
@@ -77,6 +80,7 @@ function showEmpty() {
     aTag.append(div1);
     div1.append(div3);
     $("#menu-anker").append(menuItem);
+    hasSuggestion = false;
 }
 
 function addUser(user) {
@@ -97,6 +101,7 @@ function addUser(user) {
 
     usernameInput.val("");
     $("#menu-anker").hide();
+    hasSuggestion = false;
     usernameInput.focus()
 }
 
@@ -128,4 +133,43 @@ inviteForm.submit(function (event) {
         window.location.href = response.redirect;
     });
 
+});
+
+
+$(document).keydown(function(e) {
+    if($("#usernameInput, #menu-anker > .menu-item > a").is(":focus") && hasSuggestion){
+        switch(e.which) {
+            case 38: //left 
+            if(document.activeElement.nodeName == "INPUT"){
+                $("#menu-anker > .menu-item").last().children().first().focus();
+            }else if(document.activeElement.nodeName == "A"){
+                if($(document.activeElement).parent().prev().length != 0){
+                    $(document.activeElement).parent().prev().children().first().focus();
+                }else{
+                    $(document.activeElement).parent().parent().first().children().last().children().first().focus();
+                }   
+            }else{
+                return;
+            }
+            break;
+
+            case 40: // right
+            console.log(document.activeElement.nodeName);
+            if(document.activeElement.nodeName == "INPUT"){
+                $("#menu-anker > .menu-item").first().children().first().focus();
+            }else if(document.activeElement.nodeName == "A"){
+                if($(document.activeElement).parent().next().length != 0){
+                    $(document.activeElement).parent().next().children().first().focus();
+                }else{
+                    $(document.activeElement).parent().parent().first().children().first().children().first().focus();
+                }   
+            }else{
+                return;
+            }
+            break;
+
+            default: return; // exit this handler for other keys
+        }
+        e.preventDefault(); // prevent the default action (scroll / move caret)
+    }
 });
