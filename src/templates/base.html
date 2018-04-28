@@ -7,6 +7,7 @@
 
         <link rel="stylesheet" href="/static/css/main.css">
         <link rel="stylesheet" href="/static/css/spectre.min.css">
+        <link rel="stylesheet" href="/static/css/docs.min.css">
         <link rel="stylesheet" href="/static/css/spectre-exp.min.css">
         <link rel="stylesheet" href="/static/css/spectre-icons.min.css">
         <title>{% block title %}{% endblock %}Lab-Planer</title>
@@ -20,89 +21,7 @@
 </head>
 <body>
 
-<header class="navbar p-2 fixed" style="background: white">
-    <section class="navbar-section">
-        <a href="#" class="btn btn-link">Home</a>
-        <a href="#" class="btn btn-link">Polls</a>
-        <a href="#" class="btn btn-link">Calendar</a>
-    </section>
-    <section class="navbar-center">
-        <h3>
-            <small class="label">Lab-Planer</small>
-        </h3>
-    </section>
-    <section class="navbar-section">
-        {% if g['session']['authenticated'] %}
-            <a class="btn btn-link" href="{{ url_for('auth.logout') }}">Logout</a>
-        {% else %}
-            <a class="btn btn-link" href="{{ url_for('auth.login_get') }}">Login</a>
-            <a class="btn btn-link" href="{{ url_for('auth.signup_get') }}">Sign Up</a>
-        {% endif %}
-    </section>
-</header>
-
-{% block content %}{% endblock %}
-
-<section class="hero footer bg-gray p-2 d-block" id="footer">
-    <div class="container">
-        <div class="columns">
-            <div class="column col-3 col-md-12">
-                <h3>
-                    <small class="label">Lab-Planer</small>
-                </h3>
-                <p>Create polls, invite your friends and manage the perfect event. All withing one place.</p>
-                {% if g['session']['authenticated'] %}
-                    <p>
-                        <a href="{{ url_for('auth.logout') }}">Logout</a>
-                    </p>
-                {% else %}
-                    <p>
-                        <a href="{{ url_for('auth.login_get') }}">Login</a> or <a
-                            href="{{ url_for('auth.signup_get') }}">Sign
-                        Up</a>
-                    </p>
-                {% endif %}
-            </div>
-            <div class="column col-2 col-md-12 col-ml-auto">
-                <ul class="nav">
-                    <h5>Where to go</h5>
-                    <li class="nav-item">
-                        <a href="#">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#">Account</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#">AGs</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#">Events</a>
-                    </li>
-                </ul>
-            </div>
-            <div class="column col-2 col-md-12">
-                <ul class="nav">
-                    <h5>More</h5>
-                    <li class="nav-item">
-                        <a href="#">About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#">Support</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#">Privacy</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#">Terms</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#">Contact</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</section>
+{% block body %}{% endblock %}
 
 {% block scripts %}{% endblock %}
 

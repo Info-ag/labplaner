@@ -6,6 +6,8 @@ from flask_marshmallow import Marshmallow
 
 from flask import render_template, \
     request, \
+    redirect, \
+    url_for, \
     g
 
 import dbconfig
@@ -16,7 +18,7 @@ db = SQLAlchemy(app)
 ma = Marshmallow(app)
 migrate = Migrate(app, db)
 
-from models.user import Session
+from models.user import Session, User
 
 db.create_all()
 
@@ -54,6 +56,9 @@ def auth_middleware():
         db.session.commit()
         g.session = _session
 
+    if g.session.authenticated:
+        g.user = User.query.get(g.session.uid)
+
     @utils.after_this_request
     def set_cookie(response):
         response.set_cookie("sid", g.session.get_string_cookie(),
@@ -69,8 +74,11 @@ app.register_blueprint(cal.bp, url_prefix="/cal")
 
 
 @app.route('/')
-def index(text=''):
-    return render_template('index.html', message=text)
+def index():
+    if not g.session.authenticated:
+        return redirect(url_for("auth.login_get"))
+
+    return render_template('index.html')
 
 
 if __name__ == '__main__':

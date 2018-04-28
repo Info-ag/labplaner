@@ -74,7 +74,6 @@ def add_user_to_ag(ag_id):
                         user: User = User.query.filter_by(username=username).scalar()
 
                         if db.session.query(exists().where(UserAG.uid == user.id and UserAG.ag_id == ag.id)).scalar():
-                            print("user already in ag")
                             continue
 
                         new_user_ag = UserAG()
