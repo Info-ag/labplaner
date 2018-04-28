@@ -3,11 +3,12 @@ import hmac
 import hashlib
 import base64
 from datetime import datetime, timedelta
+import bcrypt
+from sqlalchemy.sql import exists
 
 from app import db
 from app import ma
-from models.ag import AG
-import bcrypt
+from models.ag import AG, AGSchema
 
 from models.associations import UserAG
 
@@ -34,8 +35,10 @@ class User(db.Model):
 
 
 class UserSchema(ma.Schema):
+    ags = ma.Nested(AGSchema, many=True, exclude=('users',))
+
     class Meta:
-        fields = ('id', 'username')
+        fields = ('id', 'username', "ags")
 
 
 class Session(db.Model):
@@ -61,28 +64,35 @@ class Session(db.Model):
         self.expires = datetime.today() + timedelta(days=days)
 
     def get_string_cookie(self):
+        """
+        Generate a custom string cookie that includes both the public as well as the private token.
+        :return: Cookie string
+        """
         dig = hmac.new(b'a_perfect_secret', msg=self.token.encode('utf-8'), digestmod=hashlib.sha256).digest()
         str_dig = base64.b64encode(dig).decode()
         return f'{self.public_token}+{str_dig}'
 
     @staticmethod
     def verify(cookie: str):
-        try:
-            if cookie:
-                pub = cookie.split("+")[0]
-                session = Session.query.filter_by(public_token=pub).one()
+        """
+        Check if the provided cookie is part of a valid session.
+        :param cookie: String cookie: "public_token+hash(token)"
+        :return: a Session object when the session cookie was valid, False if
+            the session cookie was invalid
+        """
+        if cookie:
+            # get public token from cookie string
+            pub = cookie.split("+")[0]
+            # check if a session with the public token exists
+            if db.session.query(exists().where(Session.public_token == pub)).scalar():
+                # get the session from the db
+                session = Session.query.filter_by(public_token=pub).scalar()
                 if session.expires > datetime.now() and not session.revoked:
-                    dig = hmac.new(b'a_perfect_secret',
-                                   msg=session.token.encode('utf-8'),
-                                   digestmod=hashlib.sha256).digest()
-                    str_dig = base64.b64encode(dig).decode()
-                    cookie_dig = cookie[cookie.index("+") + 1:]
-                    if secrets.compare_digest(str_dig, cookie_dig):
+                    if secrets.compare_digest(session.get_string_cookie(), cookie):
                         return session
-        except:
-            return False
 
         return False
 
-    def __repr__(self):
-        return f'<Session {self.id}>'
+
+def __repr__(self):
+    return f'<Session {self.id}>'

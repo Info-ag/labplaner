@@ -1,3 +1,5 @@
+from flask_marshmallow import fields
+
 from app import db
 from app import ma
 
@@ -16,5 +18,7 @@ class AG(db.Model):
 
 
 class AGSchema(ma.Schema):
+    users = ma.Nested('UserSchema', many=True, exclude=('ags',))
+
     class Meta:
-        fields = ("id", "name", "display_name", "description")
+        fields = ("id", "name", "display_name", "description", "users")
