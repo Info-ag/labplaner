@@ -8,14 +8,9 @@ from sqlalchemy.sql import exists
 
 from app import db
 from app import ma
-<<<<<<< HEAD
-from models.ag import AG, AGSchema
-=======
-from models.ag import AG
-from models.date import Date
-import bcrypt
->>>>>>> 9ee87f146c7ad81d480cad54f686413f2f3dabaa
 
+from models.ag import AG, AGSchema
+from models.date import Date
 from models.associations import UserAG, DateUser
 
 
