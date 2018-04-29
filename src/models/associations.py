@@ -2,31 +2,35 @@ from app import db
 
 
 class UserAG(db.Model):
-    __tablename__ = 'user_ag_association'
+    __tablename__ = 'users_ags'
     id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
-    uid = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     ag_id = db.Column(db.Integer, db.ForeignKey('ags.id'))
-    role = db.Column('role', db.String(11), nullable=False, default="NONE")
+    role = db.Column(db.String(11), nullable=False, default="NONE")
+    # either "MENTOR", "PARTICIPANT" or "NONE"
 
     def __repr__(self):
         return f"<UserAG {self.id}>"
 
 
-class DateEvent(db.Model):
-    __tablename__ = 'date_event_association'
+class EventDate(db.Model):
+    __tablename__ = 'events_dates'
     id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
-    dtid = db.Column(db.Integer, db.ForeignKey('dates.id'))
-    evid = db.Column(db.Integer, db.ForeignKey('events.id'))
+
+    date_id = db.Column(db.Integer, db.ForeignKey('dates.id'))
+    event_id = db.Column(db.Integer, db.ForeignKey('events.id'))
 
     def __repr__(self):
         return f"<DateEvent {self.id}>"
 
 
-class DateUser(db.Model):
-    __tablename__ = 'user_date_asscociation'
+class UserDate(db.Model):
+    __tablename__ = 'users_dates'
     id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
-    dtid = db.Column(db.Integer, db.ForeignKey('dates.id'))
-    uid = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+    date_id = db.Column(db.Integer, db.ForeignKey('dates.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     def __repr__(self):
         return f"<DateUser {self.id}>"

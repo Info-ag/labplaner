@@ -1,5 +1,3 @@
-from flask_marshmallow import fields
-
 from app import db
 from app import ma
 
@@ -11,7 +9,7 @@ class AG(db.Model):
     display_name = db.Column(db.String(48), unique=True, nullable=False)
     description = db.Column(db.String(140), nullable=False)
 
-    users = db.relationship("User", secondary="user_ag_association")
+    users = db.relationship("User", secondary="users_ags")
     events = db.relationship("Event")
 
     def __repr__(self):
@@ -19,6 +17,14 @@ class AG(db.Model):
 
 
 class AGSchema(ma.Schema):
+    users = ma.Nested('UserSchema', many=True, exclude=('ags',))
+    events = ma.Nested('EventSchema', many=True, exclude=('ag',))
+
+    class Meta:
+        fields = ("id", "name", "display_name", "description")
+
+
+class AGSchemaIntern(ma.Schema):
     users = ma.Nested('UserSchema', many=True, exclude=('ags',))
     events = ma.Nested('EventSchema', many=True, exclude=('ag',))
 
