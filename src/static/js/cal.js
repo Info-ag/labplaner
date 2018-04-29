@@ -56,6 +56,7 @@ function buildBasis(monthRaw, year, anker, options){
     divHeader.append(divMon, divTue, divWed, divThu, divFri, divSat, divSun);
     var divBody = $("<div></div>").addClass("calendar-body").attr("id", anker + "-body");
     divBody = generateDays(year, month, anker, divBody, options);
+
     
 
     divContainer.append(divHeader, divBody);
@@ -70,6 +71,7 @@ function buildBasis(monthRaw, year, anker, options){
         calendarMode = 1;
     }
     makeDaysSelectable();
+    markToday();
     
 }
 
@@ -96,6 +98,7 @@ function showAnotherMonth(event){
     $("#" + anker + "-right").click({"year": prevAndNextMonth.next.year, "month": prevAndNextMonth.next.month, "anker": anker }, showAnotherMonth)
     divBody = generateDays(year, month, anker, divBody);
     makeDaysSelectable();
+    markToday();
     if(calendarMode == 1){
         for (let i in dateSelection){
             $button = $("#"+dateSelection[i].replace(/\s/g,'-'));
@@ -107,6 +110,17 @@ function showAnotherMonth(event){
                 })  
             }  
         }
+    }
+}
+
+
+function markToday(){
+    let today = new Date();
+    let todayString = today.toDateString();
+    console.log(todayString);
+    if($("#"+todayString.replace(/\s/g,'-')).length != 0){
+        console.log("test");
+        $("#"+todayString.replace(/\s/g,'-')).children("button").addClass("date-today");
     }
 }
 
@@ -232,7 +246,7 @@ function buildNextDay(day){
 }
 
 function buildDay(day, div){
-    button = $("<button></button>").addClass("date-item").text(day.getDate());
+    button = $("<button></button>").addClass("date-item").prop("type", "button").text(day.getDate());
     var dayString = day.toDateString(); 
     button.attr("data-attr", dayString);
     div.attr("id", dayString.replace(/\s/g,'-'));
