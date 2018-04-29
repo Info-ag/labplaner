@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, g
 from sqlalchemy.sql import exists
-from werkzeug.exceptions import NotFound, Unauthorized
+from werkzeug.exceptions import NotFound, Unauthorized, BadRequest, Forbidden, RequestEntityTooLarge
 from models.ag import AG, AGSchema
 from models.user import User
 from models.associations import UserAG
@@ -14,16 +14,21 @@ ags_schema = AGSchema(many=True)
 
 @bp.route("/", methods=["POST"])
 def add_ag():
-    if not g.session.authenticated:
+
+    try:
+        if not g.session.authenticated:
+            return Unauthorized()
+    except NameError:
         return Unauthorized()
+
     try:
         name = request.values["name"]
         if db.session.query(exists().where(AG.name == name)).scalar():
-            return jsonify({"Status": "Failed", "reason": "name"}), 406
+            return BadRequest(description='AG already exists')
         if len(request.values["displayname"]) > 48:
-            return jsonify({"Status": "Failed", "reason": "displayname"}), 406
+            return RequestEntityTooLarge('Maximum length of 48 characters')
         if len(request.values["description"]) > 140:
-            return jsonify({"Status": "Failed", "reason": "description"}), 406
+            return RequestEntityTooLarge('Maximum length of 140 characters')
 
         ag = AG()
         ag.name = name
@@ -44,7 +49,7 @@ def add_ag():
 
         return jsonify({"redirect": f"/ag/{name}/invite"}), 200
     except:
-        return jsonify({"Status": "Failed"}), 406
+        return BadRequest()
 
 
 @bp.route("/id/<aid>", methods=["GET"])
@@ -61,7 +66,11 @@ def get_ag_by_username(name):
 
 @bp.route("/<ag_id>/invite", methods=["POST"])
 def add_user_to_ag(ag_id):
-    if not g.session.authenticated:
+
+    try:
+        if not g.session.authenticated:
+            return Unauthorized()
+    except NameError:
         return Unauthorized()
 
     if db.session.query(exists().where(AG.id == ag_id)).scalar():
@@ -94,7 +103,11 @@ def add_user_to_ag(ag_id):
 
 @bp.route("/<ag_id>", methods=["PUT"])
 def change_ag_values(ag_id):
-    if not g.session.authenticated:
+
+    try:
+        if not g.session.authenticated:
+            return Unauthorized()
+    except NameError:
         return Unauthorized()
 
     if db.session.query(exists().where(AG.id == ag_id)).scalar():

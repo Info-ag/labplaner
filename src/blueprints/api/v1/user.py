@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from werkzeug.exceptions import NotFound, Unauthorized
+from werkzeug.exceptions import NotFound, Unauthorized, BadRequest, Forbidden
 from models.user import User, UserSchema
 from app import db
 from models.associations import DateUser
@@ -15,13 +15,13 @@ def add_user():
     try:
         username = request.values["username"]
         if db.session.query(User).filter_by(username=username).scalar() is not None:
-            return jsonify({"Status": "Failed", "reason": "username"}), 406
+            return BadRequest(description='Username already exists')
         email = request.values["email"]
         if db.session.query(User).filter_by(email=email).scalar() is not None:
-            return jsonify({"Status": "Failed", "reason": "email"}), 406
+            return BadRequest(description='Email already exists')
         password = request.values["password"]
         if len(password) < 8:
-            return jsonify({"Status": "Failed", "reason": "password"}), 406
+            return BadRequest(description='Keylength too short')
         user = User()
         user.username = request.values["username"]
         user.email = request.values["email"]
@@ -32,7 +32,7 @@ def add_user():
 
         return user_schema.jsonify(user), 200
     except:
-        return jsonify({"Status": "Failed"}), 406
+        return BadRequest()
 
 
 @bp.route("/id/<uid>", methods=["GET"])
@@ -68,16 +68,19 @@ def get_all_users():
     return users_schema.jsonify(all_users[:len(all_users) if len(all_users) < count else count])
 
 
-@bp.route("/dates", methods=["POST"])
-def set_dates():
-
-    if not g.session.authenticated:
-        return jsonify({"Status": "Failed"}), 406
+@bp.route("/<uid>/dates", methods=["POST"])
+def set_dates(uid):
 
     try:
-        uid = request.values["uid"]
+        if not g.session.authenticated:
+            return Unauthorized()
+    except NameError:
+        return Unauthorized()
+
+    try:
+
         if db.session.query(User).filter_by(id=uid).scalar() is None:
-            return jsonify({"Status": "Failed", "reason": "uid"}), 406
+            return NotFound(description='UserID not found')
 
         dates = request.values["dates"]
 
@@ -105,4 +108,4 @@ def set_dates():
             db.session.commit()
 
     except:
-        return NotFound()
+        return BadRequest()

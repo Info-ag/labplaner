@@ -10,7 +10,7 @@ dates_schema = DateSchema(many=True)
 
 
 
-@bp.route("/id/<dtid>", methods=["GET"])   #REVIEW Is the date/ neccessary? Same question for events.py
+@bp.route("/id/<dtid>", methods=["GET"]) 
 def get_date_by_id(dtid):
     fdate = Date.query.get(dtid)
     return date_schema.jsonify(fdate)

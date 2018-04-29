@@ -11,6 +11,7 @@ ag_schema = AGSchema()
 ags_schema = AGSchema(many=True)
 
 
+
 @bp.route("/add", methods=["GET"])
 def create_ag():
     if not g.session.authenticated:

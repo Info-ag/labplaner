@@ -20,6 +20,8 @@ db.create_all()
 from blueprints.api.v1 import api
 from blueprints.api.v1 import user
 from blueprints.api.v1 import ag as ag_api
+from blueprints.api.v1 import event as event_api
+from blueprints.api.v1 import date as date_api
 from blueprints import auth
 from blueprints import ag
 from blueprints import cal
@@ -63,6 +65,8 @@ def auth_middleware():
 app.register_blueprint(api.bp, url_prefix="/api/v1")
 app.register_blueprint(user.bp, url_prefix="/api/v1/user")
 app.register_blueprint(ag_api.bp, url_prefix="/api/v1/ag")
+app.register_blueprint(event_api.bp, url_prefix="/api/v1/event")
+app.register_blueprint(date_api.bp, url_prefix="/api/v1/date")
 app.register_blueprint(auth.bp, url_prefix="/auth")
 app.register_blueprint(ag.bp, url_prefix="/ag")
 app.register_blueprint(cal.bp, url_prefix="/cal")
