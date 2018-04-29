@@ -23,4 +23,4 @@ class AGSchema(ma.Schema):
     events = ma.Nested('EventSchema', many=True, exclude=('ag',))
 
     class Meta:
-        fields = ("id", "name", "display_name", "description", "users")
+        fields = ("id", "name", "display_name", "description", "users", "events")
