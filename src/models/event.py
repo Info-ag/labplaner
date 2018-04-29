@@ -1,7 +1,6 @@
 from app import db
 from app import ma
 
-from models.associations import DateEvent
 
 
 class Event(db.Model):
@@ -13,7 +12,7 @@ class Event(db.Model):
     date = db.Column(db.Date, nullable=True)
     ag = db.Column(db.Integer, db.ForeignKey("ags.id"))
 
-    dates = db.relationship('Date', secondary="date_event_association")
+    dates = db.relationship('Date', secondary="events_dates")
 
 
 class EventSchema(ma.Schema):

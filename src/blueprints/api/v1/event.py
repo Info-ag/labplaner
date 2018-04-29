@@ -6,7 +6,7 @@ from werkzeug.exceptions import NotFound, Unauthorized, BadRequest, Forbidden, R
 from models.event import Event, EventSchema
 from models.ag import AG
 from models.date import Date
-from models.associations import DateEvent, UserAG
+from models.associations import EventDate, UserAG
 from app import db
 
 bp = Blueprint("event_api", __name__)
@@ -23,7 +23,7 @@ def add_event():
     ag_id = request.values.get("ag")
 
     if db.session.query(exists().where(AG.id == ag_id)).scalar():
-        if db.session.query(exists().where(UserAG.uid == g.session.uid and UserAG.ag_id == ag_id)).scalar():
+        if db.session.query(exists().where(UserAG.user_id == g.session.uid and UserAG.ag_id == ag_id)).scalar():
             user_ag = UserAG.query.filter_by(uid=g.session.uid, ag_id=ag_id).scalar()
             if user_ag.role == "MENTOR":
                 display_name = request.values.get("display_name")
@@ -90,9 +90,9 @@ def add_dates():
             else:
                 date_obj = db.session.query(Date).filter_by(day=d)
 
-            date_event = DateEvent()
-            date_event.dtid = date_obj.id
-            date_event.evid = event.id
+            date_event = EventDate()
+            date_event.date_id = date_obj.id
+            date_event.event_id = event.id
 
             db.session.merge(date_event)
             db.session.commit()

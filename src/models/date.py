@@ -1,9 +1,6 @@
 from app import db
 from app import ma
 
-from models.event import Event
-
-from models.associations import DateUser, DateEvent
 
 class Date(db.Model):
     __tablename__ = 'dates'
@@ -13,8 +10,8 @@ class Date(db.Model):
 
     event = db.Column(db.Integer, db.ForeignKey('events.id'))
 
-    events = db.relationship('Event', secondary="date_event_association")
-    users = db.relationship('User', secondary="user_date_asscociation")
+    events = db.relationship('Event', secondary="events_dates")
+    users = db.relationship('User', secondary="users_dates")
 
 
 class DateSchema(ma.Schema):

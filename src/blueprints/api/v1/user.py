@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from werkzeug.exceptions import NotFound, Unauthorized, BadRequest, Forbidden
 from models.user import User, UserSchema
 from app import db
-from models.associations import DateUser
+from models.associations import UserDate
 
 bp = Blueprint("user_api", __name__)
 
@@ -68,6 +68,8 @@ def get_all_users():
     return users_schema.jsonify(all_users[:len(all_users) if len(all_users) < count else count])
 
 
+"""
+Something does not work yet
 @bp.route("/<uid>/dates", methods=["POST"])
 def set_dates(uid):
 
@@ -100,12 +102,13 @@ def set_dates(uid):
             else:
                 date_obj = db.session.query(Date).filter_by(day=d)
 
-            date_user = DateUser()
-            date_user.dtid = date_obj.id
-            date_user.uid = uid
+            date_user = UserDate()
+            date_user.date_id = date_obj.id
+            date_user.user_id = uid
 
             db.session.merge(date_user)
             db.session.commit()
 
     except:
         return BadRequest()
+"""

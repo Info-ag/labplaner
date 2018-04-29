@@ -23,7 +23,7 @@ $(agAddForm).submit(function (event) {
             case "name":
                 setNameError();
                 break;
-            case "displayname":
+            case "display_name":
                 break;
             case "description":
                 break;

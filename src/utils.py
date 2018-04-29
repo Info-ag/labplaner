@@ -1,17 +1,19 @@
 from functools import wraps
-from flask import g, request, redirect, url_for
+
+from flask import g
+from werkzeug.exceptions import Unauthorized
 
 
-def role_required(role="NONE"):
-    def decorator(f):
+def requires_auth():
+    def wrapper(f):
         @wraps(f)
-        def decorated_function(*args, **kwargs):
-            # TODO check if user has role
-            return redirect(url_for('login', next=request.url))
-
-        return decorated_function
-
-    return decorator
+        def wrapped(*args, **kwargs):
+            if not g.session.authenticated:
+                return Unauthorized()
+            else:
+                return f(*args, **kwargs)
+        return wrapped
+    return wrapper
 
 
 def after_this_request(f):

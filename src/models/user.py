@@ -10,7 +10,8 @@ from app import app, ma, db
 
 from models.ag import AG, AGSchema
 from models.date import Date
-from models.associations import UserAG, DateUser
+from models.event import Event
+from models.associations import UserAG, UserDate, EventDate
 
 
 class User(db.Model):
@@ -20,11 +21,11 @@ class User(db.Model):
     email = db.Column(db.String(48), unique=True, nullable=False)
     password = db.Column(db.LargeBinary, nullable=False)
 
-    ags = db.relationship(AG, secondary="user_ag_association")
+    ags = db.relationship(AG, secondary="users_ags")
 
-    dates = db.relationship(Date, secondary="user_date_asscociation")
+    dates = db.relationship(Date, secondary="users_dates")
 
-    sessions = db.relationship("Session", backref='persons', lazy=True)
+    sessions = db.relationship("Session")
 
     def __repr__(self):
         return f'<User {self.username}>'
@@ -43,7 +44,7 @@ class UserSchema(ma.Schema):
 
     def get_role_for_ag(self, obj: User):
         ag_id = self.context.get("ag_id")
-        if ag_id and db.session.query(exists().where(UserAG.uid == obj.id and UserAG.ag_id == ag_id)).scalar():
+        if ag_id and db.session.query(exists().where(UserAG.user_id == obj.id and UserAG.ag_id == ag_id)).scalar():
             user_ag: UserAG = UserAG.query.filter_by(uid=obj.id, ag_id=ag_id).scalar()
             return user_ag.role
         else:
@@ -56,10 +57,15 @@ class UserSchema(ma.Schema):
         fields = ('id', 'username', "ags", "picture", "ag_role")
 
 
+class UserSchemaSelf(UserSchema):
+    class Meta:
+        fields = ('id', 'username', "ags", "picture", "ag_role", "email")
+
+
 class Session(db.Model):
     __tablename__ = 'sessions'
     id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
-    uid = db.Column(db.Integer, db.ForeignKey("users.id"))
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     expires = db.Column(db.DateTime, nullable=False)
     token = db.Column(db.String(64), nullable=False)
     public_token = db.Column(db.String(16), unique=True, nullable=False)
@@ -68,10 +74,10 @@ class Session(db.Model):
 
     def __init__(self, user: User = None, days=60):
         if user:
-            self.uid = user.id
+            self.user_id = user.id
             self.authenticated = True
         else:
-            self.uid = None
+            self.user_id = None
             self.authenticated = False
 
         self.token = secrets.token_hex(64)
