@@ -64,3 +64,10 @@ def get_all_users():
     count = request.args.get('count', default=5, type=int)
     all_users = User.query.all()
     return users_schema.jsonify(all_users[:len(all_users) if len(all_users) < count else count])
+
+
+@bp.route("/dates", methods=["POST"])
+def set_dates():
+
+    if not g.session.authenticated:
+        return jsonify({"Status": "Failed"}), 406
