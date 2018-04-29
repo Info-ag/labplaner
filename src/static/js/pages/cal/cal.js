@@ -2,16 +2,34 @@ const monthNames = ["January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"
 ];
 
+function removeA(arr) {
+    var what, a = arguments, L = a.length, ax;
+    while (L > 1 && arr.length) {
+        what = a[--L];
+        while ((ax= arr.indexOf(what)) !== -1) {
+            arr.splice(ax, 1);
+        }
+    }
+    return arr;
+}
+
 function daysInMonth (month, year) {
     return new Date(year, month, 0).getDate();
 }
 
 
+var dateSelection = new Array();
+
+
 //month from 0-11
-function buildBasis(month, year, size, anker){
+function buildBasis(monthRaw, year, anker, options){
+    month = monthRaw - 1;
     var div1 = $("<div></div>").addClass("calendar");
-    if(size = true){
-        div1.addClass("calendar-lg");
+    if(options.hasOwnProperty('size')){
+        var size = options.size;
+        if(size == true){
+            div1.addClass("calendar-lg");
+        }
     }
     var divNav = $("<div></div>").addClass("calendar-nav navbar");
     var btnLeft = $("<button></button>").addClass("btn btn-action btn-link btn-lg").attr("id", anker+"-left");
@@ -23,7 +41,6 @@ function buildBasis(month, year, size, anker){
     btnRight.append(iBtnRight);
 
     var prevAndNextMonth = getPrevAndNextMonth(year, month);
-    console.log(prevAndNextMonth);
     btnLeft.click({"year": prevAndNextMonth.previous.year, "month": prevAndNextMonth.previous.month, "anker": anker }, showAnotherMonth)
     btnRight.click({"year": prevAndNextMonth.next.year, "month": prevAndNextMonth.next.month, "anker": anker }, showAnotherMonth)
     divNav.append(btnLeft, divMonth, btnRight);
@@ -38,34 +55,33 @@ function buildBasis(month, year, size, anker){
     var divSun = $("<div></div>").addClass("calendar-date").text("Sun");
     divHeader.append(divMon, divTue, divWed, divThu, divFri, divSat, divSun);
     var divBody = $("<div></div>").addClass("calendar-body").attr("id", anker + "-body");
-    divBody = generateDays(year, month, anker, divBody);
-
+    divBody = generateDays(year, month, anker, divBody, options);
+    
 
     divContainer.append(divHeader, divBody);
     div1.append(divNav, divContainer);
 
     $("#" + anker).append(div1);
+    if(options.hasOwnProperty("mode")){
+        mode = options.mode;
+    }else{
+        mode = 1;
+    }
+    if(mode == 1){
+        console.log("test");
+        $(".calendar-date > .date-item").on("click", function(e){
+            addSelection(this);
+        })
+    }
 }
 
-buildBasis(4, 2018, true, "calendar-anker");
-/*
-function showAnotherMonth(year, month, anker){
-    var divBody = $(anker + "-body");
-    divBody.empty();
-    divBody = generateDays(year, month, anker, divBody);
-    var prevAndNextMonth = getPrevAndNextMonth(year, month); 
-    //$(anker + "-left").on("click", showAnotherMonth(prevAndNextMonth.previous.year, prevAndNextMonth.previous.month, anker));
-    //$(anker + "-right").on("click", showAnotherMonth(prevAndNextMonth.next.year, prevAndNextMonth.next.month, anker));
-    //$(anker + "-left").click(showAnotherMonth(prevAndNextMonth.previous.year, prevAndNextMonth.previous.month, anker));
-    //$(anker + "-right").click(showAnotherMonth(prevAndNextMonth.next.year, prevAndNextMonth.next.month, anker));
+buildBasis(4, 2018, "calendar-anker", {"size" : true, "mode": 1});
 
-}*/
 
 function showAnotherMonth(event){
     anker = event.data.anker;
     month = event.data.month;
     year = event.data.year;
-    console.log(event.data);
     var divBody = $("#" + anker + "-body");
     divBody.empty();
     var prevAndNextMonth = getPrevAndNextMonth(year, month); 
@@ -94,9 +110,8 @@ function getPrevAndNextMonth(year, month){
 }
 
 
-function generateDays(year, month, anker, divBody){
+function generateDays(year, month, anker, divBody, options){
     firstWeekDay = new Date(year, month).getDay();
-    console.log(firstWeekDay);
     switch(firstWeekDay){
         case 0:
         var daysInPrevMonth = 6;
@@ -128,26 +143,84 @@ function generateDays(year, month, anker, divBody){
     return divBody;
 }
 
+function addEvents(events){
+
+}
+
+
+
+function addEvent(dayRaw, event, type){
+    var dayString = dayRaw.toDateString();
+    var divEventContainer = $("#" + dayString.replace(/\s/g,'-'));
+    if(divEventContainer.children("calendar-events").length == 0){
+        var divEvents = $("<div></div>").addClass("calendar-events");
+        divEventContainer.append(divEvents);
+    }else{ 
+        var divEvents = divEventContainer.children("calendar-events").first();    
+    }
+    if(event.hasOwnProperty("color")){
+        var color = event.color;
+    }else{
+        var color = "error";
+    }
+    if(event.hasOwnProperty("display_name")){
+        displayName = event.display_name;
+    }else{
+        displayName = "Something went wrong";
+    }
+    var aEvent = $("<a></a>").addClass("calendar-event text-light bg-"+color).text(displayName).attr("href", "#");
+    divEventContainer.children(".calendar-events").first().append(aEvent);
+
+    
+}
+
+
+
+
+function addSelection(button){
+    $button = $(button);
+    dateSelection.push($button.attr("data-attr"));
+    $button.addClass("active");
+    $button.on("click", function(e){
+        removeSelection(this);
+    })       
+}
+
+function removeSelection(button){
+    $button = $(button);
+    removeA(dateSelection, $button.attr("data-attr"));
+    $button.removeClass("active");
+    $button.on("click", function(e){
+        addSelection(this);
+    })
+
+}
 
 
 
 function buildPrevDay(day){
     div = $("<div></div>").addClass("calendar-date prev-month disabled");
-    button = $("<button></button>").addClass("date-item").text(day.getDate());
-    div.append(button);
+    div = buildDay(day, div);
     return div;
 };
 
 function buildCurrentDay(day){
     div = $("<div></div>").addClass("calendar-date current-month");
-    button = $("<button></button>").addClass("date-item").text(day.getDate());
-    div.append(button);
+    div = buildDay(day, div);
     return div;
 }
 
 function buildNextDay(day){
     div = $("<div></div>").addClass("calendar-date next-month disabled");
+    div = buildDay(day, div);
+    return div;
+}
+
+function buildDay(day, div){
     button = $("<button></button>").addClass("date-item").text(day.getDate());
+    var dayString = day.toDateString(); 
+    button.attr("data-attr", dayString);
+    div.attr("id", dayString.replace(/\s/g,'-'));
     div.append(button);
     return div;
 }
