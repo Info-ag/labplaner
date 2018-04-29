@@ -75,7 +75,6 @@ function buildBasis(monthRaw, year, anker, options){
 
 function makeDaysSelectable(){
     if(calendarMode == 1){
-        console.log("test");
         $(".calendar-date > .date-item").on("click", function(e){
             addSelection(this);
         })
@@ -98,12 +97,8 @@ function showAnotherMonth(event){
     divBody = generateDays(year, month, anker, divBody);
     makeDaysSelectable();
     if(calendarMode == 1){
-        console.log("checking..")
         for (let i in dateSelection){
-            console.log(i);
             $button = $("#"+dateSelection[i].replace(/\s/g,'-'));
-            console.log($button);
-            console.log($button.length);
             if($button.length != 0){
                 $button.children("button").addClass("active");
                 $button.children("button").off("click");
