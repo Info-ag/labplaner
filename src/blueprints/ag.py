@@ -56,3 +56,22 @@ def invite_ag(ag_name):
 
     else:
         return NotFound()
+
+
+# Events
+
+@bp.route("/<ag_name>/event/add", methods=["GET"])
+def create_event(ag_name):
+    if not g.session.authenticated:
+        return Unauthorized()
+
+    if db.session.query(exists().where(AG.name == ag_name)).scalar():
+        ag: AG = AG.query.filter_by(name=ag_name).scalar()
+        if db.session.query(exists().where(UserAG.uid == g.session.uid and UserAG.ag_id == ag.id)).scalar():
+            user_ag = UserAG.query.filter_by(uid=g.session.uid, ag_id=ag.id).scalar()
+            if user_ag.role == "MENTOR":
+                return render_template('ag/event/add.html', ag=ag_schema.dump(ag), title=f"New Event {ag.display_name}")
+
+        return Unauthorized()
+
+    return NotFound()
