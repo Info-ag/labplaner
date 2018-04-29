@@ -19,7 +19,7 @@ function daysInMonth (month, year) {
 
 
 var dateSelection = new Array();
-
+var calendarMode;
 
 //month from 0-11
 function buildBasis(monthRaw, year, anker, options){
@@ -64,18 +64,25 @@ function buildBasis(monthRaw, year, anker, options){
     $("#" + anker).append(div1);
     if(options.hasOwnProperty("mode")){
         mode = options.mode;
+        calendarMode = options.mode;
     }else{
         mode = 1;
+        calendarMode = 1;
     }
-    if(mode == 1){
+    makeDaysSelectable();
+    
+}
+
+buildBasis(4, 2018, "calendar-anker", {"size" : true, "mode": 1});
+
+function makeDaysSelectable(){
+    if(calendarMode == 1){
         console.log("test");
         $(".calendar-date > .date-item").on("click", function(e){
             addSelection(this);
         })
     }
 }
-
-buildBasis(4, 2018, "calendar-anker", {"size" : true, "mode": 1});
 
 
 function showAnotherMonth(event){
@@ -91,7 +98,23 @@ function showAnotherMonth(event){
     $("#" + anker + "-left").click({"year": prevAndNextMonth.previous.year, "month": prevAndNextMonth.previous.month, "anker": anker }, showAnotherMonth)
     $("#" + anker + "-right").click({"year": prevAndNextMonth.next.year, "month": prevAndNextMonth.next.month, "anker": anker }, showAnotherMonth)
     divBody = generateDays(year, month, anker, divBody);
-
+    makeDaysSelectable();
+    if(calendarMode == 1){
+        console.log("checking..")
+        for (let i in dateSelection){
+            console.log(i);
+            $button = $("#"+dateSelection[i].replace(/\s/g,'-'));
+            console.log($button);
+            console.log($button.length);
+            if($button.length != 0){
+                $button.children("button").addClass("active");
+                $button.children("button").off("click");
+                $button.children("button").on("click", function(e){
+                    removeSelection(this);
+                })  
+            }  
+        }
+    }
 }
 
 
@@ -156,7 +179,7 @@ function addEvent(dayRaw, event, type){
         var divEvents = $("<div></div>").addClass("calendar-events");
         divEventContainer.append(divEvents);
     }else{ 
-        var divEvents = divEventContainer.children("calendar-events").first();    
+        var divEvents = divEventContainer.children(".calendar-events").first();    
     }
     if(event.hasOwnProperty("color")){
         var color = event.color;
@@ -174,13 +197,11 @@ function addEvent(dayRaw, event, type){
     
 }
 
-
-
-
 function addSelection(button){
     $button = $(button);
     dateSelection.push($button.attr("data-attr"));
     $button.addClass("active");
+    $button.off("click");
     $button.on("click", function(e){
         removeSelection(this);
     })       
@@ -190,6 +211,7 @@ function removeSelection(button){
     $button = $(button);
     removeA(dateSelection, $button.attr("data-attr"));
     $button.removeClass("active");
+    $button.off("click");
     $button.on("click", function(e){
         addSelection(this);
     })
