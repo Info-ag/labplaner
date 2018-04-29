@@ -74,7 +74,6 @@ def index():
         flash(u'You need to be logged in', 'error')
         return redirect(url_for("auth.login_get"))
 
-    flash(u'You need to be logged in', 'error')
     return render_template('index.html', title="Dashboard")
 
 

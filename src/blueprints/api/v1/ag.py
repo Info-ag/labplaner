@@ -96,23 +96,27 @@ def add_user_to_ag(ag_id):
 def change_ag_values(ag_id):
     if not g.session.authenticated:
         return Unauthorized()
-    try:
 
-        if db.session.query(AG).filter_by(id=ag_id).scalar() is None:
-            return jsonify({"Status": "Failed", "reason": "name"}), 406
+    if db.session.query(exists().where(AG.id == ag_id)).scalar():
+        if db.session.query(exists().where(UserAG.uid == g.session.uid and UserAG.ag_id == ag_id)).scalar():
+            user_ag = UserAG.query.filter_by(uid=g.session.uid, ag_id=ag_id).scalar()
+            if user_ag.role != "NONE":
+                ag: AG = AG.query.filter_by(id=ag_id).scalar()
 
-        ag = db.session.query(AG).filter_by(id=ag_id).scalar()
+                if request.values.get('display_name') is not None:
+                    ag.display_name = request.values["display_name"]
 
-        if request.values.get('displayname') is not None:
-            ag.displayname = request.values["displayname"]
+                if request.values.get('description') is not None:
+                    ag.description = request.values["description"]
 
-        if request.values.get('description') is not None:
-            ag.description = request.values["description"]
+                db.session.merge(ag)
+                db.session.commit()
 
-        db.session.add(ag)
-        db.session.commit()
+                return jsonify({"Status": "Success"}), 200
 
-    except:
+        return Unauthorized()
+
+    else:
         return NotFound()
 
 
