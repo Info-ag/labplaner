@@ -1,5 +1,6 @@
 from datetime import date
 from flask import Blueprint, request, jsonify
+from werkzeug.exceptions import NotFound, Unauthorized, BadRequest, Forbidden, RequestEntityTooLarge
 from models.event import Event, EventSchema
 from models.ag import AG
 from models.date import Date
@@ -15,20 +16,23 @@ events_schema = EventSchema(many=True)
 @bp.route("/", methods=["POST"])
 def add_event():
 
-    if not g.session.authenticated:
-        return jsonify({"Status": "Failed"}), 406
+    try:
+        if not g.session.authenticated:
+            return Unauthorized()
+    except NameError:
+        return Unauthorized()
 
     try:
         name = request.values["name"]
         if db.session.query(Event).filter_by(name=name).scalar() is not None:
-            return jsonify({"Status": "Failed", "reason": "name"}), 406
+            return BadRequest(description='Eventname already exists')
         ag = request.values["ag"]
         if db.session.query(AG).filter_by(name=ag).scalar() is None:
-            return jsonify({"Status": "Failed", "reason": "ag"}), 406
+            return NotFound(description='AG not found')
         if len(request.values["displayname"]) > 48:
-            return jsonify({"Status": "Failed", "reason": "displayname"}), 406
+            return RequestEntityTooLarge('Maximum length of 48 characters')
         if len(request.values["description"]) > 280:
-            return jsonify({"Status": "Failed", "reason": "description"}), 406
+            return RequestEntityTooLarge('Maximum length of 280 characters')
         dates = request.values["dates"]
 
 
@@ -66,18 +70,22 @@ def add_event():
 
         return jsonify({"redirect": f"/event/{name}/invite"}), 200
     except:
-        return jsonify({"Status": "Failed"}), 406
+        return BadRequest()
 
 
 @bp.route("/dates", methods=["POST"])
 def add_dates():
-    if not g.session.authenticated:
-        return jsonify({"Status": "Failed"}), 406
+
+    try:
+        if not g.session.authenticated:
+            return Unauthorized()
+    except NameError:
+        return Unauthorized()
 
     try:
         name = request.values["name"]
         if db.session.query(Event).filter_by(name=name).scalar() is None:
-            return jsonify({"Status": "Failed", "reason": "name"}), 406
+            return NotFound(description='Eventname not found')
         dates = request.values["dates"]
 
         event = db.session.query(Event).filter_by(name=name).scalar()
@@ -106,7 +114,7 @@ def add_dates():
 
         return jsonify({"redirect": f"/event/{name}/invite"}), 200
     except:
-        return jsonify({"Status": "Failed"}), 406
+        return BadRequest()
 
 
 @bp.route("/id/<evid>", methods=["GET"])
@@ -118,6 +126,16 @@ def get_event_by_id(evid):
 @bp.route("/name/<name>", methods=["GET"])
 def get_event_by_name(name):
     event = Event.query.filter_by(name=name).scalar()
+    return event_schema.jsonify(event)
+
+@bp.route("/month/<month>", methods=["GET"])
+def get_events_by_month(month):
+
+    events = Date.query.all()
+    for event in events:
+        if event.events is None:
+            del events
+
     return event_schema.jsonify(event)
 
 
