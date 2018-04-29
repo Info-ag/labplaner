@@ -11,18 +11,12 @@ class Date(db.Model):
     id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
     day = db.Column(db.Date, nullable=False)
 
+    event = db.Column(db.Integer, db.ForeignKey('event.id'))
+
     events = db.relationship('Event', secondary="date_event_association")
     users = db.relationship('User', secondary="user_date_asscociation")
 
 
-class LockedDates(db.Model):
-    __tablename__ = 'lockeddates'
-
-    id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
-    day = db.Column(db.Date, nullable=False)
-    event = db.Column(db.Integer, db.ForeignKey('event.id'))
-
-
 class DateSchema(ma.Schema):
     class Meta:
-        fields = ('id', 'day', 'events')
+        fields = ('id', 'day', 'event', 'events')
