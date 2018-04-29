@@ -51,7 +51,7 @@ def add_event():
                 date_obj = Date()
                 date_obj.day = d
 
-                db.session.add(date_obj)
+                db.session.merge(date_obj)
                 db.session.commit()
 
             else:
@@ -61,7 +61,7 @@ def add_event():
             date_event.dtid = date_obj.id
             date_event.evid = event.id
 
-            db.session.add(date_event)
+            db.session.merge(date_event)
             db.session.commit()
 
         return jsonify({"redirect": f"/event/{name}/invite"}), 200
@@ -91,7 +91,7 @@ def add_dates():
                 date_obj = Date()
                 date_obj.day = obj_date
 
-                db.session.add(date_obj)
+                db.session.merge(date_obj)
                 db.session.commit()
 
             else:
@@ -101,7 +101,7 @@ def add_dates():
             date_event.dtid = date_obj.id
             date_event.evid = event.id
 
-            db.session.add(date_event)
+            db.session.merge(date_event)
             db.session.commit()
 
         return jsonify({"redirect": f"/event/{name}/invite"}), 200

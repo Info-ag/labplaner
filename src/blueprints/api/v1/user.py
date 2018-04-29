@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from werkzeug.exceptions import NotFound, Unauthorized
 from models.user import User, UserSchema
 from app import db
 from models.associations import DateUser
@@ -89,7 +90,7 @@ def set_dates():
                 date_obj = Date()
                 date_obj.day = d
 
-                db.session.add(date_obj)
+                db.session.merge(date_obj)
                 db.session.commit()
 
 
@@ -100,5 +101,8 @@ def set_dates():
             date_user.dtid = date_obj.id
             date_user.uid = uid
 
-            db.session.add(date_user)
+            db.session.merge(date_user)
             db.session.commit()
+
+    except:
+        return NotFound()
