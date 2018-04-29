@@ -12,8 +12,9 @@ event_schema = EventSchema()
 events_schema = EventSchema(many=True)
 
 
-@bp.route("/events/", methods=["POST"])
+@bp.route("/event/", methods=["POST"])
 def add_event():
+    
     if not g.session.authenticated:
         return jsonify({"Status": "Failed"}), 406
 
@@ -63,7 +64,8 @@ def add_event():
     except:
         return jsonify({"Status": "Failed"}), 406
 
-@bp.route("/events/dates", methods=["POST"])
+
+@bp.route("/event/dates", methods=["POST"])
 def add_dates():
     if not g.session.authenticated:
         return jsonify({"Status": "Failed"}), 406
@@ -99,13 +101,13 @@ def add_dates():
         return jsonify({"Status": "Failed"}), 406
 
 
-@bp.route("/events/id/<evid>", methods=["GET"])
+@bp.route("/event/id/<evid>", methods=["GET"])
 def get_event_by_id(evid):
     event = Event.query.get(evid)
     return event_schema.jsonify(event)
 
 
-@bp.route("/events/name/<name>", methods=["GET"])
+@bp.route("/event/name/<name>", methods=["GET"])
 def get_event_by_name(name):
     event = Event.query.filter_by(name=name).scalar()
     return event_schema.jsonify(event)
