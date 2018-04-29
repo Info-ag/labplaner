@@ -23,8 +23,8 @@ def add_event():
     ag_id = request.values.get("ag")
 
     if db.session.query(exists().where(AG.id == ag_id)).scalar():
-        if db.session.query(exists().where(UserAG.user_id == g.session.uid and UserAG.ag_id == ag_id)).scalar():
-            user_ag = UserAG.query.filter_by(uid=g.session.uid, ag_id=ag_id).scalar()
+        if db.session.query(exists().where(UserAG.user_id == g.session.user_id and UserAG.ag_id == ag_id)).scalar():
+            user_ag = UserAG.query.filter_by(user_id=g.session.user_id, ag_id=ag_id).scalar()
             if user_ag.role == "MENTOR":
                 display_name = request.values.get("display_name")
                 description = request.values.get("description")

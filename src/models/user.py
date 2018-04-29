@@ -45,7 +45,7 @@ class UserSchema(ma.Schema):
     def get_role_for_ag(self, obj: User):
         ag_id = self.context.get("ag_id")
         if ag_id and db.session.query(exists().where(UserAG.user_id == obj.id and UserAG.ag_id == ag_id)).scalar():
-            user_ag: UserAG = UserAG.query.filter_by(uid=obj.id, ag_id=ag_id).scalar()
+            user_ag: UserAG = UserAG.query.filter_by(user_id=obj.id, ag_id=ag_id).scalar()
             return user_ag.role
         else:
             return "NONE"

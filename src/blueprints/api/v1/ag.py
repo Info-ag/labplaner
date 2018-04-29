@@ -38,12 +38,12 @@ def add_ag():
     display_name = request.values.get("display_name")
     description = request.values.get("description")
 
-    if db.session.query(exists().where(AG.name == name)).scalar or not bool(re.match(regex_match_display_name, name)):
-        return BadRequest(jsonify({"reason": "name"}))
+    if db.session.query(exists().where(AG.name == name)).scalar() or not bool(re.match(regex_match_display_name, name)):
+        return jsonify({"reason": "name"}), 400
     if not bool(re.match(regex_match_display_name, display_name)):
-        return BadRequest(jsonify({"reason": "display_name"}))
+        return jsonify({"reason": "display_name"}), 400
     if not bool(re.match(regex_match_description, description)):
-        return BadRequest(jsonify({"reason": "description"}))
+        return jsonify({"reason": "description"}), 400
 
     ag = AG()
     ag.name = name
@@ -55,7 +55,7 @@ def add_ag():
     db.session.flush()
 
     user_ag = UserAG()
-    user_ag.user_id = g.session.uid
+    user_ag.user_id = g.session.user_id
     user_ag.ag_id = ag.id
     user_ag.role = "MENTOR"
 
@@ -75,7 +75,7 @@ def get_ag_by_id(ag_id):
     """
     if db.session.query(exists().where(AG.id == ag_id)).scalar():
         ag = AG.query.get(ag_id).scalar()
-        if db.session.query(exists().where(UserAG.user_id == g.session.uid and UserAG.ag_id == ag_id)).scalar():
+        if db.session.query(exists().where(UserAG.user_id == g.session.user_id and UserAG.ag_id == ag_id)).scalar():
             return ag_schema_intern.jsonify(ag)
         else:
             return ag_schema.jsonify(ag)
@@ -93,7 +93,7 @@ def get_ag_by_username(name):
     """
     if db.session.query(exists().where(AG.name == name)).scalar():
         ag = AG.query.filter_by(name=name).scalar()
-        if db.session.query(exists().where(UserAG.user_id == g.session.uid and UserAG.ag_id == ag.id)).scalar():
+        if db.session.query(exists().where(UserAG.user_id == g.session.user_id and UserAG.ag_id == ag.id)).scalar():
             return ag_schema_intern.jsonify(ag)
         else:
             return ag_schema.jsonify(ag)
@@ -112,8 +112,8 @@ def add_user_to_ag(ag_id):
     :return: Redirect to the next step if all went as expected
     """
     if db.session.query(exists().where(AG.id == ag_id)).scalar():
-        if db.session.query(exists().where(UserAG.user_id == g.session.uid and UserAG.ag_id == ag_id)).scalar():
-            user_ag = UserAG.query.filter_by(uid=g.session.uid, ag_id=ag_id).scalar()
+        if db.session.query(exists().where(UserAG.user_id == g.session.user_id and UserAG.ag_id == ag_id)).scalar():
+            user_ag = UserAG.query.filter_by(user_id=g.session.user_id, ag_id=ag_id).scalar()
             if user_ag.role == "MENTOR":
                 ag: AG = AG.query.filter_by(id=ag_id).scalar()
                 for username in request.values.getlist("users[]"):
@@ -152,8 +152,8 @@ def change_ag_values(ag_id):
     :return:
     """
     if db.session.query(exists().where(AG.id == ag_id)).scalar():
-        if db.session.query(exists().where(UserAG.user_id == g.session.uid and UserAG.ag_id == ag_id)).scalar():
-            user_ag = UserAG.query.filter_by(uid=g.session.uid, ag_id=ag_id).scalar()
+        if db.session.query(exists().where(UserAG.user_id == g.session.user_id and UserAG.ag_id == ag_id)).scalar():
+            user_ag = UserAG.query.filter_by(user_id=g.session.user_id, ag_id=ag_id).scalar()
             if user_ag.role == "MENTOR":
                 ag: AG = AG.query.filter_by(id=ag_id).scalar()
 
@@ -193,6 +193,6 @@ def get_all_ags():
         count = 20
 
     all_ags = AG.query.all()
-    all_ags.offset(offset)
-    all_ags.limit(count)
+    #all_ags.offset(offset)
+    #all_ags.limit(count)
     return ags_schema.jsonify(all_ags)
