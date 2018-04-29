@@ -2,15 +2,24 @@
     padding: 8px;
 }
 
-.hero-fill {
+.docs-container {
     min-height: 100vh;
 }
 
-.navbar {
-    z-index: 100;
-    width: 100%;
-    right: 0;
-    left: 0;
-    top: 0;
-    box-shadow: 0 4px 16px rgba(12, 12, 13, .1);
+.nav-sidebar {
+    margin: 12px 32px;
+}
+
+.flash {
+    position: fixed;
+    right: 4px;
+    top: 4px;
+    list-style: none;
+    z-index: 1000;
+}
+
+.flash > li > .toast {
+    display: block;
+    min-width: 200px;
+    z-index: 1000;
 }

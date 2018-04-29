@@ -1,66 +1,82 @@
-{% extends "base.html" %}
+{% extends "base_sidebar.html" %}
 {% block head %}
     {{ super() }}
     <script src="/static/js/jquery.min.js"></script>
 {% endblock %}
 {% block content %}
-    <section class="hero hero-fill d-block">
-        <div class="container grid-xs p-2" style="background: white">
-            <div class="columns">
-                <div class="column">
-                    <div class="text-center my-2">
-                        <h3>Create AG
-                            <small class="label">Lab-Planer</small>
-                        </h3>
-                    </div>
-                    <ul class="step my-2">
-                        <li class="step-item active">
-                            <a>Create AG</a>
-                        </li>
-                        <li class="step-item">
-                            <a>Invite People</a>
-                        </li>
-                    </ul>
-                    <form id="agAddForm" action="{{ url_for('ag_api.add_ag') }}" method="post">
-                        <fieldset id="agAddFormFieldset">
-                            <div class="form-group">
-                                <label data-tooltip="Maximum 48 characters & 'A-z,0-9,-, ,_' & no '_, ,-' at the front or end"
-                                       class="form-label tooltip tooltip-top" for="name">Displayname*</label>
-                                <input class="form-input" required autocomplete="displayname" type="text"
+    <section id="content" style="margin-top:80px">
+        <section class="hero hero-fill d-block">
+            <div class="container grid-xs p-2" style="background: white">
+                <div class="columns">
+                    <div class="column">
+                        <div class="text-center my-2">
+                            <h3>Create AG
+                                <small class="label">Lab-Planer</small>
+                            </h3>
+                        </div>
+                        <ul class="step my-2">
+                            <li class="step-item active">
+                                <a>Create AG</a>
+                            </li>
+                            <li class="step-item">
+                                <a>Invite People</a>
+                            </li>
+                        </ul>
+                        <form id="agAddForm" action="{{ url_for('ag_api.add_ag') }}" method="post">
+                            <fieldset id="agAddFormFieldset">
+                                <div class="form-group">
+                                    <label data-tooltip="Maximum 48 characters & 'A-z,0-9,-, ,_' & no '_, ,-' at the front or end"
+                                           class="form-label tooltip tooltip-top" for="name">Displayname*</label>
+                                    <input class="form-input" required autocomplete="displayname" type="text"
                                            name="displayname"
                                            id="displayname"
                                            maxlength="48"
                                            pattern="^([A-Za-z0-9]+([A-Za-z0-9_\s-]*[A-Za-z0-9]+)*){1,48}$"
                                            placeholder="Displayname">
-                            </div>
-                            <div class="form-group">
-                                <label data-tooltip="Maximum 16 characters & 'A-z,0-9,-,_'"
-                                       class="form-label tooltip tooltip-top" for="name">Identifier (e.g. info-ag)*</label>
-                                <div class="has-icon-right" id="name-group">
-                                    <input class="form-input" required autocomplete="name" type="text"
-                                           name="name"
-                                           id="name"
-                                           maxlength="16"
-                                           pattern="^[A-Za-z0-9_-]{1,16}$"
-                                           placeholder="Identifier (e.g. info-ag)">
-                                    <i id="name-loading" class="form-icon loading" style="display:none"></i>
-                                    <i id="name-check" class="form-icon icon icon-check" style="display:none"></i>
                                 </div>
-                                <p id="name-error" class="form-input-hint" style="display:none">AG with this Identifier already exist!</p>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label" for="description">Description*</label>
-                                <textarea class="form-input" required maxlength="140" autocomplete="description" name="description" id="description" placeholder="Description"></textarea>
-                            </div>
-                            <p class="form-input-hint">All fields marked with an asterix (*) are required fields.</p>
-                            <div class="form-group float-right">
-                                <button id="addag" type="submit" value="Enter" class="btn active">Signup</button>
-                            </div>
-                        </fieldset>
-                    </form>
+                                <div class="form-group">
+                                    <label data-tooltip="Maximum 16 characters & 'A-z,0-9,-,_'"
+                                           class="form-label tooltip tooltip-top" for="name">Identifier (e.g.
+                                        info-ag)*</label>
+                                    <div class="has-icon-right" id="name-group">
+                                        <input class="form-input" required autocomplete="name" type="text"
+                                               name="name"
+                                               id="name"
+                                               maxlength="16"
+                                               pattern="^[A-Za-z0-9_-]{1,16}$"
+                                               placeholder="Identifier (e.g. info-ag)">
+                                        <i id="name-loading" class="form-icon loading" style="display:none"></i>
+                                        <i id="name-check" class="form-icon icon icon-check" style="display:none"></i>
+                                    </div>
+                                    <p id="name-error" class="form-input-hint" style="display:none">AG with this
+                                        Identifier already exist!</p>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="description">Description*</label>
+                                    <textarea class="form-input" required maxlength="140" autocomplete="description"
+                                              name="description" id="description" placeholder="Description"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="color">Color*</label>
+                                    <select class="form-select">
+                                            <option value="primary" class="bg-primary">Blau</option>
+                                            <option value="dark" class="bg-dark">Grau</option>
+                                            <option value="success" class="bg-success">Grün</option>
+                                            <option value="warning" class="bg-warning">Gelb</option>
+                                            <option value="error" class="bg-error">Rot</option>
+                                          </select>
+                                </div>
+                                <p class="form-input-hint">All fields marked with an asterix (*) are required
+                                    fields.</p>
+                                <div class="form-group float-right">
+                                    <button id="addag" type="submit" value="Enter" class="btn active">Create</button>
+                                </div>
+                            </fieldset>
+                        </form>
+                    </div>
                 </div>
             </div>
-        </div>
+        </section>
     </section>
 {% endblock %}
 {% block scripts %}

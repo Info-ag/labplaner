@@ -1,30 +1,30 @@
-# pylint: disable-all
+import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_marshmallow import Marshmallow
 
-from flask import render_template, \
-    request, \
-    g
-
-import dbconfig
+from flask import render_template, request, redirect, url_for, flash, g
 
 app = Flask(__name__)
-app.config.from_object(dbconfig.DBConfig)
+app.config.from_json(os.path.join("..", os.environ["CONFIG"]))
+app.secret_key = app.secret_key.encode()
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
 migrate = Migrate(app, db)
 
-from models.user import Session
+from models.user import Session, User
 
 db.create_all()
 
 from blueprints.api.v1 import api
 from blueprints.api.v1 import user
 from blueprints.api.v1 import ag as ag_api
+from blueprints.api.v1 import event as event_api
+from blueprints.api.v1 import date as date_api
 from blueprints import auth
 from blueprints import ag
+from blueprints import cal
 import utils
 
 
@@ -53,6 +53,9 @@ def auth_middleware():
         db.session.commit()
         g.session = _session
 
+    if g.session.authenticated:
+        g.user = User.query.get(g.session.uid)
+
     @utils.after_this_request
     def set_cookie(response):
         response.set_cookie("sid", g.session.get_string_cookie(),
@@ -62,19 +65,22 @@ def auth_middleware():
 app.register_blueprint(api.bp, url_prefix="/api/v1")
 app.register_blueprint(user.bp, url_prefix="/api/v1/user")
 app.register_blueprint(ag_api.bp, url_prefix="/api/v1/ag")
+app.register_blueprint(event_api.bp, url_prefix="/api/v1/event")
+app.register_blueprint(date_api.bp, url_prefix="/api/v1/date")
 app.register_blueprint(auth.bp, url_prefix="/auth")
 app.register_blueprint(ag.bp, url_prefix="/ag")
+app.register_blueprint(cal.bp, url_prefix="/cal")
 
 
 @app.route('/')
-def index(text=''):
-    return render_template('index.html', message=text)
+def index():
+    if not g.session.authenticated:
+        flash(u'You need to be logged in', 'error')
+        return redirect(url_for("auth.login_get"))
+
+    flash(u'You need to be logged in', 'error')
+    return render_template('index.html', title="Dashboard")
 
 
 if __name__ == '__main__':
-    app.config.update(
-        DEBUG=True,
-        TESTING=True,
-        TEMPLATES_AUTO_RELOAD=True
-    )
     app.run(host='127.0.0.1', port=5000, debug=True)

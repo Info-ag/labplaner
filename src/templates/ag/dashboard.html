@@ -1,0 +1,36 @@
+{% extends "base_sidebar.html" %}
+{% block head %}
+    {{ super() }}
+    <script src="/static/js/jquery.min.js"></script>
+{% endblock %}
+{% block content %}
+    <div id="users" class="container">
+        <h3 class="s-title">
+            <a href="#users" class="anchor" aria-hidden="true">#</a>
+            Users
+        </h3>
+        <div class="docs-note">
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Role</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for user in ag.data.users %}
+                    <tr>
+                        <td>{{ user.id }}</td>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.ag_role }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script src="/static/js/pages/ag/add.js"></script>
+{% endblock %}

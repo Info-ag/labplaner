@@ -7,99 +7,54 @@
 
         <link rel="stylesheet" href="/static/css/main.css">
         <link rel="stylesheet" href="/static/css/spectre.min.css">
+        <link rel="stylesheet" href="/static/css/docs.min.css">
         <link rel="stylesheet" href="/static/css/spectre-exp.min.css">
         <link rel="stylesheet" href="/static/css/spectre-icons.min.css">
-        <title>{% block title %}{% endblock %}Lab-Planer</title>
+        <title>{{ title }} - Lab-Planer</title>
 
         <meta name="application-name" content="Lab-Planer">
         <meta name="description" content="{% block description %}{% endblock %} - Yay we have a description">
         <meta name="theme-color" content="#454d5d">
 
         <meta http-equiv="x-ua-compatible" content="ie=edge">
+        {% if get_flashed_messages() %}
+            <script src="/static/js/jquery.min.js"></script>
+        {% endif %}
     {% endblock %}
 </head>
 <body>
-<header class="navbar p-2 fixed" style="background: white">
-    <section class="navbar-section">
-        <a href="#" class="btn btn-link">Home</a>
-        <a href="#" class="btn btn-link">Polls</a>
-        <a href="#" class="btn btn-link">Calendar</a>
-    </section>
-    <section class="navbar-center">
-        <h3>
-            <small class="label">Lab-Planer</small>
-        </h3>
-    </section>
-    <section class="navbar-section">
-        {% if g['session']['authenticated'] %}
-            <a class="btn btn-link" href="{{ url_for('auth.logout') }}">Logout</a>
-        {% else %}
-            <a class="btn btn-link" href="{{ url_for('auth.login_get') }}">Login</a>
-            <a class="btn btn-link" href="{{ url_for('auth.signup_get') }}">Sign Up</a>
-        {% endif %}
-    </section>
-</header>
-<section id="content" style="margin-top:80px">{% block content %}{% endblock %}</section>
-<section class="hero footer bg-gray p-2 d-block" id="footer">
-    <div class="container">
-        <div class="columns">
-            <div class="column col-3 col-md-12">
-                <h3>
-                    <small class="label">Lab-Planer</small>
-                </h3>
-                <p>Create polls, invite your friends and manage the perfect event. All withing one place.</p>
-                {% if g['session']['authenticated'] %}
-                    <p>
-                        <a href="{{ url_for('auth.logout') }}">Logout</a>
-                    </p>
-                {% else %}
-                    <p>
-                        <a href="{{ url_for('auth.login_get') }}">Login</a> or <a
-                            href="{{ url_for('auth.signup_get') }}">Sign
-                        Up</a>
-                    </p>
-                {% endif %}
-            </div>
-            <div class="column col-2 col-md-12 col-ml-auto">
-                <ul class="nav">
-                    <h5>Where to go</h5>
-                    <li class="nav-item">
-                        <a href="#">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#">Account</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#">AGs</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#">Events</a>
-                    </li>
-                </ul>
-            </div>
-            <div class="column col-2 col-md-12">
-                <ul class="nav">
-                    <h5>More</h5>
-                    <li class="nav-item">
-                        <a href="#">About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#">Support</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#">Privacy</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#">Terms</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#">Contact</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</section>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <ul class="flash">
+            {% for category, message in messages %}
+                <li>
+                    <div class="toast toast-{{ category }}">
+                        <button id="flash-btn" class="btn btn-clear float-right"></button>
+                        {{ message }}
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}
+
+{% block body %}{% endblock %}
+
 {% block scripts %}{% endblock %}
+{% if get_flashed_messages() %}
+    <script>
+        setTimeout(function() {
+            $(".flash").fadeOut(function() {
+                $(".flash").remove();
+            });
+        }, 2000);
+        $("#flash-btn").on("click", function () {
+            $(this).parent().fadeOut(function() {
+                $(this).remove();
+            });
+        })
+    </script>
+{% endif %}
 </body>
 </html>

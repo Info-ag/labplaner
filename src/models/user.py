@@ -3,13 +3,14 @@ import hmac
 import hashlib
 import base64
 from datetime import datetime, timedelta
-
-from app import db
-from app import ma
-from models.ag import AG
 import bcrypt
+from sqlalchemy.sql import exists
 
-from models.associations import UserAG
+from app import app, ma, db
+
+from models.ag import AG, AGSchema
+from models.date import Date
+from models.associations import UserAG, DateUser
 
 
 class User(db.Model):
@@ -20,6 +21,8 @@ class User(db.Model):
     password = db.Column(db.LargeBinary, nullable=False)
 
     ags = db.relationship(AG, secondary="user_ag_association")
+
+    dates = db.relationship(Date, secondary="user_date_asscociation")
 
     sessions = db.relationship("Session", backref='persons', lazy=True)
 
@@ -34,8 +37,23 @@ class User(db.Model):
 
 
 class UserSchema(ma.Schema):
+    ags = ma.Nested(AGSchema, many=True, exclude=('users',))
+    picture = ma.Method("get_picture")
+    ag_role = ma.Method("get_role_for_ag")
+
+    def get_role_for_ag(self, obj: User):
+        ag_id = self.context.get("ag_id")
+        if ag_id and db.session.query(exists().where(UserAG.uid == obj.id and UserAG.ag_id == ag_id)).scalar():
+            user_ag: UserAG = UserAG.query.filter_by(uid=obj.id, ag_id=ag_id).scalar()
+            return user_ag.role
+        else:
+            return "NONE"
+
+    def get_picture(self, obj: User):
+        return "https://www.gravatar.com/avatar/" + hashlib.md5(obj.email.lower().encode()).hexdigest() + "?d=mm"
+
     class Meta:
-        fields = ('id', 'username')
+        fields = ('id', 'username', "ags", "picture", "ag_role")
 
 
 class Session(db.Model):
@@ -61,28 +79,35 @@ class Session(db.Model):
         self.expires = datetime.today() + timedelta(days=days)
 
     def get_string_cookie(self):
-        dig = hmac.new(b'a_perfect_secret', msg=self.token.encode('utf-8'), digestmod=hashlib.sha256).digest()
+        """
+        Generate a custom string cookie that includes both the public as well as the private token.
+        :return: Cookie string
+        """
+        dig = hmac.new(app.secret_key, msg=self.token.encode('utf-8'), digestmod=hashlib.sha256).digest()
         str_dig = base64.b64encode(dig).decode()
         return f'{self.public_token}+{str_dig}'
 
     @staticmethod
     def verify(cookie: str):
-        try:
-            if cookie:
-                pub = cookie.split("+")[0]
-                session = Session.query.filter_by(public_token=pub).one()
+        """
+        Check if the provided cookie is part of a valid session.
+        :param cookie: String cookie: "public_token+hash(token)"
+        :return: a Session object when the session cookie was valid, False if
+            the session cookie was invalid
+        """
+        if cookie:
+            # get public token from cookie string
+            pub = cookie.split("+")[0]
+            # check if a session with the public token exists
+            if db.session.query(exists().where(Session.public_token == pub)).scalar():
+                # get the session from the db
+                session = Session.query.filter_by(public_token=pub).scalar()
                 if session.expires > datetime.now() and not session.revoked:
-                    dig = hmac.new(b'a_perfect_secret',
-                                   msg=session.token.encode('utf-8'),
-                                   digestmod=hashlib.sha256).digest()
-                    str_dig = base64.b64encode(dig).decode()
-                    cookie_dig = cookie[cookie.index("+") + 1:]
-                    if secrets.compare_digest(str_dig, cookie_dig):
+                    if secrets.compare_digest(session.get_string_cookie(), cookie):
                         return session
-        except:
-            return False
 
         return False
 
-    def __repr__(self):
-        return f'<Session {self.id}>'
+
+def __repr__(self):
+    return f'<Session {self.id}>'

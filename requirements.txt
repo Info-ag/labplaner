@@ -1,3 +1,5 @@
+werkzeug
+sqlalchemy
 flask
 flask-sqlalchemy
 flask_marshmallow
