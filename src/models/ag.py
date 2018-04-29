@@ -12,6 +12,7 @@ class AG(db.Model):
     description = db.Column(db.String(140), nullable=False)
 
     users = db.relationship("User", secondary="user_ag_association")
+    events = db.relationship("Event")
 
     def __repr__(self):
         return f"<AG {self.name}>"
@@ -19,6 +20,7 @@ class AG(db.Model):
 
 class AGSchema(ma.Schema):
     users = ma.Nested('UserSchema', many=True, exclude=('ags',))
+    events = ma.Nested('EventSchema', many=True, exclude=('ag',))
 
     class Meta:
-        fields = ("id", "name", "display_name", "description", "users")
+        fields = ("id", "name", "display_name", "description", "users", "events")

@@ -9,7 +9,7 @@ class UserAG(db.Model):
     role = db.Column('role', db.String(11), nullable=False, default="NONE")
 
     def __repr__(self):
-        return f"<UserAG {self.role}>"
+        return f"<UserAG {self.id}>"
 
 
 class DateEvent(db.Model):
@@ -19,7 +19,7 @@ class DateEvent(db.Model):
     evid = db.Column(db.Integer, db.ForeignKey('events.id'))
 
     def __repr__(self):
-        return f"<DateEvent {self.role}>"
+        return f"<DateEvent {self.id}>"
 
 
 class DateUser(db.Model):
@@ -29,4 +29,4 @@ class DateUser(db.Model):
     uid = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     def __repr__(self):
-        return f"<DateUser {self.role}>"
+        return f"<DateUser {self.id}>"
