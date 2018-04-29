@@ -32,11 +32,11 @@ function buildBasis(monthRaw, year, anker, options){
         }
     }
     var divNav = $("<div></div>").addClass("calendar-nav navbar");
-    var btnLeft = $("<button></button>").addClass("btn btn-action btn-link btn-lg").attr("id", anker+"-left");
+    var btnLeft = $("<button></button>").addClass("btn btn-action btn-link btn-lg").attr("id", anker+"-left").prop("type", "button");
     var iBtnLeft = $("<i></i>").addClass("icon icon-arrow-left");
     btnLeft.append(iBtnLeft);
     var divMonth = $("<div></div>").addClass("navbar-primary").attr("id", anker+"-heading").text(monthNames[month] + " " +  year);
-    var btnRight = $("<button></button>").addClass("btn btn-action btn-link btn-lg").attr("id", anker+"-right");
+    var btnRight = $("<button></button>").addClass("btn btn-action btn-link btn-lg").attr("id", anker+"-right").prop("type", "button");
     var iBtnRight = $("<i></i>").addClass("icon icon-arrow-right");
     btnRight.append(iBtnRight);
 
@@ -56,6 +56,7 @@ function buildBasis(monthRaw, year, anker, options){
     divHeader.append(divMon, divTue, divWed, divThu, divFri, divSat, divSun);
     var divBody = $("<div></div>").addClass("calendar-body").attr("id", anker + "-body");
     divBody = generateDays(year, month, anker, divBody, options);
+
     
 
     divContainer.append(divHeader, divBody);
@@ -70,12 +71,12 @@ function buildBasis(monthRaw, year, anker, options){
         calendarMode = 1;
     }
     makeDaysSelectable();
+    markToday();
     
 }
 
 function makeDaysSelectable(){
     if(calendarMode == 1){
-        console.log("test");
         $(".calendar-date > .date-item").on("click", function(e){
             addSelection(this);
         })
@@ -97,13 +98,10 @@ function showAnotherMonth(event){
     $("#" + anker + "-right").click({"year": prevAndNextMonth.next.year, "month": prevAndNextMonth.next.month, "anker": anker }, showAnotherMonth)
     divBody = generateDays(year, month, anker, divBody);
     makeDaysSelectable();
+    markToday();
     if(calendarMode == 1){
-        console.log("checking..")
         for (let i in dateSelection){
-            console.log(i);
             $button = $("#"+dateSelection[i].replace(/\s/g,'-'));
-            console.log($button);
-            console.log($button.length);
             if($button.length != 0){
                 $button.children("button").addClass("active");
                 $button.children("button").off("click");
@@ -112,6 +110,15 @@ function showAnotherMonth(event){
                 })  
             }  
         }
+    }
+}
+
+
+function markToday(){
+    let today = new Date();
+    let todayString = today.toDateString();
+    if($("#"+todayString.replace(/\s/g,'-')).length != 0){
+        $("#"+todayString.replace(/\s/g,'-')).children("button").addClass("date-today");
     }
 }
 
@@ -237,7 +244,7 @@ function buildNextDay(day){
 }
 
 function buildDay(day, div){
-    button = $("<button></button>").addClass("date-item").text(day.getDate());
+    button = $("<button></button>").addClass("date-item").prop("type", "button").text(day.getDate());
     var dayString = day.toDateString(); 
     button.attr("data-attr", dayString);
     div.attr("id", dayString.replace(/\s/g,'-'));
