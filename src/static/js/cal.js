@@ -73,8 +73,6 @@ function buildBasis(monthRaw, year, anker, options){
     
 }
 
-buildBasis(4, 2018, "calendar-anker", {"size" : true, "mode": 1});
-
 function makeDaysSelectable(){
     if(calendarMode == 1){
         console.log("test");
