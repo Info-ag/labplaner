@@ -1,21 +1,14 @@
-# pylint: disable-all
+import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_marshmallow import Marshmallow
 
-from flask import render_template, \
-    request, \
-    redirect, \
-    url_for, \
-    flash, \
-    g
-
-import dbconfig
+from flask import render_template, request, redirect, url_for, flash, g
 
 app = Flask(__name__)
-app.config.from_object(dbconfig.DBConfig)
-app.secret_key = b'(^4#2c3A0J8\d8eQ+7'
+app.config.from_json(os.environ["CONFIG"])
+app.secret_key = app.secret_key.encode()
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
 migrate = Migrate(app, db)
@@ -81,13 +74,9 @@ def index():
         flash(u'You need to be logged in', 'error')
         return redirect(url_for("auth.login_get"))
 
+    flash(u'You need to be logged in', 'error')
     return render_template('index.html', title="Dashboard")
 
 
 if __name__ == '__main__':
-    app.config.update(
-        DEBUG=True,
-        TESTING=True,
-        TEMPLATES_AUTO_RELOAD=True
-    )
     app.run(host='127.0.0.1', port=5000, debug=True)

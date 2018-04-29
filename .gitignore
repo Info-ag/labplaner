@@ -1,6 +1,9 @@
 *.db
 migrations
 
+config/production.json
+
+
 .idea
 
 # Byte-compiled / optimized / DLL files
