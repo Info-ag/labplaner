@@ -92,6 +92,30 @@ def add_user_to_ag(ag_id):
         return NotFound()
 
 
+@bp.route("/<ag_id>", methods=["PUT"])
+def change_ag_values(ag_id):
+    if not g.session.authenticated:
+        return Unauthorized()
+    try:
+
+        if db.session.query(AG).filter_by(id=ag_id).scalar() is None:
+            return jsonify({"Status": "Failed", "reason": "name"}), 406
+
+        ag = db.session.query(AG).filter_by(id=ag_id).scalar()
+
+        if request.values.get('displayname') is not None:
+            ag.displayname = request.values["displayname"]
+
+        if request.values.get('description') is not None:
+            ag.description = request.values["description"]
+
+        db.session.add(ag)
+        db.session.commit()
+
+    except:
+        return NotFound()
+
+
 @bp.route("/", methods=["GET"])
 def get_all_ags():
     all_ags = AG.query.all()

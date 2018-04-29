@@ -1,6 +1,8 @@
 from flask import Blueprint, request, jsonify
+from werkzeug.exceptions import NotFound, Unauthorized
 from models.user import User, UserSchema
 from app import db
+from models.associations import DateUser
 
 bp = Blueprint("user_api", __name__)
 
@@ -71,3 +73,36 @@ def set_dates():
 
     if not g.session.authenticated:
         return jsonify({"Status": "Failed"}), 406
+
+    try:
+        uid = request.values["uid"]
+        if db.session.query(User).filter_by(id=uid).scalar() is None:
+            return jsonify({"Status": "Failed", "reason": "uid"}), 406
+
+        dates = request.values["dates"]
+
+        for d in dates:
+
+            d = d.replace('-', '')
+            d = date(int(d[:4]), int(d[4:6]), int(d[6:]))
+
+            if db.session.query(Date).filter_by(day=d) is None:
+                date_obj = Date()
+                date_obj.day = d
+
+                db.session.merge(date_obj)
+                db.session.commit()
+
+
+            else:
+                date_obj = db.session.query(Date).filter_by(day=d)
+
+            date_user = DateUser()
+            date_user.dtid = date_obj.id
+            date_user.uid = uid
+
+            db.session.merge(date_user)
+            db.session.commit()
+
+    except:
+        return NotFound()
