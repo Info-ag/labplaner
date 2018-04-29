@@ -32,11 +32,11 @@ function buildBasis(monthRaw, year, anker, options){
         }
     }
     var divNav = $("<div></div>").addClass("calendar-nav navbar");
-    var btnLeft = $("<button></button>").addClass("btn btn-action btn-link btn-lg").attr("id", anker+"-left");
+    var btnLeft = $("<button></button>").addClass("btn btn-action btn-link btn-lg").attr("id", anker+"-left").prop("type", "button");
     var iBtnLeft = $("<i></i>").addClass("icon icon-arrow-left");
     btnLeft.append(iBtnLeft);
     var divMonth = $("<div></div>").addClass("navbar-primary").attr("id", anker+"-heading").text(monthNames[month] + " " +  year);
-    var btnRight = $("<button></button>").addClass("btn btn-action btn-link btn-lg").attr("id", anker+"-right");
+    var btnRight = $("<button></button>").addClass("btn btn-action btn-link btn-lg").attr("id", anker+"-right").prop("type", "button");
     var iBtnRight = $("<i></i>").addClass("icon icon-arrow-right");
     btnRight.append(iBtnRight);
 
