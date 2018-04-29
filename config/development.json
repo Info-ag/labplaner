@@ -4,6 +4,6 @@
   "TEMPLATES_AUTO_RELOAD": true,
   "ENV": "development",
   "SQLALCHEMY_DATABASE_URI": "sqlite:///app.db",
-  "SQLALCHEMY_TRACK_MODIFICATIONS": true,
-  "SECRET_KEY": "(^4#2c3A0J/dc8eQ+7"
+  "SQLALCHEMY_TRACK_MODIFICATIONS": false,
+  "SECRET_KEY": "very_secure_secret"
 }
