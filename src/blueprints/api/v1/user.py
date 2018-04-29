@@ -84,7 +84,7 @@ def set_dates():
 
             d = d.replace('-', '')
             d = date(int(d[:4]), int(d[4:6]), int(d[6:]))
-            
+
             if db.session.query(Date).filter_by(day=d) is None:
                 date_obj = Date()
                 date_obj.day = d

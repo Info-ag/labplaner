@@ -20,7 +20,7 @@ class LockedDates(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
     day = db.Column(db.Date, nullable=False)
-    users = db.relationship('User', secondary="user_date_asscociation")
+    event = db.Column(db.Integer, db.ForeignKey('event.id'))
 
 
 class DateSchema(ma.Schema):
