@@ -12,9 +12,9 @@ event_schema = EventSchema()
 events_schema = EventSchema(many=True)
 
 
-@bp.route("/event/", methods=["POST"])
+@bp.route("/", methods=["POST"])
 def add_event():
-    
+
     if not g.session.authenticated:
         return jsonify({"Status": "Failed"}), 406
 
@@ -43,9 +43,13 @@ def add_event():
         db.session.commit()
 
         for d in dates:
+
+            d = d.replace('-', '')
+            d = date(int(d[:4]), int(d[4:6]), int(d[6:]))
+
             if db.session.query(Date).filter_by(day=d) is None:
                 date_obj = Date()
-                date_obj.day = obj_date
+                date_obj.day = d
 
                 db.session.add(date_obj)
                 db.session.commit()
@@ -65,7 +69,7 @@ def add_event():
         return jsonify({"Status": "Failed"}), 406
 
 
-@bp.route("/event/dates", methods=["POST"])
+@bp.route("/dates", methods=["POST"])
 def add_dates():
     if not g.session.authenticated:
         return jsonify({"Status": "Failed"}), 406
@@ -79,6 +83,10 @@ def add_dates():
         event = db.session.query(Event).filter_by(name=name).scalar()
 
         for d in dates:
+
+            d = d.replace('-', '')
+            d = date(int(d[:4]), int(d[4:6]), int(d[6:]))
+
             if db.session.query(Date).filter_by(day=d) is None:
                 date_obj = Date()
                 date_obj.day = obj_date
@@ -101,19 +109,19 @@ def add_dates():
         return jsonify({"Status": "Failed"}), 406
 
 
-@bp.route("/event/id/<evid>", methods=["GET"])
+@bp.route("/id/<evid>", methods=["GET"])
 def get_event_by_id(evid):
     event = Event.query.get(evid)
     return event_schema.jsonify(event)
 
 
-@bp.route("/event/name/<name>", methods=["GET"])
+@bp.route("/name/<name>", methods=["GET"])
 def get_event_by_name(name):
     event = Event.query.filter_by(name=name).scalar()
     return event_schema.jsonify(event)
 
 
-@bp.route("/events/", methods=["GET"])
+@bp.route("/", methods=["GET"])
 def get_all_events():
     all_events = Event.query.all()
     result = event_schema.dump(all_events)
