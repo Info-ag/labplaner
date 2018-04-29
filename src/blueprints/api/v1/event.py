@@ -130,13 +130,8 @@ def get_event_by_name(name):
 
 @bp.route("/month/<month>", methods=["GET"])
 def get_events_by_month(month):
-
-    events = Date.query.all()
-    for event in events:
-        if event.events is None:
-            del events
-
-    return event_schema.jsonify(event)
+    events = Date.query.filter((Date.events != None) | (Date.events != 0)).filter(Date.day.month == int(month))
+    return event_schema.jsonify(events)
 
 
 @bp.route("/", methods=["GET"])
