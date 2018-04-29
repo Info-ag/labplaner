@@ -12,7 +12,7 @@ class Date(db.Model):
     day = db.Column(db.Date, nullable=False)
 
     events = db.relationship('Event', secondary="date_event_association")
-    #users = db.relationship('User', secondary="user_date_asscociation")
+    users = db.relationship('User', secondary="user_date_asscociation")
 
 class DateSchema(ma.Schema):
     class Meta:

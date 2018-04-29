@@ -28,44 +28,71 @@ def add_event():
             return jsonify({"Status": "Failed", "reason": "displayname"}), 406
         if len(request.values["description"]) > 280:
             return jsonify({"Status": "Failed", "reason": "description"}), 406
-        raw_date = request.values["date"]
-        if len(raw_date) != 8 or int(raw_date[0]) > 3 or int(raw_date[2]) > 1 or int(raw_date[4]) != 2 or int(raw_date[5]) != 0:
-            return jsonify({"Status": "Failed", "reason": "date (DDMMYYYY)"}), 406
+        dates = request.values["dates"]
 
-        obj_date = date(int(raw_date[:2]), int(raw_date[2:4]), int(raw_date[4:]))
 
         event = Event()
         event.name = name
         event.display_name = request.values["displayname"]
         event.description = request.values["description"]
         event.ag = ag
+        event.date = ""
 
         db.session.add(event)
         db.session.commit()
 
-        if db.session.query(Date).filter_by(day=obj_date) is None:
-            d = Date()
-            d.day = obj_date
+        for d in dates:
+            if db.session.query(Date).filter_by(day=d) is None:
+                date_obj = Date()
+                date_obj.day = obj_date
 
-            db.session.add(d)
+                db.session.add(date_obj)
+                db.session.commit()
+
+            else:
+                date_obj = db.session.query(Date).filter_by(day=d)
+
+            date_event = DateEvent()
+            date_event.dtid = date_obj.id
+            date_event.evid = event.id
+
+            db.session.add(date_event)
             db.session.commit()
 
-        else:
-            d = db.session.query(Date).filter_by(day=obj_date)
+        return jsonify({"redirect": f"/event/{name}/invite"}), 200
+    except:
+        return jsonify({"Status": "Failed"}), 406
 
-        dateevent = DateEvent()
-        dateevent.dtid = d.id
-        dateevent.evid = event.id
+@bp.route("/events/dates", methods=["POST"])
+def add_dates():
+    if not g.session.authenticated:
+        return jsonify({"Status": "Failed"}), 406
 
-        db.session.add(dateevent)
-        db.session.commit()
+    try:
+        name = request.values["name"]
+        if db.session.query(Event).filter_by(name=name).scalar() is None:
+            return jsonify({"Status": "Failed", "reason": "name"}), 406
+        dates = request.values["dates"]
 
-        dateevent = DateEvent()
-        dateevent.dtid = d.id
-        dateevent.evid = event.id
+        event = db.session.query(Event).filter_by(name=name).scalar()
 
-        db.session.add(dateevent)
-        db.session.commit()
+        for d in dates:
+            if db.session.query(Date).filter_by(day=d) is None:
+                date_obj = Date()
+                date_obj.day = obj_date
+
+                db.session.add(date_obj)
+                db.session.commit()
+
+            else:
+                date_obj = db.session.query(Date).filter_by(day=d)
+
+            date_event = DateEvent()
+            date_event.dtid = date_obj.id
+            date_event.evid = event.id
+
+            db.session.add(date_event)
+            db.session.commit()
 
         return jsonify({"redirect": f"/event/{name}/invite"}), 200
     except:
