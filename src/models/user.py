@@ -22,7 +22,7 @@ class User(db.Model):
 
     ags = db.relationship(AG, secondary="user_ag_association")
 
-    # dates = db.relationship(Date, secondary="user_date_asscociation")
+    dates = db.relationship(Date, secondary="user_date_asscociation")
 
     sessions = db.relationship("Session", backref='persons', lazy=True)
 
