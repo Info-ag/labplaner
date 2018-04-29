@@ -117,9 +117,7 @@ function showAnotherMonth(event){
 function markToday(){
     let today = new Date();
     let todayString = today.toDateString();
-    console.log(todayString);
     if($("#"+todayString.replace(/\s/g,'-')).length != 0){
-        console.log("test");
         $("#"+todayString.replace(/\s/g,'-')).children("button").addClass("date-today");
     }
 }
