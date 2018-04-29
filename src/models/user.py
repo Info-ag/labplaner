@@ -65,7 +65,7 @@ class UserSchemaSelf(UserSchema):
 class Session(db.Model):
     __tablename__ = 'sessions'
     id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
-    uid = db.Column(db.Integer, db.ForeignKey("users.id"))
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     expires = db.Column(db.DateTime, nullable=False)
     token = db.Column(db.String(64), nullable=False)
     public_token = db.Column(db.String(16), unique=True, nullable=False)
@@ -74,10 +74,10 @@ class Session(db.Model):
 
     def __init__(self, user: User = None, days=60):
         if user:
-            self.uid = user.id
+            self.user_id = user.id
             self.authenticated = True
         else:
-            self.uid = None
+            self.user_id = None
             self.authenticated = False
 
         self.token = secrets.token_hex(64)

@@ -54,7 +54,7 @@ def auth_middleware():
         g.session = _session
 
     if g.session.authenticated:
-        g.user = User.query.get(g.session.uid)
+        g.user = User.query.get(g.session.user_id)
 
     @utils.after_this_request
     def set_cookie(response):
