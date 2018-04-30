@@ -19,5 +19,7 @@
 {% block scripts %}
 <script src="/static/js/cal.js"></script>
 <script>
-    buildBasis(4, 2018, "calendar-anker", {"size" : true, "mode": 1});</script>
+        configureCalendar('calendar-anker', {"mode": 1, "size": 1});
+    generateCalendar('calendar-anker');
+    </script>
 {% endblock %}
