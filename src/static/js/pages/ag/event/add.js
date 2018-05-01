@@ -1,7 +1,15 @@
 var today = new Date();
-
-//buildBasis(today.getMonth() + 1, today.getFullYear(), "calendar-anker", {"size": true, "mode": 1});
-configureCalendar('calendar-anker', {});
+config = {
+    "large" : true,
+    "select" : {
+        "selectable" : true,
+        "onlyFuture" : true
+    },  
+    "events" : {
+        showAll: false
+    }
+}
+configureCalendar('calendar-anker', config);
 generateCalendar('calendar-anker');
 $("#form-create-event").submit(function (event) {
     event.preventDefault();

@@ -19,7 +19,7 @@
 {% block scripts %}
 <script src="/static/js/cal.js"></script>
 <script>
-        configureCalendar('calendar-anker', {"mode": 1, "size": 1});
+        configureCalendar('calendar-anker', {"select" : {"selectable" : false}, "large": true});
     generateCalendar('calendar-anker');
     </script>
 {% endblock %}

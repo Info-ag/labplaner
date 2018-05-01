@@ -8,16 +8,38 @@ Give any div you want to use as container an unique id. This id will be handled 
 generate a JSON object describing all properties for the calendar. The config JSON object will be describded in the following.
 
 config = {
-    "anker" : <anker/id of the containing div (no default value - please just set any anker)>,
+    //"anker" : <anker/id of the containing div (no default value - please just set any anker)>,
     "month" : <month to be shown (default : current month)>,
     "year" : <year of the month to be shown (default : current year)>,
-    "size" : <0 for small | 1 for large> (default : 1),
-    "mode" : <0 for selecting dates (with already selected dates) | 1 for showing events | 2 for both modes (default : 0),   //1 & 2 are not supported yet
-    "selection" : < array'with the dates, that should be shown as already selected e.g. ["Sun Apr 01 2018", "Sun Apr 08 2018", "Sun Apr 15 2018", "Sun Apr 22 2018", "Sun Apr 29 2018"]>
+    "size" : <false/true (default true)>,
+    "select" : {
+        "selectable" : <false/true (default false)>,
+        "onlyFuture" : <false/true (default true)>
+    }  
+    "events" : {
+        showAll: <false/true (default false)>
+    }
+}
+
+As third parameter you can use a data JSON object as following:
+
+data = {
+    "selection" : < array'with the dates, that should be shown as already selected e.g. ["Sun Apr 01 2018", "Sun Apr 08 2018", "Sun Apr 15 2018", "Sun Apr 22 2018", "Sun Apr 29 2018"]>,
+    "events" : [
+        {
+            "event_name" : <event identifier>,
+            "display_name" : <name of the event that should be displayed>,
+            "date" : <the day the event will take place>,
+            "color" : <css class (default error)>
+            "dates" :  [
+                "<day the event might is going to take place", "another day the event might is going to take place"
+            ]
+        }
+    ]
 }
 
 call the configuring function with anker&config 
-    configureCalendar(anker <anker>, config <config JSON Object>);
+    configureCalendar(anker <anker>, config <config JSON Object>, data <data JSON Object>);
 
 call the generating function with the anker
     generateCalendar(anker <anker>);
@@ -56,11 +78,21 @@ function missingAnker(){
     alert("Why do you call this function without any anker?");
 }
 
+function showError(msg){
+    console.log(msg);
+}
+
 //function to confire a calendar
-function configureCalendar(anker, config){
+function configureCalendar(anker, config, data){
     if(typeof anker == "undefined"){
-        //Why do you calll this function without any anker?
+        //Why do you call this function without any anker?
         missingAnker();
+    }
+    if(typeof config == "undefined"){
+        config = {};
+    }
+    if(typeof data == "undefined"){
+        data = {};
     }
     if(!config.hasOwnProperty("month")){
         config.month = new Date().getMonth() + 1;
@@ -71,17 +103,24 @@ function configureCalendar(anker, config){
     if(!config.hasOwnProperty("size")){
         config.size = 1;
     }
-    if(!config.hasOwnProperty("mode")){
-        config.mode = 0;
+    if(!config.hasOwnProperty("select")){
+        config.select = {};
     }
-    if(config.mode == 0 || config.mode == 2){
-        if(!config.hasOwnProperty("selection")){
-            config.selection = new Array();
-        }else{
-            console.log(typeof config.selection);
-        }
+    if(!config.select.hasOwnProperty("selectable")){
+        config.select.selectable = false;
     }
-    calendar[anker] = ({"name" : anker, "config": config});
+    if(!config.select.hasOwnProperty("onlyFuture")){
+        config.select.onlyFuture = true;
+    }
+    if(!data.hasOwnProperty("selection")){
+        data.selection = new Array();
+    }else{
+        console.log(typeof config.selection);
+    }
+    if(!data.hasOwnProperty("events")){
+        data.events = new Array();
+    }
+    calendar[anker] = ({"name" : anker, "config": config, "data": data});
 }
 
 //function to generate the calendar
@@ -92,7 +131,7 @@ function generateCalendar(anker){
     buildCalendarDays(anker);
     //mark the current day
     markTodayInCalendar(anker);
-    //make the days selectable - this will only be successful, if mode == 0 or 2
+    //make the days selectable - this will only be successful if config.select.selectable is set = true
     makeCalendarDaysSelectable(anker);
 }
 
@@ -112,7 +151,7 @@ function buildCalendarStructure(anker){
     let div1 = $("<div></div>").addClass("calendar");
     
     //check size and adapt
-    if(config.size == 1){
+    if(config.large == true){
         div1.addClass("calendar-lg");
     }
 
@@ -234,17 +273,26 @@ function markTodayInCalendar(anker){
 
 function makeCalendarDaysSelectable(anker){
     let config = calendar[anker].config;
-    if(config.mode == 0){
-        $("#" + anker + " .calendar-date > .date-item").on("click", {"anker" : anker}, function(e){
-            addDayToSelection(this, e.data.anker);
-        });
+    if(config.select.selectable == true){
+        if(config.select.onlyFuture == true){
+            $("#" + anker + " .calendar-date > .date-item").filter(function(index){
+                return new Date($(this).attr("data-attr").replace("-", "")) >= new Date().setHours(0,0,0,0);
+            }).on("click", {"anker" : anker}, function(e){
+                addDayToSelection(this, e.data.anker);
+            });
+        }else{
+            $("#" + anker + " .calendar-date > .date-item").on("click", {"anker" : anker}, function(e){
+                addDayToSelection(this, e.data.anker);
+            });
+
+        }
     }
 }
 
 
 function addDayToSelection(button, anker){
     let $button = $(button);
-    calendar[anker].config.selection.push($button.attr("data-attr"));
+    calendar[anker].data.selection.push($button.attr("data-attr"));
     $button.addClass("active");
     $button.off("click");
     $button.on("click",{"anker" : anker}, function(e){
@@ -255,7 +303,7 @@ function addDayToSelection(button, anker){
 
 function removeDayFromSelection(button, anker){
     let $button = $(button);
-    removeA(calendar[anker].config.selection, $button.attr("data-attr"));
+    removeA(calendar[anker].data.selection, $button.attr("data-attr"));
     $button.removeClass("active");
     $button.off("click");
     $button.on("click", {"anker" : anker}, function(e){
@@ -266,7 +314,7 @@ function removeDayFromSelection(button, anker){
 
 
 function returnCalendarSelected(anker){
-    return calendar[anker].config.selection;
+    return calendar[anker].data.selection;
 }
 
 
@@ -306,9 +354,9 @@ function showNewCalendarMonth(anker){
 
 
 function loadAlreadySelectedDates(anker){
-    let config = calendar[anker].config;
-    for (let i in config.selection){
-        $div = $("#"+anker + " #"+config.selection[i].replace(/\s/g,'-'));
+    let data = calendar[anker].data;
+    for (let i in data.selection){
+        $div = $("#"+anker + " #"+data.selection[i].replace(/\s/g,'-'));
         $button = $div.children("button");
         if($button.length != 0){
             $button.addClass("active");
