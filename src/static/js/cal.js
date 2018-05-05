@@ -488,7 +488,7 @@ function addEvent(anker, i, dateString){
     divEventContainer.append(aEvent);
 }
 
-function addEvents(danker, i, date){
+function addEvents(anker, i, date){
     let data = calendar[anker].data;
     dateString = new Date(date.day).toDateString();
     var divEventContainer = $("#" + dateString.replace(/\s/g,'-')).children(".calendar-events").first();

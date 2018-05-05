@@ -52,18 +52,9 @@
 <script src="/static/js/jquery.min.js"></script>    
 <script src="/static/js/cal.js"></script>
 <script>
-    let config = {
-    "large" : true,
-    "select" : {
-        "selectable" : false,
-        "onlyFuture" : false,
-        "onlyCertainDates" : false
-    },
-    "events" : {
-        showDate: true,
-        showDates: true
-    }
-}
+
+
+
 
 $.ajax({
         type: 'GET',
@@ -75,11 +66,27 @@ $.ajax({
             return true;
         }
     }).done(function (response) {
-        data = response.redirect;
-        
+        let data = {
+            "selection" : [],
+            "selectable" : []
+        }
+        data.events = response;
+        let config = {
+            "large" : true,
+            "select" : {
+                "selectable" : false,
+                "onlyFuture" : false,
+                "onlyCertainDates" : false
+            },
+            "events" : {
+                showDate: true,
+                showDates: true
+            }
+        }
         configureCalendar('calendar-anker', config, data);
         generateCalendar('calendar-anker');
     }).fail(function (data) {
     });
+
 </script>
 {% endblock %}
