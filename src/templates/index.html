@@ -7,7 +7,7 @@
         </h3>
         <div class="docs-note">
             <div class="columns">
-                <div class="column col-4 col-md-12" id="calendar-anker">
+                <div class="column col-12 col-md-12" id="calendar-anker">
                     
                 </div>
             </div>
@@ -52,7 +52,34 @@
 <script src="/static/js/jquery.min.js"></script>    
 <script src="/static/js/cal.js"></script>
 <script>
-    configureCalendar('calendar-anker', {"select" : {"selectable" : false}, "large": false});
+    let config = {
+    "large" : true,
+    "select" : {
+        "selectable" : false,
+        "onlyFuture" : false,
+        "onlyCertainDates" : false
+    },
+    "events" : {
+        showDate: true,
+        showDates: true
+    }
+}
+
+
+let data = {
+    "selection" : [],
+    "selectable" : [],
+    "events" : [
+        {
+            "event_name" : "test",
+            "display_name" : "TEST",
+            "date" : "Mon Apr 02 2018",
+            "color" : "warning",
+            "dates" :  ["Sun Apr 01 2018", "Sun Apr 08 2018", "Sun Apr 15 2018", "Sun Apr 22 2018", "Sun Apr 29 2018"]
+        }
+    ]
+}
+    configureCalendar('calendar-anker', config, data);
     generateCalendar('calendar-anker');
 </script>
 {% endblock %}

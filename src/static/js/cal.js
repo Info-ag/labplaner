@@ -11,13 +11,15 @@ config = {
     //"anker" : <anker/id of the containing div (no default value - please just set any anker)>,
     "month" : <month to be shown (default : current month)>,
     "year" : <year of the month to be shown (default : current year)>,
-    "size" : <false/true (default true)>,
+    "large" : <false/true (default true)>,
     "select" : {
         "selectable" : <false/true (default false)>,
-        "onlyFuture" : <false/true (default true)>
-    }  
+        "onlyFuture" : <false/true (default true)>,
+        "onlyCertainDates" : <false/true (default false)>
+    },  
     "events" : {
-        showAll: <false/true (default false)>
+        showDate: <false/true (default true)>,
+        showDates: <false/true (default false)>
     }
 }
 
@@ -25,12 +27,13 @@ As third parameter you can use a data JSON object as following:
 
 data = {
     "selection" : < array'with the dates, that should be shown as already selected e.g. ["Sun Apr 01 2018", "Sun Apr 08 2018", "Sun Apr 15 2018", "Sun Apr 22 2018", "Sun Apr 29 2018"]>,
+    "selectable" : <array with the dates, that should be selectable (see config.select.onlycertainDates), same syntax as in selection>,
     "events" : [
         {
             "event_name" : <event identifier>,
             "display_name" : <name of the event that should be displayed>,
             "date" : <the day the event will take place>,
-            "color" : <css class (default error)>
+            "color" : <css class (default error)>,
             "dates" :  [
                 "<day the event might is going to take place", "another day the event might is going to take place"
             ]
@@ -47,8 +50,21 @@ call the generating function with the anker
 now you wait till you want the selected data and call the returning function
     return returnCalendarSelected(anker <anker>);
 
+    if you provide your dates in any other syntax than descripted, please use yourArray = validateDateArray(yourArray);
 
 */
+
+
+function validateDateArray(dateArray){
+    for(let i = 0; i < dateArray.length ; i++){
+        dateArray[i] = new Date(new Date(dateArray[i]).setHours(0,0,0,0)).valueOf();
+    }
+    return dateArray;
+}
+
+function validateEventsData(anker){
+
+}
 
 
 //Variable to get monthname through month-number
@@ -112,16 +128,24 @@ function configureCalendar(anker, config, data){
     if(!config.select.hasOwnProperty("onlyFuture")){
         config.select.onlyFuture = true;
     }
+	if(!config.select.hasOwnProperty("onlyCertainDates")){
+		config.select.onlyCertainDates = false;
+	}
     if(!data.hasOwnProperty("selection")){
         data.selection = new Array();
     }else{
         console.log(typeof config.selection);
     }
+	if(!data.hasOwnProperty("selectable")){
+		data.selectable = new Array();
+	}
     if(!data.hasOwnProperty("events")){
         data.events = new Array();
     }
+    validateEventsData;
     calendar[anker] = ({"name" : anker, "config": config, "data": data});
 }
+
 
 //function to generate the calendar
 function generateCalendar(anker){
@@ -133,13 +157,14 @@ function generateCalendar(anker){
     markTodayInCalendar(anker);
     //make the days selectable - this will only be successful if config.select.selectable is set = true
     makeCalendarDaysSelectable(anker);
+    showEvents(anker);
 }
 
 
 function buildCalendarStructure(anker){
     //if there is no anker return
     if(!calendar.hasOwnProperty(anker)){
-        return;
+        //return;
         missingAnker();
     }
 
@@ -216,49 +241,61 @@ function buildCalendarDays(anker){
         
     }
     for( let i = ( - daysInPrevMonth) + 1 ; i <= 0; i++){
-        divBody.append(buildPrevDay(new Date(config.year, (config.month - 1), i)));
+        divBody.append(buildPrevDay(new Date(new Date(config.year, (config.month - 1), i).setHours(0,0,0,0)), anker));
     }
 
     let lastDay = new Date(config.year, (config.month), 0);
     let lastDayNumber = lastDay.getDate();
     for (let i = 1; i <= lastDayNumber; i++){
-        divBody.append(buildCurrentDay(new Date(config.year, (config.month - 1), i)));
+        divBody.append(buildCurrentDay(new Date(new Date(config.year, (config.month - 1), i).setHours(0,0,0,0)), anker));
     }
     let lastWeekDay = lastDay.getDay();
     let daysInNextMonth = 7 - lastWeekDay;
     for (let i = 1; i <= daysInNextMonth; i++){
-        divBody.append(buildNextDay(new Date(config.year, (config.month), i)));
+        divBody.append(buildNextDay(new Date(new Date(config.year, (config.month), i).setHours(0,0,0,0)), anker));
     }   
 }
 
 
-function buildPrevDay(day){
+function buildPrevDay(day, anker){
     div = $("<div></div>").addClass("calendar-date prev-month disabled");
-    div = buildDay(day, div);
+    div = buildDay(day, div, anker);
     return div;
 };
 
 
-function buildCurrentDay(day){
+function buildCurrentDay(day, anker){
     div = $("<div></div>").addClass("calendar-date current-month");
-    div = buildDay(day, div);
+    div = buildDay(day, div, anker);
     return div;
 }
 
 
-function buildNextDay(day){
+function buildNextDay(day, anker){
     div = $("<div></div>").addClass("calendar-date next-month disabled");
-    div = buildDay(day, div);
+    div = buildDay(day, div, anker);
     return div;
 }
 
 
-function buildDay(day, div){
+function buildDay(day, div, anker){
+    let data = calendar[anker].data;
+    let config = calendar[anker].config;
     button = $("<button></button>").addClass("date-item").prop("type", "button").text(day.getDate());
     var dayString = day.toDateString(); 
     button.attr("data-attr", dayString);
     div.attr("id", dayString.replace(/\s/g,'-'));
+    if(config.select.onlyCertainDates == true){
+        if(data.selectable.includes(day.valueOf())){
+            button.attr("onlyselectable", true);
+        }else{
+            button.attr("onlyselectable", false)
+			div.addClass("disabled");
+        }
+    }
     div.append(button);
+    let divEventContainer = $("<div></div>").addClass("calendar-events");
+    div.append(divEventContainer);    
     return div;
 }
 
@@ -275,9 +312,25 @@ function makeCalendarDaysSelectable(anker){
     let config = calendar[anker].config;
     if(config.select.selectable == true){
         if(config.select.onlyFuture == true){
+            if(config.select.onlyCertainDates == true){
+                $("#" + anker + " .calendar-date > .date-item").filter(function(index){
+                    return new Date($(this).attr("data-attr").replace("-", "")) >= new Date().setHours(0,0,0,0);
+                }).filter(function(index){
+                    return $(this).attr("onlyselectable");
+                }).on("click", {"anker" : anker}, function(e){
+                    addDayToSelection(this, e.data.anker);
+                });
+            }else{
+                $("#" + anker + " .calendar-date > .date-item").filter(function(index){
+                    return new Date($(this).attr("data-attr").replace("-", "")) >= new Date().setHours(0,0,0,0);
+                }).on("click", {"anker" : anker}, function(e){
+                    addDayToSelection(this, e.data.anker);
+                });
+            }
+        }else if(config.select.onlyCertainDates == true){
             $("#" + anker + " .calendar-date > .date-item").filter(function(index){
-                return new Date($(this).attr("data-attr").replace("-", "")) >= new Date().setHours(0,0,0,0);
-            }).on("click", {"anker" : anker}, function(e){
+                return ("true" == $(this).attr("onlyselectable"));
+			}).on("click", {"anker" : anker}, function(e){
                 addDayToSelection(this, e.data.anker);
             });
         }else{
@@ -350,6 +403,7 @@ function showNewCalendarMonth(anker){
     markTodayInCalendar(anker);
     makeCalendarDaysSelectable(anker); 
     loadAlreadySelectedDates(anker);
+    showEvents(anker);
 }
 
 
@@ -372,35 +426,58 @@ function loadAlreadySelectedDates(anker){
 
 
 
-//The following code is no implemented yet, it just stays here for some future features
+//The following code is not tested yet
 
 
-
-function addEvents(events){
-
+function showEvents(anker){
+    console.log(calendar);
+    console.log(anker);
+    let data = calendar[anker].data;
+    let config = calendar[anker].config;
+    for(let i = 0; i < data.events.length; i++){
+        console.log("test");
+        if(config.events.showDate == true){
+            showDate(anker, i);
+        }
+        if(config.events.showDate == true){
+            showDates(anker, i);
+        }
+    }
 }
 
-function addEvent(dayRaw, event, type){
-    var dayString = dayRaw.toDateString();
-    var divEventContainer = $("#" + dayString.replace(/\s/g,'-'));
-    if(divEventContainer.children("calendar-events").length == 0){
-        var divEvents = $("<div></div>").addClass("calendar-events");
-        divEventContainer.append(divEvents);
-    }else{ 
-        var divEvents = divEventContainer.children(".calendar-events").first();    
-    }
-    if(event.hasOwnProperty("color")){
-        var color = event.color;
-    }else{
-        var color = "error";
-    }
-    if(event.hasOwnProperty("display_name")){
-        displayName = event.display_name;
-    }else{
-        displayName = "Something went wrong";
-    }
-    var aEvent = $("<a></a>").addClass("calendar-event text-light bg-"+color).text(displayName).attr("href", "#");
-    divEventContainer.children(".calendar-events").first().append(aEvent);
+function showDate(anker, i){
+    let data = calendar[anker].data;
+    addEvent(anker, i, new Date(data.events[i].date).toDateString(), false);
+}
 
-    
+function showDates(anker, i){
+    let data = calendar[anker].data;
+    let config = calendar[anker].config;
+    for(let k = 0; k < data.events[i].dates.length; k++){
+        addEvent(anker, i, new Date(data.events[i].dates[k]).toDateString(), true);
+    }    
+}
+
+
+
+
+function addEvent(anker, i, dateString, disabled){
+    let data = calendar[anker].data;
+    var divEventContainer = $("#" + dateString.replace(/\s/g,'-')).children(".calendar-events").first();
+    if(divEventContainer.length == 0){
+        return;
+    }
+    if(!data.events[i].hasOwnProperty("display_name")){
+        data.events[i].display_name = "Something went wrong";
+    }
+    if(!data.events[i].hasOwnProperty("color")){
+        data.events[i].color = "error";
+    }
+    let aEvent = $("<a></a>").addClass("calendar-event bg-"+data.events[i].color).text(data.events[i].display_name).attr("href", "#");
+    if(disabled == true){
+        aEvent.addClass("text-error");
+    }else{
+        aEvent.addClass("text-secondary");
+    }
+    divEventContainer.append(aEvent);
 }
