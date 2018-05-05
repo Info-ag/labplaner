@@ -14,17 +14,6 @@ class UserAG(db.Model):
         return f"<UserAG {self.id}>"
 
 
-class EventDate(db.Model):
-    __tablename__ = 'events_dates'
-    id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
-
-    date_id = db.Column(db.Integer, db.ForeignKey('dates.id'))
-    event_id = db.Column(db.Integer, db.ForeignKey('events.id'))
-
-    def __repr__(self):
-        return f"<DateEvent {self.id}>"
-
-
 class UserDate(db.Model):
     __tablename__ = 'users_dates'
     id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)

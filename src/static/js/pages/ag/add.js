@@ -58,13 +58,11 @@ function doneTyping() {
         beforeSend: function () {
             $("#name-loading").show();
         }
-    }).done(function (response) {
-        if (response && response.hasOwnProperty('name')) {
-            setNameError()
-        } else {
-            setNameSuccess()
-        }
-    })
+    }).done(function () {
+        setNameError()
+    }).fail(function () {
+        setNameSuccess()
+    });
 }
 
 function resetName() {

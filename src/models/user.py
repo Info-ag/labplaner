@@ -9,9 +9,9 @@ from sqlalchemy.sql import exists
 from app import app, ma, db
 
 from models.ag import AG, AGSchema
-from models.date import Date
+from models.date import Date, DateSchema
 from models.event import Event
-from models.associations import UserAG, UserDate, EventDate
+from models.associations import UserAG, UserDate
 
 
 class User(db.Model):
@@ -22,9 +22,7 @@ class User(db.Model):
     password = db.Column(db.LargeBinary, nullable=False)
 
     ags = db.relationship(AG, secondary="users_ags")
-
     dates = db.relationship(Date, secondary="users_dates")
-
     sessions = db.relationship("Session")
 
     def __repr__(self):
@@ -39,8 +37,9 @@ class User(db.Model):
 
 class UserSchema(ma.Schema):
     ags = ma.Nested(AGSchema, many=True, exclude=('users',))
+    dates = ma.Nested(DateSchema, many=True, exclude=('user',))
     picture = ma.Method("get_picture")
-    ag_role = ma.Method("get_role_for_ag")
+    ag_role = ma.Function("get_role_for_ag")
 
     def get_role_for_ag(self, obj: User):
         ag_id = self.context.get("ag_id")
@@ -50,11 +49,12 @@ class UserSchema(ma.Schema):
         else:
             return "NONE"
 
-    def get_picture(self, obj: User):
-        return "https://www.gravatar.com/avatar/" + hashlib.md5(obj.email.lower().encode()).hexdigest() + "?d=mm"
-
     class Meta:
         fields = ('id', 'username', "ags", "picture", "ag_role")
+
+
+def get_picture_for_user(obj: User):
+    return "https://www.gravatar.com/avatar/" + hashlib.md5(obj.email.lower().encode()).hexdigest() + "?d=mm"
 
 
 class UserSchemaSelf(UserSchema):

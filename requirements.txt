@@ -3,5 +3,6 @@ sqlalchemy
 flask
 flask-sqlalchemy
 flask_marshmallow
+marshmallow-sqlalchemy
 flask-migrate
 bcrypt
