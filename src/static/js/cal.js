@@ -433,6 +433,9 @@ function loadAlreadySelectedDates(anker){
     }
 }
 
+function UpdateEventsInData(anker, events){
+    calendar[anker]     
+}
 
 function showEvents(anker){
     console.log(calendar);
@@ -479,10 +482,10 @@ function addEvent(anker, i, dateString){
     if(!data.events[i].hasOwnProperty("display_name")){
         data.events[i].display_name = "Something went wrong";
     }
-    if(!data.events[i].hasOwnProperty("color")){
-        data.events[i].color = "primary";
+    if(!data.events[i].ag.hasOwnProperty("color")){
+        data.events[i].ag.color = "primary";
     }
-    let aEvent = $("<a></a>").addClass("has-icon-right text-light calendar-event bg-"+data.events[i].color).text(" " + data.events[i].display_name).attr("href", "/ag/"+ data.events[i].ag.name +"/event/"+data.events[i].id);
+    let aEvent = $("<a></a>").addClass("has-icon-right text-light calendar-event bg-"+data.events[i].ag.color).text(" " + data.events[i].display_name).attr("href", "/ag/"+ data.events[i].ag.name +"/event/"+data.events[i].id);
     let icon = $("<i></i>").addClass("icon icon-check");
     aEvent.prepend(icon);
     divEventContainer.append(aEvent);
@@ -498,9 +501,9 @@ function addEvents(anker, i, date){
     if(!data.events[i].hasOwnProperty("display_name")){
         data.events[i].display_name = "Something went wrong";
     }
-    if(!data.events[i].hasOwnProperty("color")){
-        data.events[i].color = "primary";
+    if(!data.events[i].ag.hasOwnProperty("color")){
+        data.events[i].ag.color = "primary";
     }
-    let aEvent = $("<a></a>").addClass("has-icon-right text-light calendar-event bg-"+data.events[i].color).text(date.count+": " + data.events[i].display_name).attr("href", "/ag/"+ data.events[i].ag.name +"/event/"+data.events[i].id);
+    let aEvent = $("<a></a>").addClass("has-icon-right text-light calendar-event bg-"+data.events[i].ag.color).text(date.count+": " + data.events[i].display_name).attr("href", "/ag/"+ data.events[i].ag.name +"/event/"+data.events[i].id);
     divEventContainer.append(aEvent);     
 }
