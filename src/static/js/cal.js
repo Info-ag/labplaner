@@ -433,17 +433,23 @@ function loadAlreadySelectedDates(anker){
     }
 }
 
-function UpdateEventsInData(anker, events){
-    calendar[anker]     
+function updateEventsInData(anker, events){
+    calendar[anker].data.events = events;     
+}
+
+function reloadCalendar(anker){
+    buildCalendarDays(anker);
+    $("#" + anker + "-heading").text(monthNames[calendar[anker].config.month] + " " + calendar[anker].config.year);
+    markTodayInCalendar(anker);
+    makeCalendarDaysSelectable(anker); 
+    loadAlreadySelectedDates(anker);
+    showEvents(anker);
 }
 
 function showEvents(anker){
-    console.log(calendar);
-    console.log(anker);
     let data = calendar[anker].data;
     let config = calendar[anker].config;
     for(let i = 0; i < data.events.length; i++){
-        console.log("test");
         if(config.events.showDate == true){
             if(data.events[i].date){
                 showDate(anker, i);
