@@ -18,7 +18,7 @@ config = {
         "onlyCertainDates" : <false/true (default false)>
     },  
     "events" : {
-        showDate: <false/true (default true)>,
+        showDate: <false/true (default true)>, //
         showDates: <false/true (default false)>
     }
 }
@@ -26,16 +26,27 @@ config = {
 As third parameter you can use a data JSON object as following:
 
 data = {
-    "selection" : < array'with the dates, that should be shown as already selected e.g. ["Sun Apr 01 2018", "Sun Apr 08 2018", "Sun Apr 15 2018", "Sun Apr 22 2018", "Sun Apr 29 2018"]>,
+    "selection" : <array'with the dates, that should be shown as already selected e.g. ["Sun Apr 01 2018", "Sun Apr 08 2018", "Sun Apr 15 2018", "Sun Apr 22 2018", "Sun Apr 29 2018"]>,
     "selectable" : <array with the dates, that should be selectable (see config.select.onlycertainDates), same syntax as in selection>,
     "events" : [
         {
-            "event_name" : <event identifier>,
             "display_name" : <name of the event that should be displayed>,
-            "date" : <the day the event will take place>,
-            "color" : <css class (default error)>,
-            "dates" :  [
-                "<day the event might is going to take place", "another day the event might is going to take place"
+            "id" : <id of the event>,
+            "ag" : {
+                "id" :
+                "name" : 
+            }
+            "date" : <the day the event will take place>, // date the event will take place
+            "color" : <css class (default primary)>,
+            "dates" :  [ 
+                {
+                    "day" : "<day the event might is going to take place>",
+                    "count" : <count how many users could come>;
+                },
+                {
+                    "day" : "<another day the event might is going to take place>",
+                    "count" : <count how many users could come>;
+                },
             ]
         }
     ]
@@ -423,12 +434,6 @@ function loadAlreadySelectedDates(anker){
 }
 
 
-
-
-
-//The following code is not tested yet
-
-
 function showEvents(anker){
     console.log(calendar);
     console.log(anker);
@@ -437,10 +442,14 @@ function showEvents(anker){
     for(let i = 0; i < data.events.length; i++){
         console.log("test");
         if(config.events.showDate == true){
-            showDate(anker, i);
+            if(data.events[i].date){
+                showDate(anker, i);
+            }
         }
         if(config.events.showDate == true){
-            showDates(anker, i);
+            if(data.events[i].dates.length != 0){
+                showDates(anker, i);
+            }
         }
     }
 }
@@ -454,14 +463,14 @@ function showDates(anker, i){
     let data = calendar[anker].data;
     let config = calendar[anker].config;
     for(let k = 0; k < data.events[i].dates.length; k++){
-        addEvent(anker, i, new Date(data.events[i].dates[k]).toDateString(), true);
+        addEvents(anker, i, data.events[i].dates[k], true);
     }    
 }
 
 
 
 
-function addEvent(anker, i, dateString, disabled){
+function addEvent(anker, i, dateString){
     let data = calendar[anker].data;
     var divEventContainer = $("#" + dateString.replace(/\s/g,'-')).children(".calendar-events").first();
     if(divEventContainer.length == 0){
@@ -471,13 +480,27 @@ function addEvent(anker, i, dateString, disabled){
         data.events[i].display_name = "Something went wrong";
     }
     if(!data.events[i].hasOwnProperty("color")){
-        data.events[i].color = "error";
+        data.events[i].color = "primary";
     }
-    let aEvent = $("<a></a>").addClass("calendar-event bg-"+data.events[i].color).text(data.events[i].display_name).attr("href", "#");
-    if(disabled == true){
-        aEvent.addClass("text-error");
-    }else{
-        aEvent.addClass("text-secondary");
-    }
+    let aEvent = $("<a></a>").addClass("has-icon-right calendar-event bg-"+data.events[i].color).text(" " + data.events[i].display_name).attr("href", "/ag/"+ data.events[i].ag.name +"/event/"+data.events[i].id);
+    let icon = $("<i></i>").addClass("icon icon-check");
+    aEvent.prepend(icon);
     divEventContainer.append(aEvent);
+}
+
+function addEvents(danker, i, date){
+    let data = calendar[anker].data;
+    dateString = new Date(date.day).toDateString();
+    var divEventContainer = $("#" + dateString.replace(/\s/g,'-')).children(".calendar-events").first();
+    if(divEventContainer.length == 0){
+        return;
+    }
+    if(!data.events[i].hasOwnProperty("display_name")){
+        data.events[i].display_name = "Something went wrong";
+    }
+    if(!data.events[i].hasOwnProperty("color")){
+        data.events[i].color = "primary";
+    }
+    let aEvent = $("<a></a>").addClass("has-icon-right calendar-event bg-"+data.events[i].color).text(date.count+": " + data.events[i].display_name).attr("href", "/ag/"+ data.events[i].ag.name +"/event/"+data.events[i].id);
+    divEventContainer.append(aEvent);     
 }
