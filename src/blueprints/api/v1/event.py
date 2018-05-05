@@ -29,9 +29,9 @@ def add_event():
                 display_name = request.values.get("display_name")
                 description = request.values.get("description")
                 if len(display_name) == 0 or len(display_name) > 48:
-                    return RequestEntityTooLarge('Maximum length of 48 characters')
+                    return jsonify({"reason": "display_name"}), 400
                 if len(description) > 280:
-                    return RequestEntityTooLarge('Maximum length of 280 characters')
+                    return jsonify({"reason": "description"}), 400
 
                 event = Event()
                 event.display_name = display_name
@@ -42,9 +42,10 @@ def add_event():
                 db.session.add(event)
                 db.session.flush()
 
-                dates = request.values.getlist("dates")
-                for date in dates:
-                    d = datetime.datetime.strptime(date, "%a %b %d %Y")
+                dates = request.values.getlist("dates[]")
+                for _date in dates:
+                    print(_date)
+                    d = datetime.datetime.strptime(_date, "%a %b %d %Y")
                     date_obj = Date()
                     date_obj.event = event.id
                     date_obj.day = d
@@ -53,7 +54,7 @@ def add_event():
 
                 db.session.commit()
 
-                return jsonify({"Status": "Success", "redirect": "/"})
+                return jsonify({"status": "success", "redirect": "/"}), 200
 
         return Unauthorized()
     return NotFound()

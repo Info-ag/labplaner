@@ -1,6 +1,7 @@
 from app import db
 from app import ma
 
+from models.event import EventSchema
 
 class Date(db.Model):
     __tablename__ = 'dates'
@@ -9,11 +10,11 @@ class Date(db.Model):
     day = db.Column(db.Date, nullable=False)
 
     event = db.Column(db.Integer, db.ForeignKey('events.id'))
-
-    events = db.relationship('Event', secondary="events_dates")
     users = db.relationship('User', secondary="users_dates")
 
 
 class DateSchema(ma.Schema):
+    event = ma.Nested(EventSchema, exclude=('dates',))
+
     class Meta:
-        fields = ('id', 'day', 'event', 'events')
+        fields = ('id', 'day', 'event')

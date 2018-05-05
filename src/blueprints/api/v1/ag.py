@@ -62,7 +62,7 @@ def add_ag():
     db.session.add(user_ag)
     db.session.commit()
 
-    return jsonify({"status": "success", "redirect": f"/ag/{name}/invite"})
+    return jsonify({"status": "success", "redirect": f"/ag/{name}/invite"}), 200
 
 
 @bp.route("/id/<ag_id>", methods=["GET"])
@@ -76,9 +76,9 @@ def get_ag_by_id(ag_id):
     if db.session.query(exists().where(AG.id == ag_id)).scalar():
         ag = AG.query.get(ag_id).scalar()
         if db.session.query(exists().where(UserAG.user_id == g.session.user_id and UserAG.ag_id == ag_id)).scalar():
-            return ag_schema_intern.jsonify(ag)
+            return ag_schema_intern.jsonify(ag), 200
         else:
-            return ag_schema.jsonify(ag)
+            return ag_schema.jsonify(ag), 200
     else:
         return NotFound()
 
@@ -94,9 +94,9 @@ def get_ag_by_username(name):
     if db.session.query(exists().where(AG.name == name)).scalar():
         ag = AG.query.filter_by(name=name).scalar()
         if db.session.query(exists().where(UserAG.user_id == g.session.user_id and UserAG.ag_id == ag.id)).scalar():
-            return ag_schema_intern.jsonify(ag)
+            return ag_schema_intern.jsonify(ag), 200
         else:
-            return ag_schema.jsonify(ag)
+            return ag_schema.jsonify(ag), 200
     else:
         return NotFound()
 
@@ -172,7 +172,7 @@ def change_ag_values(ag_id):
                 if value_changed:
                     db.session.merge(ag)
                     db.session.commit()
-                    return jsonify({"Status": "Success"}), 200
+                    return jsonify({"status": "success"}), 200
                 else:
                     return BadRequest()
 
