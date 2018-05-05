@@ -2,7 +2,6 @@ from app import db
 from app import ma
 
 from models.ag import AGSchema
-from models.date import DateSchema
 
 
 class Event(db.Model):
@@ -19,7 +18,7 @@ class Event(db.Model):
 
 class EventSchema(ma.Schema):
     ag = ma.Nested(AGSchema, exclude=('events',))
-    dates = ma.Nested(DateSchema, many=True, exclude=('event',))
+    dates = ma.Nested("DateSchema", many=True, exclude=('event',))
 
     class Meta:
         fields = ('id', 'display_name', 'ag', 'dates')

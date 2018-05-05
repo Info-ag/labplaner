@@ -6,7 +6,7 @@ from werkzeug.exceptions import NotFound, Unauthorized, BadRequest, Forbidden, R
 from models.event import Event, EventSchema
 from models.ag import AG
 from models.date import Date
-from models.associations import EventDate, UserAG
+from models.associations import UserAG
 from app import db
 
 bp = Blueprint("event_api", __name__)
@@ -60,6 +60,7 @@ def add_event():
     return NotFound()
 
 
+"""
 @bp.route("/dates", methods=["POST"])
 def add_dates():
     try:
@@ -101,6 +102,7 @@ def add_dates():
         return jsonify({"redirect": f"/event/{name}/invite"}), 200
     except:
         return BadRequest()
+"""
 
 
 @bp.route("/id/<evid>", methods=["GET"])

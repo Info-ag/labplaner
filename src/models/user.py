@@ -38,8 +38,11 @@ class User(db.Model):
 class UserSchema(ma.Schema):
     ags = ma.Nested(AGSchema, many=True, exclude=('users',))
     dates = ma.Nested(DateSchema, many=True, exclude=('user',))
-    picture = ma.Method("get_picture")
-    ag_role = ma.Function("get_role_for_ag")
+    picture = ma.Method("get_picture_for_user")
+    ag_role = ma.Method("get_role_for_ag")
+
+    def get_picture_for_user(self, obj: User):
+        return "https://www.gravatar.com/avatar/" + hashlib.md5(obj.email.lower().encode()).hexdigest() + "?d=mm"
 
     def get_role_for_ag(self, obj: User):
         ag_id = self.context.get("ag_id")
@@ -51,10 +54,6 @@ class UserSchema(ma.Schema):
 
     class Meta:
         fields = ('id', 'username', "ags", "picture", "ag_role")
-
-
-def get_picture_for_user(obj: User):
-    return "https://www.gravatar.com/avatar/" + hashlib.md5(obj.email.lower().encode()).hexdigest() + "?d=mm"
 
 
 class UserSchemaSelf(UserSchema):
