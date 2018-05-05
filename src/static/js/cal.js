@@ -32,9 +32,12 @@ data = {
         {
             "display_name" : <name of the event that should be displayed>,
             "id" : <id of the event>,
-            "ag"
+            "ag" : {
+                "id" :
+                "name" : 
+            }
             "date" : <the day the event will take place>, // date the event will take place
-            "color" : <css class (default error)>,
+            "color" : <css class (default primary)>,
             "dates" :  [ 
                 {
                     "day" : "<day the event might is going to take place>",
@@ -477,7 +480,7 @@ function addEvent(anker, i, dateString){
         data.events[i].display_name = "Something went wrong";
     }
     if(!data.events[i].hasOwnProperty("color")){
-        data.events[i].color = "error";
+        data.events[i].color = "primary";
     }
     let aEvent = $("<a></a>").addClass("has-icon-right calendar-event bg-"+data.events[i].color).text(" " + data.events[i].display_name).attr("href", "/ag/"+ data.events[i].ag.name +"/event/"+data.events[i].id);
     let icon = $("<i></i>").addClass("icon icon-check");
@@ -496,7 +499,7 @@ function addEvents(danker, i, date){
         data.events[i].display_name = "Something went wrong";
     }
     if(!data.events[i].hasOwnProperty("color")){
-        data.events[i].color = "error";
+        data.events[i].color = "primary";
     }
     let aEvent = $("<a></a>").addClass("has-icon-right calendar-event bg-"+data.events[i].color).text(date.count+": " + data.events[i].display_name).attr("href", "/ag/"+ data.events[i].ag.name +"/event/"+data.events[i].id);
     divEventContainer.append(aEvent);     

@@ -65,6 +65,22 @@
     }
 }
 
+$.ajax({
+        type: 'GET',
+        url: "/api/v1/event/mine",
+        data: {},
+        dataType: "json",
+        cache: false,
+        beforeSend: function () {
+            return true;
+        }
+    }).done(function (response) {
+        data = response.redirect;
+        
+        configureCalendar('calendar-anker', config, data);
+        generateCalendar('calendar-anker');
+    }).fail(function (data) {
+    });
 
 let data = {
     "selection" : [],
@@ -79,7 +95,5 @@ let data = {
         }
     ]
 }
-    configureCalendar('calendar-anker', config, data);
-    generateCalendar('calendar-anker');
 </script>
 {% endblock %}
