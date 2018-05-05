@@ -13,7 +13,7 @@ class Event(db.Model):
     date = db.Column(db.Date, nullable=True)
     ag = db.Column(db.Integer, db.ForeignKey("ags.id"))
 
-    dates = db.relationship('Date', secondary="events_dates")
+    dates = db.relationship('Date')
 
 
 class EventSchema(ma.Schema):
