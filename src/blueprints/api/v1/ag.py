@@ -40,7 +40,7 @@ def add_ag():
 
     if db.session.query(exists().where(AG.name == name)).scalar() or not bool(re.match(regex_match_display_name, name)):
         return jsonify({"reason": "name"}), 400
-    if not bool(re.match(regex_match_display_name, display_name)):
+    if db.session.query(exists().where(AG.display_name == display_name)).scalar() or not bool(re.match(regex_match_display_name, display_name)):
         return jsonify({"reason": "display_name"}), 400
     if not bool(re.match(regex_match_description, description)):
         return jsonify({"reason": "description"}), 400
@@ -86,7 +86,7 @@ def get_ag_by_id(ag_id):
 
 @bp.route("/name/<name>", methods=["GET"])
 @utils.requires_auth()
-def get_ag_by_username(name):
+def get_ag_by_name(name):
     """
     Query an AG specified by its unique name
     :param name: A specific AG name
