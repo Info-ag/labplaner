@@ -31,10 +31,19 @@ data = {
     "events" : [
         {
             "display_name" : <name of the event that should be displayed>,
+            "id" : <id of the event>,
+            "ag"
             "date" : <the day the event will take place>, // date the event will take place
             "color" : <css class (default error)>,
-            "dates" :  [
-                "<day the event might is going to take place", "another day the event might is going to take place"
+            "dates" :  [ 
+                {
+                    "day" : "<day the event might is going to take place>",
+                    "count" : <count how many users could come>;
+                },
+                {
+                    "day" : "<another day the event might is going to take place>",
+                    "count" : <count how many users could come>;
+                },
             ]
         }
     ]
@@ -451,14 +460,14 @@ function showDates(anker, i){
     let data = calendar[anker].data;
     let config = calendar[anker].config;
     for(let k = 0; k < data.events[i].dates.length; k++){
-        addEvent(anker, i, new Date(data.events[i].dates[k]).toDateString(), true);
+        addEvents(anker, i, data.events[i].dates[k], true);
     }    
 }
 
 
 
 
-function addEvent(anker, i, dateString, disabled){
+function addEvent(anker, i, dateString){
     let data = calendar[anker].data;
     var divEventContainer = $("#" + dateString.replace(/\s/g,'-')).children(".calendar-events").first();
     if(divEventContainer.length == 0){
@@ -470,12 +479,25 @@ function addEvent(anker, i, dateString, disabled){
     if(!data.events[i].hasOwnProperty("color")){
         data.events[i].color = "error";
     }
-    let aEvent = $("<a></a>").addClass("has-icon-right calendar-event bg-"+data.events[i].color).text(data.events[i].display_name).attr("href", "#");
-    if(disabled == false){
-        aEvent.text(" " + data.events[i].display_name);
-        let icon = $("<i></i>").addClass("icon icon-check");
-        aEvent.prepend(icon);
-    }else{
-    }
+    let aEvent = $("<a></a>").addClass("has-icon-right calendar-event bg-"+data.events[i].color).text(" " + data.events[i].display_name).attr("href", "/ag/"+ data.events[i].ag.name +"/event/"+data.events[i].id);
+    let icon = $("<i></i>").addClass("icon icon-check");
+    aEvent.prepend(icon);
     divEventContainer.append(aEvent);
+}
+
+function addEvents(danker, i, date){
+    let data = calendar[anker].data;
+    dateString = new Date(date.day).toDateString();
+    var divEventContainer = $("#" + dateString.replace(/\s/g,'-')).children(".calendar-events").first();
+    if(divEventContainer.length == 0){
+        return;
+    }
+    if(!data.events[i].hasOwnProperty("display_name")){
+        data.events[i].display_name = "Something went wrong";
+    }
+    if(!data.events[i].hasOwnProperty("color")){
+        data.events[i].color = "error";
+    }
+    let aEvent = $("<a></a>").addClass("has-icon-right calendar-event bg-"+data.events[i].color).text(date.count+": " + data.events[i].display_name).attr("href", "/ag/"+ data.events[i].ag.name +"/event/"+data.events[i].id);
+    divEventContainer.append(aEvent);     
 }
