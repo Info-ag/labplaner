@@ -1,12 +1,16 @@
-from datetime import date
+import datetime
+
 from flask import Blueprint, request, jsonify, g
 from sqlalchemy.sql import exists
-import datetime
 from werkzeug.exceptions import NotFound, Unauthorized, BadRequest, Forbidden, RequestEntityTooLarge
+
+import utils
+
 from models.event import Event, EventSchema
 from models.ag import AG
 from models.date import Date
 from models.associations import UserAG
+
 from app import db
 
 bp = Blueprint("event_api", __name__)
@@ -16,6 +20,7 @@ events_schema = EventSchema(many=True)
 
 
 @bp.route("/", methods=["POST"])
+@utils.requires_auth()
 def add_event():
     if not g.session.authenticated:
         return Unauthorized()
@@ -36,7 +41,7 @@ def add_event():
                 event = Event()
                 event.display_name = display_name
                 event.description = description
-                event.ag = ag_id
+                event.ag_id = ag_id
                 event.date = None
 
                 db.session.add(event)
@@ -60,49 +65,16 @@ def add_event():
     return NotFound()
 
 
-"""
-@bp.route("/dates", methods=["POST"])
-def add_dates():
-    try:
-        if not g.session.authenticated:
-            return Unauthorized()
-    except NameError:
-        return Unauthorized()
+@bp.route("/mine", methods=["GET"])
+@utils.requires_auth()
+def get_events_for_user():
+    ags = UserAG.query.filter_by(user_id=g.session.user_id)
+    event_list = []
+    for ag in ags:
+        events = Event.query.filter_by(ag_id=ag.id)
+        event_list += events
 
-    try:
-        name = request.values["name"]
-        if db.session.query(Event).filter_by(name=name).scalar() is None:
-            return NotFound(description='Eventname not found')
-        dates = request.values["dates"]
-
-        event = db.session.query(Event).filter_by(name=name).scalar()
-
-        for d in dates:
-
-            d = d.replace('-', '')
-            d = date(int(d[:4]), int(d[4:6]), int(d[6:]))
-
-            if db.session.query(Date).filter_by(day=d) is None:
-                date_obj = Date()
-                date_obj.day = obj_date
-
-                db.session.merge(date_obj)
-                db.session.commit()
-
-            else:
-                date_obj = db.session.query(Date).filter_by(day=d)
-
-            date_event = EventDate()
-            date_event.date_id = date_obj.id
-            date_event.event_id = event.id
-
-            db.session.merge(date_event)
-            db.session.commit()
-
-        return jsonify({"redirect": f"/event/{name}/invite"}), 200
-    except:
-        return BadRequest()
-"""
+    return events_schema.jsonify(event_list)
 
 
 @bp.route("/id/<evid>", methods=["GET"])

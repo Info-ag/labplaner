@@ -45,10 +45,11 @@ def add_ag():
     if not bool(re.match(regex_match_description, description)):
         return jsonify({"reason": "description"}), 400
 
-    ag = AG()
+    ag: AG = AG()
     ag.name = name
     ag.display_name = display_name
     ag.description = description
+    ag.color = request.values.get("color", default="primary")
 
     # Add the AG to the DB to create a new id
     db.session.add(ag)

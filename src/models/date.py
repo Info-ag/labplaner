@@ -16,6 +16,10 @@ class Date(db.Model):
 
 class DateSchema(ma.Schema):
     event = ma.Nested(EventSchema, exclude=('dates',))
+    count = ma.Method("count_users")
+
+    def count_users(self, obj: Date):
+        return len(obj.users)
 
     class Meta:
-        fields = ('id', 'day', 'event')
+        fields = ('id', 'day', 'event', "count")
