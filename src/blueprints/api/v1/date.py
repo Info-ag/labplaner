@@ -21,18 +21,16 @@ dates_schema = DateSchema(many=True)
 @utils.requires_auth()
 def get_date_by_id(date_id):
     """
-        Query an AG specified by its id
-        :param ag_id: A specific id
-        :return: JSON representation of the AG
+        Query an date specified by its id
+        :param date_id: A specific id
+        :return: JSON representation of the date
         """
     if db.session.query(exists().where(Date.id == date_id)).scalar():
-        date_obj = Date.query.get(date_id).scalar()
-        if db.session.query(exists().where(UserAG.user_id == g.session.user_id and UserAG.ag_id == ag_id)).scalar():
-            return ag_schema_intern.jsonify(ag), 200
-        else:
-            return ag_schema.jsonify(ag), 200
+        date_obj: Date = Date.query.get(date_id).scalar()
+        return date_schema.jsonify(date_obj), 200
     else:
         return NotFound()
+
 
 @bp.route("/name/<date_name>", methods=["GET"])
 def get_date_by_date(date_name):
