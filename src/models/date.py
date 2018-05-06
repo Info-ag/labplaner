@@ -22,4 +22,4 @@ class DateSchema(ma.Schema):
         return len(obj.users)
 
     class Meta:
-        fields = ('id', 'day', 'event', "count")
+        fields = ('id', 'day', 'event', 'count')

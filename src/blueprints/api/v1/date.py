@@ -42,5 +42,5 @@ def get_date_by_date(date_name):
 @bp.route("/", methods=["GET"])
 def get_all_dates():
     all_dates = Date.query.all()
-    result = date_schema.dump(all_dates)
+    result = dates_schema.dump(all_dates)
     return jsonify(result)
