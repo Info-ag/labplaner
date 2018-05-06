@@ -31,3 +31,36 @@ beforeSend: function () {
     reloadCalendar("calendar-anker");
 }).fail(function (data) {
 });
+
+$.ajax({
+type: 'GET',
+url: "/api/v1/user/dates/mine",
+data: {},
+dataType: "json",
+cache: false,
+beforeSend: function () {
+    return true;
+}
+}).done(function (response) {
+    updateSelectionInData("calendar-anker", response);
+    reloadCalendar("calendar-anker");
+    $("#write-selection-in-database").removeClass("loading");
+}).fail(function (data) {
+});
+
+function writeSelectionInDatabase(){
+    $.ajax({
+        type: 'GET',
+        url: "/api/v1/user/dates/update",
+        data: returnCalendarSelected(anker),
+        dataType: "json",
+        cache: false,
+        beforeSend: function () {
+            $("#write-selection-in-database").addClass("loading");
+        }
+        }).done(function (response) {
+            $("#write-selection-in-database").removeClass("loading");
+        }).fail(function (data) {
+
+        });
+}

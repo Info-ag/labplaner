@@ -433,6 +433,10 @@ function loadAlreadySelectedDates(anker){
     }
 }
 
+function updateSelectionInData(anker, selection){
+    calendar[anker].data.selection = selection;
+}
+
 function updateEventsInData(anker, events){
     calendar[anker].data.events = events;     
 }
