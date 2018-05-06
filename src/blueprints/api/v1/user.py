@@ -1,13 +1,13 @@
 import datetime
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, g
 from werkzeug.exceptions import NotFound, Unauthorized, BadRequest, Forbidden
 
 
 from app import db
 import utils
 
-from models.user import User, UserSchema
+from models.user import User, UserSchema, UserSchemaDates
 from models.associations import UserDate
 from models.date import Date
 
@@ -16,6 +16,7 @@ bp = Blueprint("user_api", __name__)
 
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
+userdates_schema = UserSchemaDates(many=True)
 
 
 @bp.route("/", methods=["POST"])
@@ -76,26 +77,20 @@ def get_all_users():
     return users_schema.jsonify(all_users[:len(all_users) if len(all_users) < count else count])
 
 
-@bp.route("/dates/<uid>", methods=["POST"])
+@bp.route("/dates", methods=["POST"])
 @utils.requires_auth()
-def set_dates(uid):
+def set_dates():
 
-    if db.session.query(User).filter_by(id=uid).scalar() is None:
-        return NotFound(description='UserID not found')
-    else:
-        print(db.session.query(User).all())
-        user = db.session.query(User).filter_by(id=uid).scalar()
+    user = db.session.query(User).filter_by(id=g.session.user_id).scalar()
 
-    #dates = request.values.getlist("dates[]")
-    dates = ['Wed Oct 31 2018']
+    dates = request.values.getlist("dates[]")
     for _date in dates:
         print(_date)
         d = datetime.datetime.strptime(_date, "%a %b %d %Y")
         if not db.session.query(Date).filter_by(day=d.isoformat()[:10]).scalar():
             date_obj = Date()
             date_obj.day = d
-
-        db.session.add(date_obj)
+            db.session.add(date_obj)
 
         u = UserDate()
         u.date_id = db.session.query(Date).filter_by(day=d.isoformat()[:10]).scalar().id
@@ -105,3 +100,12 @@ def set_dates(uid):
     db.session.commit()
 
     return jsonify({"status": "success", "redirect": "/"}), 200
+
+
+@bp.route("/dates", methods=["GET"])
+@utils.requires_auth()
+def get_dates():
+
+    user = db.session.query(User).filter_by(id=g.session.user_id).scalar()
+
+    return userdates_schema.jsonify(user)
