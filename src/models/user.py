@@ -53,7 +53,7 @@ class UserSchema(ma.Schema):
             return "NONE"
 
     class Meta:
-        fields = ('id', 'username', "ags", "picture", "ag_role")
+        fields = ('id', 'username', "ags", "picture", "ag_role", 'dates')
 
 
 class UserSchemaSelf(UserSchema):

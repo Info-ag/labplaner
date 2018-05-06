@@ -22,8 +22,6 @@ events_schema = EventSchema(many=True)
 @bp.route("/", methods=["POST"])
 @utils.requires_auth()
 def add_event():
-    if not g.session.authenticated:
-        return Unauthorized()
 
     ag_id = request.values.get("ag")
 
@@ -98,5 +96,5 @@ def get_events_by_month(month):
 @bp.route("/", methods=["GET"])
 def get_all_events():
     all_events = Event.query.all()
-    result = event_schema.dump(all_events)
+    result = events_schema.dump(all_events)
     return jsonify(result)
