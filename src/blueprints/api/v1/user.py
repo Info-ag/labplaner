@@ -76,8 +76,6 @@ def get_all_users():
     return users_schema.jsonify(all_users[:len(all_users) if len(all_users) < count else count])
 
 
-
-#REVIEW Not sure if working
 @bp.route("/dates/<uid>", methods=["POST"])
 @utils.requires_auth()
 def set_dates(uid):
@@ -85,18 +83,25 @@ def set_dates(uid):
     if db.session.query(User).filter_by(id=uid).scalar() is None:
         return NotFound(description='UserID not found')
     else:
+        print(db.session.query(User).all())
         user = db.session.query(User).filter_by(id=uid).scalar()
 
-    dates = request.values.getlist("dates[]")
+    #dates = request.values.getlist("dates[]")
+    dates = ['Wed Oct 31 2018']
     for _date in dates:
         print(_date)
         d = datetime.datetime.strptime(_date, "%a %b %d %Y")
-        date_obj = Date()
-        date_obj.users = user.id
-        date_obj.day = d
+        if not db.session.query(Date).filter_by(day=d.isoformat()[:10]).scalar():
+            date_obj = Date()
+            date_obj.day = d
 
         db.session.add(date_obj)
 
+        u = UserDate()
+        u.date_id = db.session.query(Date).filter_by(day=d.isoformat()[:10]).scalar().id
+        u.user_id = user.id
+
+        db.session.add(u)
     db.session.commit()
 
     return jsonify({"status": "success", "redirect": "/"}), 200
