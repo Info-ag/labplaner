@@ -2,9 +2,10 @@ language: python
 python:
         - "3.6"
 env:
-        - FLASK_APP="src/app.py"
-        - FLASK_DEBUG=1
-        - CONFIG="config/development.json"
+        global:
+                - FLASK_APP="src/app.py"
+                - FLASK_DEBUG=1
+                - CONFIG="config/development.json"
 install:
         - pip install -r requirements.txt
 script:
