@@ -60,10 +60,12 @@ class UserSchemaSelf(UserSchema):
     class Meta:
         fields = ('id', 'username', "ags", "picture", "ag_role", "email")
 
+
 class UserSchemaDates(ma.Schema):
     dates = ma.Nested(DateSchema, many=True, exclude=('user',))
+
     class Meta:
-        fields = ('dates')    
+        fields = ('dates',)
 
 
 class Session(db.Model):
