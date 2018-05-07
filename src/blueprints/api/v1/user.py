@@ -15,7 +15,7 @@ bp = Blueprint("user_api", __name__)
 
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
-user_dates_schema = UserSchemaDates(many=True)
+user_dates_schema = UserSchemaDates()
 event_schema = EventSchema()
 events_schema = EventSchema(many=True)
 
