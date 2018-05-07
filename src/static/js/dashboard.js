@@ -42,7 +42,7 @@ beforeSend: function () {
     return true;
 }
 }).done(function (response) {
-    updateSelectionInData("calendar-anker", response);
+    updateSelectionInData("calendar-anker", response.dates);
     reloadCalendar("calendar-anker");
     $("#write-selection-in-database").removeClass("loading");
 }).fail(function (data) {
