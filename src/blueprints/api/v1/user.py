@@ -105,7 +105,7 @@ def set_dates():
 @bp.route("/self/dates", methods=["GET"])
 @utils.requires_auth()
 def get_dates():
-    user = db.session.query(User).filter_by(id=g.session.user_id).scalar()
+    user = db.session.query(User).filter_by(id=g.session .user_id).scalar()
 
     return user_dates_schema.jsonify(user)
 
