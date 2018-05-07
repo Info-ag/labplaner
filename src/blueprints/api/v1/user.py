@@ -3,20 +3,21 @@ import datetime
 from flask import Blueprint, request, jsonify, g
 from werkzeug.exceptions import NotFound, Unauthorized, BadRequest, Forbidden
 
-
 from app import db
 import utils
 
 from models.user import User, UserSchema, UserSchemaDates
-from models.associations import UserDate
+from models.associations import UserDate, UserAG
 from models.date import Date
-
+from models.event import Event, EventSchema
 
 bp = Blueprint("user_api", __name__)
 
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
-userdates_schema = UserSchemaDates(many=True)
+user_dates_schema = UserSchemaDates(many=True)
+event_schema = EventSchema()
+events_schema = EventSchema(many=True)
 
 
 @bp.route("/", methods=["POST"])
@@ -77,10 +78,9 @@ def get_all_users():
     return users_schema.jsonify(all_users[:len(all_users) if len(all_users) < count else count])
 
 
-@bp.route("/dates", methods=["POST"])
+@bp.route("/self/dates", methods=["POST"])
 @utils.requires_auth()
 def set_dates():
-
     user = db.session.query(User).filter_by(id=g.session.user_id).scalar()
 
     dates = request.values.getlist("dates[]")
@@ -102,10 +102,21 @@ def set_dates():
     return jsonify({"status": "success", "redirect": "/"}), 200
 
 
-@bp.route("/dates", methods=["GET"])
+@bp.route("/self/dates", methods=["GET"])
 @utils.requires_auth()
 def get_dates():
-
     user = db.session.query(User).filter_by(id=g.session.user_id).scalar()
 
-    return userdates_schema.jsonify(user)
+    return user_dates_schema.jsonify(user)
+
+
+@bp.route("/self/events", methods=["GET"])
+@utils.requires_auth()
+def get_events_for_user():
+    ags = UserAG.query.filter_by(user_id=g.session.user_id)
+    event_list = []
+    for ag in ags:
+        events = Event.query.filter_by(ag_id=ag.id)
+        event_list += events
+
+    return events_schema.jsonify(event_list)

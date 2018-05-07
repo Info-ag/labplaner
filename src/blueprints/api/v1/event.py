@@ -63,18 +63,6 @@ def add_event():
     return NotFound()
 
 
-@bp.route("/mine", methods=["GET"])
-@utils.requires_auth()
-def get_events_for_user():
-    ags = UserAG.query.filter_by(user_id=g.session.user_id)
-    event_list = []
-    for ag in ags:
-        events = Event.query.filter_by(ag_id=ag.id)
-        event_list += events
-
-    return events_schema.jsonify(event_list)
-
-
 @bp.route("/id/<evid>", methods=["GET"])
 def get_event_by_id(evid):
     event = Event.query.get(evid)
