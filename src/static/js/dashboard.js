@@ -5,8 +5,8 @@ let data = {
 let config = {
     "large" : true,
     "select" : {
-        "selectable" : false,
-        "onlyFuture" : false,
+        "selectable" : true,
+        "onlyFuture" : true,
         "onlyCertainDates" : false
     },
     "events" : {
@@ -19,7 +19,7 @@ generateCalendar('calendar-anker');
 
 $.ajax({
 type: 'GET',
-url: "/api/v1/event/mine",
+url: "/api/v1/user/self/events",
 data: {},
 dataType: "json",
 cache: false,
@@ -34,7 +34,7 @@ beforeSend: function () {
 
 $.ajax({
 type: 'GET',
-url: "/api/v1/user/dates/mine",
+url: "/api/v1/user/self/dates",
 data: {},
 dataType: "json",
 cache: false,
@@ -51,7 +51,7 @@ beforeSend: function () {
 function writeSelectionInDatabase(){
     $.ajax({
         type: 'GET',
-        url: "/api/v1/user/dates/update",
+        url: "/api/v1/user/self/update",
         data: returnCalendarSelected(anker),
         dataType: "json",
         cache: false,
