@@ -27,7 +27,7 @@ beforeSend: function () {
     return true;
 }
 }).done(function (response) {
-    updateEventsInData("calendar-anker", response);
+    updateEventsInData("calendar-anker", response.events);
     reloadCalendar("calendar-anker");
 }).fail(function (data) {
 });
