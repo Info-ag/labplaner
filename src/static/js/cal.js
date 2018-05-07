@@ -423,7 +423,6 @@ function loadAlreadySelectedDates(anker){
     if(data.selection.length = 0){
         return;
     }
-    console.log(data.selection);
     for (let i in data.selection){
         $div = $("#"+anker + " #"+data.selection[i].replace(/\s/g,'-'));
         $button = $div.children("button");

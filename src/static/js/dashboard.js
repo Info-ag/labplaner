@@ -43,6 +43,7 @@ beforeSend: function () {
 }
 }).done(function (response) {
     updateSelectionInData("calendar-anker", response.dates);
+    console.log(response.dates);
     reloadCalendar("calendar-anker");
     $("#write-selection-in-database").removeClass("loading");
 }).fail(function (data) {
@@ -52,7 +53,7 @@ function writeSelectionInDatabase(anker){
     $.ajax({
         type: 'POST',
         url: "/api/v1/user/self/dates",
-        data: returnCalendarSelected(anker),
+        data: {"dates" : returnCalendarSelected(anker)},
         dataType: "json",
         cache: false,
         beforeSend: function () {
