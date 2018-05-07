@@ -48,7 +48,7 @@ beforeSend: function () {
 }).fail(function (data) {
 });
 
-function writeSelectionInDatabase(){
+function writeSelectionInDatabase(anker){
     $.ajax({
         type: 'POST',
         url: "/api/v1/user/self/dates",
