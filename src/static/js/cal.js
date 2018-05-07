@@ -145,7 +145,7 @@ function configureCalendar(anker, config, data){
     if(!data.hasOwnProperty("selection")){
         data.selection = new Array();
     }else{
-        console.log(typeof config.selection);
+        //console.log(typeof config.selection);
     }
 	if(!data.hasOwnProperty("selectable")){
 		data.selectable = new Array();

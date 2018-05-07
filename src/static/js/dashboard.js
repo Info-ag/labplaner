@@ -43,7 +43,7 @@ beforeSend: function () {
 }
 }).done(function (response) {
     updateSelectionInData("calendar-anker", response.dates);
-    console.log(response.dates);
+    console.log(response);
     reloadCalendar("calendar-anker");
     $("#write-selection-in-database").removeClass("loading");
 }).fail(function (data) {
