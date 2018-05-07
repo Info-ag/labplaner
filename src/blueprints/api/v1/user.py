@@ -82,11 +82,13 @@ def get_all_users():
 @bp.route("/self/dates", methods=["POST"])
 @utils.requires_auth()
 def set_dates():
-    user = db.session.query(User).filter_by(id=g.session.user_id).scalar()
+    user = g.user
+
+    UserDate.query.filter_by(user_id=g.session.user_id).delete()
+    db.session.commit()
 
     dates = request.values.getlist("dates[]")
     for _date in dates:
-        print(_date)
         d = datetime.datetime.strptime(_date, "%a %b %d %Y")
         if not db.session.query(Date).filter_by(day=d.isoformat()[:10]).scalar():
             date_obj = Date()

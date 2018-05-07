@@ -2,7 +2,7 @@ import datetime
 
 from flask import Blueprint, request, jsonify, g
 from sqlalchemy.sql import exists
-from werkzeug.exceptions import NotFound, Unauthorized, BadRequest, Forbidden, RequestEntityTooLarge
+from werkzeug.exceptions import NotFound, Unauthorized
 
 import utils
 
@@ -22,7 +22,6 @@ events_schema = EventSchema(many=True)
 @bp.route("/", methods=["POST"])
 @utils.requires_auth()
 def add_event():
-
     ag_id = request.values.get("ag")
 
     if db.session.query(exists().where(AG.id == ag_id)).scalar():
@@ -43,21 +42,23 @@ def add_event():
                 event.date = None
 
                 db.session.add(event)
-                # db.session.flush()
 
                 dates = request.values.getlist("dates[]")
                 for _date in dates:
-                    print(_date)
-                    d = datetime.datetime.strptime(_date, "%a %b %d %Y")
-                    date_obj: Date = Date()
-                    date_obj.users.append(g.user)
-                    date_obj.events.append(event)
-                    date_obj.day = d
-
-                    db.session.add(date_obj)
+                    d = datetime.datetime.strptime(_date, "%a %b %d %Y").date()
+                    if db.session.query(exists().where(Date.day == d)).scalar():
+                        u_date = Date.query.filter_by(day=d).scalar()
+                        u_date.users.append(g.user)
+                        u_date.events.append(event)
+                        continue
+                    else:
+                        date_obj: Date = Date()
+                        date_obj.users.append(g.user)
+                        date_obj.events.append(event)
+                        date_obj.day = d
+                        db.session.add(date_obj)
 
                 db.session.commit()
-
                 return jsonify({"status": "success", "redirect": "/"}), 200
 
         return Unauthorized()

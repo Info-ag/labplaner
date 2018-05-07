@@ -40,7 +40,8 @@ def add_ag():
 
     if db.session.query(exists().where(AG.name == name)).scalar() or not bool(re.match(regex_match_display_name, name)):
         return jsonify({"reason": "name"}), 400
-    if db.session.query(exists().where(AG.display_name == display_name)).scalar() or not bool(re.match(regex_match_display_name, display_name)):
+    if db.session.query(exists().where(AG.display_name == display_name)).scalar() or not bool(
+            re.match(regex_match_display_name, display_name)):
         return jsonify({"reason": "display_name"}), 400
     if not bool(re.match(regex_match_description, description)):
         return jsonify({"reason": "description"}), 400
@@ -120,9 +121,9 @@ def add_user_to_ag(ag_id):
                 for username in request.values.getlist("users[]"):
                     if db.session.query(exists().where(User.username == username)).scalar():
                         user: User = User.query.filter_by(username=username).scalar()
+                        print(user)
 
-                        if db.session.query(
-                                exists().where(UserAG.user_id == user.id and UserAG.ag_id == ag.id)).scalar():
+                        if db.session.query(UserAG.query.filter_by(user_id=user.id, ag_id=ag.id).exists()).scalar():
                             continue
 
                         new_user_ag = UserAG()
@@ -194,6 +195,6 @@ def get_all_ags():
         count = 20
 
     all_ags = AG.query.all()
-    #all_ags.offset(offset)
-    #all_ags.limit(count)
+    # all_ags.offset(offset)
+    # all_ags.limit(count)
     return ags_schema.jsonify(all_ags)

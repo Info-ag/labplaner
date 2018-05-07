@@ -20,13 +20,8 @@ class DateSchema(ma.Schema):
         event_id = self.context.get("event_id")
         users = []
         for user in obj.users:  # that
-            print(user)
             for ag in user.ags:  # shit
-                print(ag)
                 for event in ag.events:  # is
-                    print(event)
-                    print(event_id)
-                    print(event.id)
                     if event.id == event_id:  # damn
                         users.append(user)  # nested
 
