@@ -14,12 +14,12 @@ class Event(db.Model):
     ag_id = db.Column(db.Integer, db.ForeignKey("ags.id"))
 
     ag = db.relationship(AG)
-    dates = db.relationship('Date')
+    dates = db.relationship('Date', secondary="events_dates")
 
 
 class EventSchema(ma.Schema):
     ag = ma.Nested(AGSchema)
-    dates = ma.Nested("DateSchema", many=True, exclude=('event',))
+    dates = ma.Nested("DateSchema", many=True)
 
     class Meta:
         fields = ('id', "date", 'display_name', "ag", 'dates')

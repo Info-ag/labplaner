@@ -1,4 +1,5 @@
 import datetime
+import json
 
 from flask import Blueprint, request, jsonify, g
 from werkzeug.exceptions import NotFound, Unauthorized, BadRequest, Forbidden
@@ -105,7 +106,7 @@ def set_dates():
 @bp.route("/self/dates", methods=["GET"])
 @utils.requires_auth()
 def get_dates():
-    user = db.session.query(User).filter_by(id=g.session .user_id).scalar()
+    user = User.query.filter_by(id=g.session.user_id).scalar()
 
     return user_dates_schema.jsonify(user)
 
@@ -114,9 +115,11 @@ def get_dates():
 @utils.requires_auth()
 def get_events_for_user():
     ags = UserAG.query.filter_by(user_id=g.session.user_id)
-    event_list = []
+    event_list = {'events': []}
     for ag in ags:
         events = Event.query.filter_by(ag_id=ag.id)
-        event_list += events
+        for event in events:
+            event_schema.context = {"event_id": event.id}
+            event_list['events'].append(event_schema.dump(event)[0])
 
-    return events_schema.jsonify(event_list)
+    return jsonify(event_list)

@@ -43,14 +43,15 @@ def add_event():
                 event.date = None
 
                 db.session.add(event)
-                db.session.flush()
+                # db.session.flush()
 
                 dates = request.values.getlist("dates[]")
                 for _date in dates:
                     print(_date)
                     d = datetime.datetime.strptime(_date, "%a %b %d %Y")
-                    date_obj = Date()
-                    date_obj.event = event.id
+                    date_obj: Date = Date()
+                    date_obj.users.append(g.user)
+                    date_obj.events.append(event)
                     date_obj.day = d
 
                     db.session.add(date_obj)
