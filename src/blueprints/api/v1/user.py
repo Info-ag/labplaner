@@ -1,13 +1,24 @@
-from flask import Blueprint, request, jsonify
+import datetime
+import json
+
+from flask import Blueprint, request, jsonify, g
 from werkzeug.exceptions import NotFound, Unauthorized, BadRequest, Forbidden
-from models.user import User, UserSchema
+
 from app import db
-from models.associations import DateUser
+import utils
+
+from models.user import User, UserSchema, UserSchemaDates
+from models.associations import UserDate, UserAG
+from models.date import Date
+from models.event import Event, EventSchema
 
 bp = Blueprint("user_api", __name__)
 
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
+user_dates_schema = UserSchemaDates()
+event_schema = EventSchema()
+events_schema = EventSchema(many=True)
 
 
 @bp.route("/", methods=["POST"])
@@ -68,44 +79,49 @@ def get_all_users():
     return users_schema.jsonify(all_users[:len(all_users) if len(all_users) < count else count])
 
 
-@bp.route("/<uid>/dates", methods=["POST"])
-def set_dates(uid):
+@bp.route("/self/dates", methods=["POST"])
+@utils.requires_auth()
+def set_dates():
+    user = g.user
 
-    try:
-        if not g.session.authenticated:
-            return Unauthorized()
-    except NameError:
-        return Unauthorized()
+    UserDate.query.filter_by(user_id=g.session.user_id).delete()
+    db.session.commit()
 
-    try:
+    dates = request.values.getlist("dates[]")
+    for _date in dates:
+        d = datetime.datetime.strptime(_date, "%a %b %d %Y")
+        if not db.session.query(Date).filter_by(day=d.isoformat()[:10]).scalar():
+            date_obj = Date()
+            date_obj.day = d
+            db.session.add(date_obj)
 
-        if db.session.query(User).filter_by(id=uid).scalar() is None:
-            return NotFound(description='UserID not found')
+        u = UserDate()
+        u.date_id = db.session.query(Date).filter_by(day=d.isoformat()[:10]).scalar().id
+        u.user_id = user.id
 
-        dates = request.values["dates"]
+        db.session.add(u)
+    db.session.commit()
 
-        for d in dates:
-
-            d = d.replace('-', '')
-            d = date(int(d[:4]), int(d[4:6]), int(d[6:]))
-
-            if db.session.query(Date).filter_by(day=d) is None:
-                date_obj = Date()
-                date_obj.day = d
-
-                db.session.merge(date_obj)
-                db.session.commit()
+    return jsonify({"status": "success", "redirect": "/"}), 200
 
 
-            else:
-                date_obj = db.session.query(Date).filter_by(day=d)
+@bp.route("/self/dates", methods=["GET"])
+@utils.requires_auth()
+def get_dates():
+    user = User.query.filter_by(id=g.session.user_id).scalar()
 
-            date_user = DateUser()
-            date_user.dtid = date_obj.id
-            date_user.uid = uid
+    return user_dates_schema.jsonify(user)
 
-            db.session.merge(date_user)
-            db.session.commit()
 
-    except:
-        return BadRequest()
+@bp.route("/self/events", methods=["GET"])
+@utils.requires_auth()
+def get_events_for_user():
+    ags = UserAG.query.filter_by(user_id=g.session.user_id)
+    event_list = {'events': []}
+    for ag in ags:
+        events = Event.query.filter_by(ag_id=ag.id)
+        for event in events:
+            event_schema.context = {"event_id": event.id}
+            event_list['events'].append(event_schema.dump(event)[0])
+
+    return jsonify(event_list)

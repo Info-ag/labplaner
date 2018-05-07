@@ -7,7 +7,7 @@ from flask_marshmallow import Marshmallow
 from flask import render_template, request, redirect, url_for, flash, g
 
 app = Flask(__name__)
-app.config.from_json(os.path.join("..", os.environ["CONFIG"]))
+app.config.from_json(os.path.join(os.getcwd(), os.environ["CONFIG"]))
 app.secret_key = app.secret_key.encode()
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
@@ -54,7 +54,7 @@ def auth_middleware():
         g.session = _session
 
     if g.session.authenticated:
-        g.user = User.query.get(g.session.uid)
+        g.user = User.query.get(g.session.user_id)
 
     @utils.after_this_request
     def set_cookie(response):

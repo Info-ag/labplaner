@@ -4,6 +4,7 @@
     <script src="/static/js/jquery.min.js"></script>
 {% endblock %}
 {% block content %}
+    {% if my_role == "MENTOR" %}
     <div class="modal modal-sm" id="modal-name">
         <a href="#" class="modal-overlay" aria-label="Close"></a>
         <div class="modal-container" role="document">
@@ -59,13 +60,18 @@
             </div>
         </div>
     </div>
+    {% endif %}
 
     <div class="container mt-2">
         <h1>{{ ag.data.display_name }}
-            <a href="#modal-name" class="btn btn-link"><i class="icon icon-edit"></i></a>
+            {% if my_role == "MENTOR" %}
+                <a href="#modal-name" class="btn btn-link"><i class="icon icon-edit"></i></a>
+            {% endif %}
         </h1>
         <p>Description: {{ ag.data.description }}
-            <a href="#modal-description" id="edit-description" class="btn btn-link"><i class="icon icon-edit"></i></a>
+            {% if my_role == "MENTOR" %}
+                <a href="#modal-description" id="edit-description" class="btn btn-link"><i class="icon icon-edit"></i></a>
+            {% endif %}
         </p>
     </div>
     <div id="users" class="container">

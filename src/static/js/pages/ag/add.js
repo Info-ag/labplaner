@@ -23,7 +23,7 @@ $(agAddForm).submit(function (event) {
             case "name":
                 setNameError();
                 break;
-            case "displayname":
+            case "display_name":
                 break;
             case "description":
                 break;
@@ -58,13 +58,11 @@ function doneTyping() {
         beforeSend: function () {
             $("#name-loading").show();
         }
-    }).done(function (response) {
-        if (response && response.hasOwnProperty('name')) {
-            setNameError()
-        } else {
-            setNameSuccess()
-        }
-    })
+    }).done(function () {
+        setNameError()
+    }).fail(function () {
+        setNameSuccess()
+    });
 }
 
 function resetName() {

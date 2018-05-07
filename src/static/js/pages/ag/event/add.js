@@ -1,14 +1,23 @@
 var today = new Date();
-
-buildBasis(today.getMonth() + 1, today.getFullYear(), "calendar-anker", {"size": true, "mode": 1});
-
+config = {
+    "large" : true,
+    "select" : {
+        "selectable" : true,
+        "onlyFuture" : true
+    },  
+    "events" : {
+        showAll: false
+    }
+}
+configureCalendar('calendar-anker', config);
+generateCalendar('calendar-anker');
 $("#form-create-event").submit(function (event) {
     event.preventDefault();
     var formData = {
         ag: $("#ag").val(),
         display_name: $("#display_name").val(),
         description: $("#description").val(),
-        dates: dateSelection
+        dates: returnCalendarSelected("calendar-anker")
     }
     console.log(formData);
     $.ajax({

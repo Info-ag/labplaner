@@ -1,7 +1,90 @@
-const monthNames = ["January", "February", "March", "April", "May", "June",
+//Calendar API
+
+
+
+/*
+HowToUse the API
+Give any div you want to use as container an unique id. This id will be handled as "anker" in the following.
+generate a JSON object describing all properties for the calendar. The config JSON object will be describded in the following.
+
+config = {
+    //"anker" : <anker/id of the containing div (no default value - please just set any anker)>,
+    "month" : <month to be shown (default : current month)>,
+    "year" : <year of the month to be shown (default : current year)>,
+    "large" : <false/true (default true)>,
+    "select" : {
+        "selectable" : <false/true (default false)>,
+        "onlyFuture" : <false/true (default true)>,
+        "onlyCertainDates" : <false/true (default false)>
+    },  
+    "events" : {
+        showDate: <false/true (default true)>, //
+        showDates: <false/true (default false)>
+    }
+}
+
+As third parameter you can use a data JSON object as following:
+
+data = {
+    "selection" : <array'with the dates, that should be shown as already selected e.g. ["Sun Apr 01 2018", "Sun Apr 08 2018", "Sun Apr 15 2018", "Sun Apr 22 2018", "Sun Apr 29 2018"]>,
+    "selectable" : <array with the dates, that should be selectable (see config.select.onlycertainDates), same syntax as in selection>,
+    "events" : [
+        {
+            "display_name" : <name of the event that should be displayed>,
+            "id" : <id of the event>,
+            "ag" : {
+                "id" :
+                "name" : 
+            }
+            "date" : <the day the event will take place>, // date the event will take place
+            "color" : <css class (default primary)>,
+            "dates" :  [ 
+                {
+                    "day" : "<day the event might is going to take place>",
+                    "count" : <count how many users could come>;
+                },
+                {
+                    "day" : "<another day the event might is going to take place>",
+                    "count" : <count how many users could come>;
+                },
+            ]
+        }
+    ]
+}
+
+call the configuring function with anker&config 
+    configureCalendar(anker <anker>, config <config JSON Object>, data <data JSON Object>);
+
+call the generating function with the anker
+    generateCalendar(anker <anker>);
+
+now you wait till you want the selected data and call the returning function
+    return returnCalendarSelected(anker <anker>);
+
+    if you provide your dates in any other syntax than descripted, please use yourArray = validateDateArray(yourArray);
+
+*/
+
+
+function validateDateArray(dateArray){
+    for(let i = 0; i < dateArray.length ; i++){
+        dateArray[i] = new Date(new Date(dateArray[i]).setHours(0,0,0,0)).valueOf();
+    }
+    return dateArray;
+}
+
+function validateEventsData(anker){
+
+}
+
+
+//Variable to get monthname through month-number
+const monthNames = ["","January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"
 ];
 
+
+//helping function to delete an array element identified by the value
 function removeA(arr) {
     var what, a = arguments, L = a.length, ax;
     while (L > 1 && arr.length) {
@@ -13,241 +96,427 @@ function removeA(arr) {
     return arr;
 }
 
-function daysInMonth (month, year) {
-    return new Date(year, month, 0).getDate();
+
+//Variable where all calenders, their config and data will be saved in
+var calendar = {};
+
+//functions for error messages
+function missingAnker(){
+    alert("Why do you call this function without any anker?");
+}
+
+function showError(msg){
+    console.log(msg);
+}
+
+//function to confire a calendar
+function configureCalendar(anker, config, data){
+    if(typeof anker == "undefined"){
+        //Why do you call this function without any anker?
+        missingAnker();
+    }
+    if(typeof config == "undefined"){
+        config = {};
+    }
+    if(typeof data == "undefined"){
+        data = {};
+    }
+    if(!config.hasOwnProperty("month")){
+        config.month = new Date().getMonth() + 1;
+    }
+    if(!config.hasOwnProperty("year")){
+        config.year = new Date().getFullYear();
+    }
+    if(!config.hasOwnProperty("size")){
+        config.size = 1;
+    }
+    if(!config.hasOwnProperty("select")){
+        config.select = {};
+    }
+    if(!config.select.hasOwnProperty("selectable")){
+        config.select.selectable = false;
+    }
+    if(!config.select.hasOwnProperty("onlyFuture")){
+        config.select.onlyFuture = true;
+    }
+	if(!config.select.hasOwnProperty("onlyCertainDates")){
+		config.select.onlyCertainDates = false;
+	}
+    if(!data.hasOwnProperty("selection")){
+        data.selection = new Array();
+    }else{
+        //console.log(typeof config.selection);
+    }
+	if(!data.hasOwnProperty("selectable")){
+		data.selectable = new Array();
+	}
+    if(!data.hasOwnProperty("events")){
+        data.events = new Array();
+    }
+    validateEventsData;
+    calendar[anker] = ({"name" : anker, "config": config, "data": data});
 }
 
 
-var dateSelection = new Array();
-var calendarMode;
+//function to generate the calendar
+function generateCalendar(anker){
+    //first build the structure
+    buildCalendarStructure(anker);
+    //then insert the days
+    buildCalendarDays(anker);
+    //mark the current day
+    markTodayInCalendar(anker);
+    //make the days selectable - this will only be successful if config.select.selectable is set = true
+    makeCalendarDaysSelectable(anker);
+    showEvents(anker);
+}
 
-//month from 0-11
-function buildBasis(monthRaw, year, anker, options){
-    month = monthRaw - 1;
-    var div1 = $("<div></div>").addClass("calendar");
-    if(options.hasOwnProperty('size')){
-        var size = options.size;
-        if(size == true){
-            div1.addClass("calendar-lg");
-        }
+
+function buildCalendarStructure(anker){
+    //if there is no anker return
+    if(!calendar.hasOwnProperty(anker)){
+        //return;
+        missingAnker();
     }
-    var divNav = $("<div></div>").addClass("calendar-nav navbar");
-    var btnLeft = $("<button></button>").addClass("btn btn-action btn-link btn-lg").attr("id", anker+"-left").prop("type", "button");
-    var iBtnLeft = $("<i></i>").addClass("icon icon-arrow-left");
+
+    //load config
+    let config = calendar[anker].config;
+
+
+    //generate outer div
+    let div1 = $("<div></div>").addClass("calendar");
+    
+    //check size and adapt
+    if(config.large == true){
+        div1.addClass("calendar-lg");
+    }
+
+    //generate calendar nav
+    let divNav = $("<div></div>").addClass("calendar-nav navbar");
+
+
+    //generate content of calendar nav
+    let btnLeft = $("<button></button>").addClass("btn btn-action btn-link btn-lg").attr("id", anker+"-left").prop("type", "button");
+    let iBtnLeft = $("<i></i>").addClass("icon icon-arrow-left");
     btnLeft.append(iBtnLeft);
-    var divMonth = $("<div></div>").addClass("navbar-primary").attr("id", anker+"-heading").text(monthNames[month] + " " +  year);
-    var btnRight = $("<button></button>").addClass("btn btn-action btn-link btn-lg").attr("id", anker+"-right").prop("type", "button");
-    var iBtnRight = $("<i></i>").addClass("icon icon-arrow-right");
+    let divMonth = $("<div></div>").addClass("navbar-primary").attr("id", anker+"-heading").text(monthNames[config.month] + " " +  config.year);
+    let btnRight = $("<button></button>").addClass("btn btn-action btn-link btn-lg").attr("id", anker+"-right").prop("type", "button");
+    let iBtnRight = $("<i></i>").addClass("icon icon-arrow-right");
     btnRight.append(iBtnRight);
 
-    var prevAndNextMonth = getPrevAndNextMonth(year, month);
-    btnLeft.click({"year": prevAndNextMonth.previous.year, "month": prevAndNextMonth.previous.month, "anker": anker }, showAnotherMonth)
-    btnRight.click({"year": prevAndNextMonth.next.year, "month": prevAndNextMonth.next.month, "anker": anker }, showAnotherMonth)
+    //get prev and next month, so they can be accessed by the navbar buttons
+    btnLeft.click({"anker": anker }, showPreviousCalendarMonth)
+    btnRight.click({"anker": anker }, showNextCalendarMonth)
     divNav.append(btnLeft, divMonth, btnRight);
-    var divContainer = $("<div></div>").addClass("calendar-container");
-    var divHeader = $("<div></div>").addClass("calendar-header");
-    var divMon = $("<div></div>").addClass("calendar-date").text("Mon");
-    var divTue = $("<div></div>").addClass("calendar-date").text("Tue");
-    var divWed = $("<div></div>").addClass("calendar-date").text("Wed");
-    var divThu = $("<div></div>").addClass("calendar-date").text("Thu");
-    var divFri = $("<div></div>").addClass("calendar-date").text("Fri");
-    var divSat = $("<div></div>").addClass("calendar-date").text("Sat");
-    var divSun = $("<div></div>").addClass("calendar-date").text("Sun");
+
+    //generate calendar inner container
+    let divContainer = $("<div></div>").addClass("calendar-container");
+
+    //generate calendar header with weekday headings
+    let divHeader = $("<div></div>").addClass("calendar-header");
+    let divMon = $("<div></div>").addClass("calendar-date").text("Mon");
+    let divTue = $("<div></div>").addClass("calendar-date").text("Tue");
+    let divWed = $("<div></div>").addClass("calendar-date").text("Wed");
+    let divThu = $("<div></div>").addClass("calendar-date").text("Thu");
+    let divFri = $("<div></div>").addClass("calendar-date").text("Fri");
+    let divSat = $("<div></div>").addClass("calendar-date").text("Sat");
+    let divSun = $("<div></div>").addClass("calendar-date").text("Sun");
     divHeader.append(divMon, divTue, divWed, divThu, divFri, divSat, divSun);
-    var divBody = $("<div></div>").addClass("calendar-body").attr("id", anker + "-body");
-    divBody = generateDays(year, month, anker, divBody, options);
+    //generate div body
+    divBody = $("<div></div>").addClass("calendar-body").attr("id", anker + "-body");
 
-    
-
+    //finish setting up calendar structure
     divContainer.append(divHeader, divBody);
     div1.append(divNav, divContainer);
+    $("#"+anker).append(div1);
 
-    $("#" + anker).append(div1);
-    if(options.hasOwnProperty("mode")){
-        mode = options.mode;
-        calendarMode = options.mode;
-    }else{
-        mode = 1;
-        calendarMode = 1;
-    }
-    makeDaysSelectable();
-    markToday();
-    
-}
-
-function makeDaysSelectable(){
-    if(calendarMode == 1){
-        $(".calendar-date > .date-item").on("click", function(e){
-            addSelection(this);
-        })
-    }
 }
 
 
-function showAnotherMonth(event){
-    anker = event.data.anker;
-    month = event.data.month;
-    year = event.data.year;
-    var divBody = $("#" + anker + "-body");
+function buildCalendarDays(anker){
+    let config = calendar[anker].config;
+
+    let divBody = $("#" + anker + "-body");
     divBody.empty();
-    var prevAndNextMonth = getPrevAndNextMonth(year, month); 
-    $("#" + anker + "-heading").text(monthNames[month] + " " +  year);
-    $("#" + anker + "-right").off("click");
-    $("#" + anker + "-left").off("click");
-    $("#" + anker + "-left").click({"year": prevAndNextMonth.previous.year, "month": prevAndNextMonth.previous.month, "anker": anker }, showAnotherMonth)
-    $("#" + anker + "-right").click({"year": prevAndNextMonth.next.year, "month": prevAndNextMonth.next.month, "anker": anker }, showAnotherMonth)
-    divBody = generateDays(year, month, anker, divBody);
-    makeDaysSelectable();
-    markToday();
-    if(calendarMode == 1){
-        for (let i in dateSelection){
-            $button = $("#"+dateSelection[i].replace(/\s/g,'-'));
-            if($button.length != 0){
-                $button.children("button").addClass("active");
-                $button.children("button").off("click");
-                $button.children("button").on("click", function(e){
-                    removeSelection(this);
-                })  
-            }  
+    let daysInPrevMonth;
+    let firstWeekDay = new Date(config.year, (config.month - 1)).getDay();
+    switch(firstWeekDay){
+        case 0:
+        daysInPrevMonth = 6;
+        break;
+        case 1:
+        daysInPrevMonth = 7;
+        break;
+        default:
+        daysInPrevMonth = firstWeekDay - 1;
+        
+    }
+    for( let i = ( - daysInPrevMonth) + 1 ; i <= 0; i++){
+        divBody.append(buildPrevDay(new Date(new Date(config.year, (config.month - 1), i).setHours(0,0,0,0)), anker));
+    }
+
+    let lastDay = new Date(config.year, (config.month), 0);
+    let lastDayNumber = lastDay.getDate();
+    for (let i = 1; i <= lastDayNumber; i++){
+        divBody.append(buildCurrentDay(new Date(new Date(config.year, (config.month - 1), i).setHours(0,0,0,0)), anker));
+    }
+    let lastWeekDay = lastDay.getDay();
+    let daysInNextMonth = 7 - lastWeekDay;
+    for (let i = 1; i <= daysInNextMonth; i++){
+        divBody.append(buildNextDay(new Date(new Date(config.year, (config.month), i).setHours(0,0,0,0)), anker));
+    }   
+}
+
+
+function buildPrevDay(day, anker){
+    div = $("<div></div>").addClass("calendar-date prev-month disabled");
+    div = buildDay(day, div, anker);
+    return div;
+};
+
+
+function buildCurrentDay(day, anker){
+    div = $("<div></div>").addClass("calendar-date current-month");
+    div = buildDay(day, div, anker);
+    return div;
+}
+
+
+function buildNextDay(day, anker){
+    div = $("<div></div>").addClass("calendar-date next-month disabled");
+    div = buildDay(day, div, anker);
+    return div;
+}
+
+
+function buildDay(day, div, anker){
+    let data = calendar[anker].data;
+    let config = calendar[anker].config;
+    button = $("<button></button>").addClass("date-item").prop("type", "button").text(day.getDate());
+    var dayString = day.toDateString(); 
+    button.attr("data-attr", dayString);
+    div.attr("id", dayString.replace(/\s/g,'-'));
+    if(config.select.onlyCertainDates == true){
+        if(data.selectable.includes(day.valueOf())){
+            button.attr("onlyselectable", true);
+        }else{
+            button.attr("onlyselectable", false)
+			div.addClass("disabled");
+        }
+    }
+    div.append(button);
+    let divEventContainer = $("<div></div>").addClass("calendar-events");
+    div.append(divEventContainer);    
+    return div;
+}
+
+
+function markTodayInCalendar(anker){
+    let todayString = new Date().toDateString();
+    if($("#" + anker + " " +"#"+todayString.replace(/\s/g,'-')).length != 0){
+        $("#"+todayString.replace(/\s/g,'-') + " > button").addClass("date-today");
+    }
+}
+
+
+function makeCalendarDaysSelectable(anker){
+    let config = calendar[anker].config;
+    if(config.select.selectable == true){
+        if(config.select.onlyFuture == true){
+            if(config.select.onlyCertainDates == true){
+                $("#" + anker + " .calendar-date > .date-item").filter(function(index){
+                    return new Date($(this).attr("data-attr").replace("-", "")) >= new Date().setHours(0,0,0,0);
+                }).filter(function(index){
+                    return $(this).attr("onlyselectable");
+                }).on("click", {"anker" : anker}, function(e){
+                    addDayToSelection(this, e.data.anker);
+                });
+            }else{
+                $("#" + anker + " .calendar-date > .date-item").filter(function(index){
+                    return new Date($(this).attr("data-attr").replace("-", "")) >= new Date().setHours(0,0,0,0);
+                }).on("click", {"anker" : anker}, function(e){
+                    addDayToSelection(this, e.data.anker);
+                });
+            }
+        }else if(config.select.onlyCertainDates == true){
+            $("#" + anker + " .calendar-date > .date-item").filter(function(index){
+                return ("true" == $(this).attr("onlyselectable"));
+			}).on("click", {"anker" : anker}, function(e){
+                addDayToSelection(this, e.data.anker);
+            });
+        }else{
+            $("#" + anker + " .calendar-date > .date-item").on("click", {"anker" : anker}, function(e){
+                addDayToSelection(this, e.data.anker);
+            });
+
         }
     }
 }
 
 
-function markToday(){
-    let today = new Date();
-    let todayString = today.toDateString();
-    if($("#"+todayString.replace(/\s/g,'-')).length != 0){
-        $("#"+todayString.replace(/\s/g,'-')).children("button").addClass("date-today");
-    }
-}
-
-
-function getPrevAndNextMonth(year, month){
-    switch(month){
-        case 0:
-        return {"previous": {"year" : (year - 1), "month" : 11 }, "next": {"year" : (year), "month" : 1}};
-        break;
-        case 11:
-        return {"previous": {"year" : year, "month" : 10}, "next": {"year" : (year + 1), "month" : 0}};
-        break;
-        default:
-        return {"previous" : {"year" : year, "month" : (month - 1)}, "next": {"year" : year, "month" : (month + 1)}};
-
-    }
-}
-
-
-function generateDays(year, month, anker, divBody, options){
-    firstWeekDay = new Date(year, month).getDay();
-    switch(firstWeekDay){
-        case 0:
-        var daysInPrevMonth = 6;
-        break;
-        case 1:
-        var daysInPrevMonth = 7;
-        break;
-        default:
-        var daysInPrevMonth = firstWeekDay - 1;
-        
-    }
-    for( var i = ( - daysInPrevMonth) + 1 ; i <= 0; i++){
-        var divDay = buildPrevDay(new Date(year, month, i));
-        divBody.append(divDay);
-    }
-
-    lastDay = new Date(year, (month+1), 0);
-    var lastDayNumber = lastDay.getDate();
-    for (var i = 1; i <= lastDayNumber; i++){
-        var divDay = buildCurrentDay(new Date(year, month, i));
-        divBody.append(divDay);
-    }
-    lastWeekDay = lastDay.getDay();
-    var daysInNextMonth = 7 - lastWeekDay;
-    for (var i = 1; i <= daysInNextMonth; i++){
-        var divDay = buildNextDay(new Date(year, (month + 1), i));
-        divBody.append(divDay);
-    }
-    return divBody;
-}
-
-function addEvents(events){
-
-}
-
-
-
-function addEvent(dayRaw, event, type){
-    var dayString = dayRaw.toDateString();
-    var divEventContainer = $("#" + dayString.replace(/\s/g,'-'));
-    if(divEventContainer.children("calendar-events").length == 0){
-        var divEvents = $("<div></div>").addClass("calendar-events");
-        divEventContainer.append(divEvents);
-    }else{ 
-        var divEvents = divEventContainer.children(".calendar-events").first();    
-    }
-    if(event.hasOwnProperty("color")){
-        var color = event.color;
-    }else{
-        var color = "error";
-    }
-    if(event.hasOwnProperty("display_name")){
-        displayName = event.display_name;
-    }else{
-        displayName = "Something went wrong";
-    }
-    var aEvent = $("<a></a>").addClass("calendar-event text-light bg-"+color).text(displayName).attr("href", "#");
-    divEventContainer.children(".calendar-events").first().append(aEvent);
-
-    
-}
-
-function addSelection(button){
-    $button = $(button);
-    dateSelection.push($button.attr("data-attr"));
+function addDayToSelection(button, anker){
+    let $button = $(button);
+    calendar[anker].data.selection.push($button.attr("data-attr"));
     $button.addClass("active");
     $button.off("click");
-    $button.on("click", function(e){
-        removeSelection(this);
-    })       
+    $button.on("click",{"anker" : anker}, function(e){
+        removeDayFromSelection(this, e.data.anker);
+    })     
 }
 
-function removeSelection(button){
-    $button = $(button);
-    removeA(dateSelection, $button.attr("data-attr"));
+
+function removeDayFromSelection(button, anker){
+    let $button = $(button);
+    removeA(calendar[anker].data.selection, $button.attr("data-attr"));
     $button.removeClass("active");
     $button.off("click");
-    $button.on("click", function(e){
-        addSelection(this);
+    $button.on("click", {"anker" : anker}, function(e){
+        addDayToSelection(this, e.data.anker);
     })
 
 }
 
 
-
-function buildPrevDay(day){
-    div = $("<div></div>").addClass("calendar-date prev-month disabled");
-    div = buildDay(day, div);
-    return div;
-};
-
-function buildCurrentDay(day){
-    div = $("<div></div>").addClass("calendar-date current-month");
-    div = buildDay(day, div);
-    return div;
+function returnCalendarSelected(anker){
+    return calendar[anker].data.selection;
 }
 
-function buildNextDay(day){
-    div = $("<div></div>").addClass("calendar-date next-month disabled");
-    div = buildDay(day, div);
-    return div;
+
+function showPreviousCalendarMonth(event){
+    let anker = event.data.anker;
+    let config = calendar[anker].config;
+    if(config.month == 1){
+        config.month = 12;
+        config.year--;
+    }else{
+        config.month--;
+    }
+    showNewCalendarMonth(anker);
 }
 
-function buildDay(day, div){
-    button = $("<button></button>").addClass("date-item").prop("type", "button").text(day.getDate());
-    var dayString = day.toDateString(); 
-    button.attr("data-attr", dayString);
-    div.attr("id", dayString.replace(/\s/g,'-'));
-    div.append(button);
-    return div;
+
+function showNextCalendarMonth(event){
+    let anker = event.data.anker;
+    let config = calendar[anker].config;
+    if(config.month == 12){
+        config.month = 1;
+        config.year++;
+    }else{
+        config.month++;
+    }
+    showNewCalendarMonth(anker);
+}
+
+
+function showNewCalendarMonth(anker){
+    buildCalendarDays(anker);
+    $("#" + anker + "-heading").text(monthNames[calendar[anker].config.month] + " " + calendar[anker].config.year);
+    markTodayInCalendar(anker);
+    makeCalendarDaysSelectable(anker); 
+    loadAlreadySelectedDates(anker);
+    showEvents(anker);
+}
+
+
+function loadAlreadySelectedDates(anker){
+    let data = calendar[anker].data;
+    if(data.selection.length = 0){
+        return;
+    }
+    for (let i in data.selection){
+        $div = $("#"+anker + " #"+data.selection[i].replace(/\s/g,'-'));
+        $button = $div.children("button");
+        if($button.length != 0){
+            $button.addClass("active");
+            $button.off("click");
+            $button.on("click",{"anker" : anker}, function(e){
+                removeDayFromSelection(this, e.data.anker);
+            })     
+        }  
+    }
+}
+
+function updateSelectionInData(anker, selection){
+    calendar[anker].data.selection = selection;
+}
+
+function updateEventsInData(anker, events){
+    calendar[anker].data.events = events;     
+}
+
+function reloadCalendar(anker){
+    buildCalendarDays(anker);
+    $("#" + anker + "-heading").text(monthNames[calendar[anker].config.month] + " " + calendar[anker].config.year);
+    markTodayInCalendar(anker);
+    makeCalendarDaysSelectable(anker); 
+    loadAlreadySelectedDates(anker);
+    showEvents(anker);
+}
+
+function showEvents(anker){
+    let data = calendar[anker].data;
+    let config = calendar[anker].config;
+    for(let i = 0; i < data.events.length; i++){
+        if(config.events.showDate == true){
+            if(data.events[i].date){
+                showDate(anker, i);
+            }
+        }
+        if(config.events.showDate == true){
+            if(data.events[i].dates.length != 0){
+                showDates(anker, i);
+            }
+        }
+    }
+}
+
+function showDate(anker, i){
+    let data = calendar[anker].data;
+    addEvent(anker, i, new Date(data.events[i].date).toDateString(), false);
+}
+
+function showDates(anker, i){
+    let data = calendar[anker].data;
+    let config = calendar[anker].config;
+    for(let k = 0; k < data.events[i].dates.length; k++){
+        addEvents(anker, i, data.events[i].dates[k], true);
+    }    
+}
+
+
+
+
+function addEvent(anker, i, dateString){
+    let data = calendar[anker].data;
+    var divEventContainer = $("#" + dateString.replace(/\s/g,'-')).children(".calendar-events").first();
+    if(divEventContainer.length == 0){
+        return;
+    }
+    if(!data.events[i].hasOwnProperty("display_name")){
+        data.events[i].display_name = "Something went wrong";
+    }
+    if(!data.events[i].ag.hasOwnProperty("color")){
+        data.events[i].ag.color = "primary";
+    }
+    let aEvent = $("<a></a>").addClass("has-icon-right text-light calendar-event bg-"+data.events[i].ag.color).text(" " + data.events[i].display_name).attr("href", "/ag/"+ data.events[i].ag.name +"/event/"+data.events[i].id);
+    let icon = $("<i></i>").addClass("icon icon-check");
+    aEvent.prepend(icon);
+    divEventContainer.append(aEvent);
+}
+
+function addEvents(anker, i, date){
+    let data = calendar[anker].data;
+    dateString = new Date(date.day).toDateString();
+    var divEventContainer = $("#" + dateString.replace(/\s/g,'-')).children(".calendar-events").first();
+    if(divEventContainer.length == 0){
+        return;
+    }
+    if(!data.events[i].hasOwnProperty("display_name")){
+        data.events[i].display_name = "Something went wrong";
+    }
+    if(!data.events[i].ag.hasOwnProperty("color")){
+        data.events[i].ag.color = "primary";
+    }
+    let aEvent = $("<a></a>").addClass("has-icon-right text-light calendar-event bg-"+data.events[i].ag.color).text(date.count+": " + data.events[i].display_name).attr("href", "/ag/"+ data.events[i].ag.name +"/event/"+data.events[i].id);
+    divEventContainer.append(aEvent);     
 }

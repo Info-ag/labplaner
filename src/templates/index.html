@@ -7,8 +7,11 @@
         </h3>
         <div class="docs-note">
             <div class="columns">
-                <div class="column col-4 col-md-12" id="calendar-anker">
+                <div class="column col-12 col-md-12" id="calendar-anker">
                     
+                </div>
+                <div class="column col-12">
+                    <button id="write-selection-in-database" type="button" onclick⁼"writeSelectionInDatabase('calendar-anker')" class="btn loading">Write selected dates in the database</button>
                 </div>
             </div>
         </div>
@@ -51,6 +54,6 @@
 
 <script src="/static/js/jquery.min.js"></script>    
 <script src="/static/js/cal.js"></script>
-<script>
-    buildBasis(4, 2018, "calendar-anker", {"size" : false, "mode": 1});</script>
+<script src="/static/js/dashboard.js">
+</script>
 {% endblock %}

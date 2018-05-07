@@ -4,7 +4,7 @@
     <script src="/static/js/jquery.min.js"></script>
 {% endblock %}
 {% block content %}
-    <section id="content" style="margin-top:80px">
+    <section id="content">
         <section class="hero hero-fill d-block">
             <div class="container grid-xs p-2" style="background: white">
                 <div class="columns">
@@ -26,13 +26,13 @@
                             <fieldset id="agAddFormFieldset">
                                 <div class="form-group">
                                     <label data-tooltip="Maximum 48 characters & 'A-z,0-9,-, ,_' & no '_, ,-' at the front or end"
-                                           class="form-label tooltip tooltip-top" for="name">Displayname*</label>
-                                    <input class="form-input" required autocomplete="displayname" type="text"
-                                           name="displayname"
-                                           id="displayname"
+                                           class="form-label tooltip tooltip-top" for="display_name">Display Name*</label>
+                                    <input class="form-input" required autocomplete="display_name" type="text"
+                                           name="display_name"
+                                           id="display_name"
                                            maxlength="48"
                                            pattern="^([A-Za-z0-9]+([A-Za-z0-9_\s-]*[A-Za-z0-9]+)*){1,48}$"
-                                           placeholder="Displayname">
+                                           placeholder="Display Name">
                                 </div>
                                 <div class="form-group">
                                     <label data-tooltip="Maximum 16 characters & 'A-z,0-9,-,_'"
@@ -58,7 +58,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label" for="color">Color*</label>
-                                    <select class="form-select">
+                                    <select class="form-select" name="color" id="color">
                                             <option value="primary" class="bg-primary">Blau</option>
                                             <option value="dark" class="bg-dark">Grau</option>
                                             <option value="success" class="bg-success">Grün</option>

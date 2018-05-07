@@ -1,7 +1,7 @@
 from app import db
 from app import ma
 
-from models.associations import DateEvent
+from models.ag import AG, AGSchema
 
 
 class Event(db.Model):
@@ -11,11 +11,15 @@ class Event(db.Model):
     display_name = db.Column(db.String(48), nullable=False)
     description = db.Column(db.String(280), nullable=False)
     date = db.Column(db.Date, nullable=True)
-    ag = db.Column(db.Integer, db.ForeignKey("ags.id"))
+    ag_id = db.Column(db.Integer, db.ForeignKey("ags.id"))
 
-    dates = db.relationship('Date', secondary="date_event_association")
+    ag = db.relationship(AG)
+    dates = db.relationship('Date', secondary="events_dates")
 
 
 class EventSchema(ma.Schema):
+    ag = ma.Nested(AGSchema)
+    dates = ma.Nested("DateSchema", many=True)
+
     class Meta:
-        fields = ('id', 'display_name', 'ag', 'dates')
+        fields = ('id', "date", 'display_name', "ag", 'dates')

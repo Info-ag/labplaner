@@ -1,4 +1,6 @@
 # Labplaner
+[![Build Status](https://travis-ci.org/Info-ag/labplaner.svg?branch=master)](https://travis-ci.org/Info-ag/labplaner)
+
 Labplaner is a web application specifically build for the [Life-Science Lab Heidelberg](https://www.life-science-lab.org).  
 It combines multiple polls into one to avoid conflicts and provides you with an optimal date for the next meeting.
 
@@ -42,26 +44,70 @@ For a clean setup run:
 ```text
 ├── LICENSE
 ├── README.md
-├── clear-db.sh
 ├── requirements.txt
-├── setupdb.sh
+├── setupdb.sh                  # Setup MySQL/MariaDB database
+├── clear-db.sh                 # Reset SQLite database
+├── config
+    └── development.json        # Config file while developing
 └── src                         # Main source code
-    ├── algorithm.py            # Algorithm for finding the best date
     ├── app.py                  # Entry point
-    ├── blueprints              # Routes
+    ├── blueprints              # Route
+    │   ├── ag.py
     │   ├── auth.py
+    │   ├── cal.py
     │   └── api
     │       └── v1
-    │           └── api.py
+    │           ├── api.py
+    │           ├── user.py
+    │           ├── ag.py
+    │           ├── date.py
+    │           └── event.py
     ├── dbconfig.py             # DB configuration
     ├── models                  # DB models
-    │   └── user.py
+    │   ├── user.py
+    │   ├── ag.py
+    │   ├── date.py
+    │   ├── event.py
+    │   └── associations.py
     ├── static                  # Static files
     │   ├── css
+    │   │   ├── docs.min.css
+    │   │   ├── main.css
+    │   │   ├── spectre-exp.min.css
+    │   │   ├── spectre-icons.min.css
+    │   │   └── spectre.min.css
     │   └── js
+    │       ├── cal.js
+    │       ├── jquery.min.js
+    │       └── pages
+    │           ├── ag
+    │           │   ├── add.js
+    │           │   ├── dashboard.js
+    │           │   ├── invite.js
+    │           │   └── event
+    │           │      └── add.js
+    │           └── auth
+    │               ├── login.js
+    │               └── signup.js
     ├── templates               # Jinja Templates
     │   ├── base.html
-    │   └── index.html
+    │   ├── base_sidebar.html
+    │   ├── index.html
+    │   ├── ag
+    │   │   ├── add.html
+    │   │   ├── dashboard.html
+    │   │   ├── invite.html
+    │   │   └── event
+    │   │      └── add.html
+    │   ├── api
+    │   │   └── v1
+    │   │       └── index.html
+    │   ├── auth
+    │   │   ├── login.html
+    │   │   └── signup.html
+    │   └── cal
+    │       └── index.html
+    ├── algorithm.py            # Algorithm for finding the best date
     └── utils.py                # Helper functions
 ```
 

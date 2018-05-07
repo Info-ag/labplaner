@@ -1,22 +1,31 @@
 from app import db
 from app import ma
 
-from models.event import Event
+from models.event import EventSchema
 
-from models.associations import DateUser, DateEvent
 
 class Date(db.Model):
     __tablename__ = 'dates'
-
     id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
-    day = db.Column(db.Date, nullable=False)
+    day = db.Column(db.Date, nullable=False, unique=True)
 
-    event = db.Column(db.Integer, db.ForeignKey('events.id'))
-
-    events = db.relationship('Event', secondary="date_event_association")
-    users = db.relationship('User', secondary="user_date_asscociation")
+    users = db.relationship('User', secondary="users_dates")
+    events = db.relationship("Event", secondary="events_dates")
 
 
 class DateSchema(ma.Schema):
+    count = ma.Method("count_users")
+
+    def count_users(self, obj: Date):
+        event_id = self.context.get("event_id")
+        users = []
+        for user in obj.users:  # that
+            for ag in user.ags:  # shit
+                for event in ag.events:  # is
+                    if event.id == event_id:  # damn
+                        users.append(user)  # nested
+
+        return len(users)
+
     class Meta:
-        fields = ('id', 'day', 'event', 'events')
+        fields = ('id', 'day', 'count')
