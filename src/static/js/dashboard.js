@@ -50,8 +50,8 @@ beforeSend: function () {
 
 function writeSelectionInDatabase(){
     $.ajax({
-        type: 'GET',
-        url: "/api/v1/user/self/update",
+        type: 'POST',
+        url: "/api/v1/user/self/dates",
         data: returnCalendarSelected(anker),
         dataType: "json",
         cache: false,
