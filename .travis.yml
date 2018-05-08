@@ -1,0 +1,21 @@
+notifications:
+        email:
+                recepients:
+                        - jonas.drotleff@gmail.com
+                on_success: never
+                on_failure: always
+
+language: python
+python:
+        - "3.6"
+env:
+        global:
+                - FLASK_APP="src/app.py"
+                - FLASK_DEBUG=1
+                - CONFIG="config/development.json"
+install:
+        - pip install -r requirements.txt
+script:
+        - CONFIG=config/development.json python -m flask db init
+        - python -m flask db merge -m "init"
+        - python -m flask db upgrade

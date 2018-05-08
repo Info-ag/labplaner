@@ -1,4 +1,6 @@
 # Labplaner
+[![Build Status](https://travis-ci.org/Info-ag/labplaner.svg?branch=master)](https://travis-ci.org/Info-ag/labplaner)
+
 Labplaner is a web application specifically build for the [Life-Science Lab Heidelberg](https://www.life-science-lab.org).  
 It combines multiple polls into one to avoid conflicts and provides you with an optimal date for the next meeting.
 

@@ -42,12 +42,20 @@ beforeSend: function () {
     return true;
 }
 }).done(function (response) {
-    updateSelectionInData("calendar-anker", response.dates);
-    console.log(response);
+    if(typeof calendar["calendar-anker"].data.selection == undefined){
+        calendar["calendar-anker"].data.selection = new Array();
+    }
+    for (let i = 0; i < response.dates.length ; i++){
+        calendar["calendar-anker"].data.selection[calendar["calendar-anker"].data.selection.length] =  (new Date(response.dates[i].day)).toDateString();
+    }
     reloadCalendar("calendar-anker");
     $("#write-selection-in-database").removeClass("loading");
 }).fail(function (data) {
 });
+
+$("#write-selection-in-database").on("click", function(){
+    writeSelectionInDatabase("calendar-anker");
+})
 
 function writeSelectionInDatabase(anker){
     $.ajax({
