@@ -42,11 +42,13 @@ def do_your_work():
                 z_max_i = best_date_for_event(event_i)
                 best_dates.append(z_max_i)
                 # set the date so we do not have to do it later
-                event_i.date = z_max_i
+                event_i.date = z_max_i.day
 
         conflict, pos = has_conflicts(best_dates)
         if not conflict:
             break
+
+        print(f"Conflict: {conflict}")
 
         # damn
         # this is where the work begins...
@@ -58,13 +60,22 @@ def do_your_work():
         for user_n in z_max_n.users:
             for user_m in z_max_m.users:
                 if user_n is user_m and user_n not in users:
+                    print(user_n)
                     users.append(user_n)
 
-        u_remove = chunks(users, int(len(users)/2))
-        for u_n in u_remove[0]:
-            z_max_n.users.remove(u_n)
-        for u_m in u_remove[1]:
-            z_max_m.users.remove(u_m)
+        if len(users) > 1:
+            u_remove = list(chunks(users, int(len(users)/2)))
+            for u_n in list(u_remove[0]):
+                z_max_n.users.remove(u_n)
+            for u_m in list(u_remove[1]):
+                z_max_m.users.remove(u_m)
+        elif len(users) != 0: 
+            z_max_n.users.remove(users[0])
+        else:
+            break
+
+
+    db.session.commit()
 
 
 def best_date_for_event(event: Event):
