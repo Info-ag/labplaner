@@ -420,7 +420,7 @@ function showNewCalendarMonth(anker){
 
 function loadAlreadySelectedDates(anker){
     let data = calendar[anker].data;
-    if(data.selection.length = 0){
+    if(data.selection.length == 0){
         return;
     }
     for (let i in data.selection){
