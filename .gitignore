@@ -111,3 +111,4 @@ ENV/
 # IntelliJ
 .idea
 .vscode/launch.json
+.vscode/settings.json
