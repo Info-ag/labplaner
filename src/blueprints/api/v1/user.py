@@ -119,7 +119,7 @@ def get_events_for_user():
     ags = UserAG.query.filter_by(user_id=g.session.user_id)
     event_list = {'events': []}
     for ag in ags:
-        events = Event.query.filter_by(ag_id=ag.id)
+        events = Event.query.filter_by(ag_id=ag.ag_id)
         for event in events:
             event_schema.context = {"event_id": event.id}
             event_list['events'].append(event_schema.dump(event)[0])
