@@ -1,7 +1,6 @@
-from app import db
-from app import ma
+from src.main import db, ma
 
-from models.ag import AG, AGSchema
+from src.models.ag import AG, AGSchema
 
 
 class Event(db.Model):

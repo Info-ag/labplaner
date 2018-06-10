@@ -4,14 +4,14 @@ import json
 from flask import Blueprint, request, jsonify, g
 from werkzeug.exceptions import NotFound, Unauthorized, BadRequest, Forbidden
 
-from app import db
-import utils
-import algorithm
+from src.main import db
+from src.utils import requires_auth
+import src.algorithm
 
-from models.user import User, UserSchema, UserSchemaDates
-from models.associations import UserDate, UserAG
-from models.date import Date
-from models.event import Event, EventSchema
+from src.models.user import User, UserSchema, UserSchemaDates
+from src.models.associations import UserDate, UserAG
+from src.models.date import Date
+from src.models.event import Event, EventSchema
 
 bp = Blueprint("user_api", __name__)
 
@@ -81,7 +81,7 @@ def get_all_users():
 
 
 @bp.route("/self/dates", methods=["POST"])
-@utils.requires_auth()
+@requires_auth()
 def set_dates():
     user = g.user
 
@@ -103,13 +103,13 @@ def set_dates():
         db.session.add(u)
     db.session.commit()
 
-    algorithm.do_your_work()
+    src.algorithm.do_your_work()
 
     return jsonify({"status": "success", "redirect": "/"}), 200
 
 
 @bp.route("/self/dates", methods=["GET"])
-@utils.requires_auth()
+@requires_auth()
 def get_dates():
     user = User.query.filter_by(id=g.session.user_id).scalar()
 
@@ -117,7 +117,7 @@ def get_dates():
 
 
 @bp.route("/self/events", methods=["GET"])
-@utils.requires_auth()
+@requires_auth()
 def get_events_for_user():
     ags = UserAG.query.filter_by(user_id=g.session.user_id)
     event_list = {'events': []}

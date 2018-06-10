@@ -6,12 +6,12 @@ from datetime import datetime, timedelta
 import bcrypt
 from sqlalchemy.sql import exists
 
-from app import app, ma, db
+from src.main import app, ma, db
 
-from models.ag import AG, AGSchema
-from models.date import Date, DateSchema
-from models.event import Event
-from models.associations import UserAG, UserDate
+from src.models.ag import AG, AGSchema
+from src.models.date import Date, DateSchema
+from src.models.event import Event
+from src.models.associations import UserAG, UserDate
 
 
 class User(db.Model):

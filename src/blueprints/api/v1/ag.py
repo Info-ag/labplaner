@@ -4,12 +4,12 @@ from flask import Blueprint, request, jsonify, g
 from sqlalchemy.sql import exists
 from werkzeug.exceptions import NotFound, BadRequest, Forbidden
 
-from models.ag import AG, AGSchema, AGSchemaIntern
-from models.user import User
-from models.associations import UserAG
-from app import db
+from src.models.ag import AG, AGSchema, AGSchemaIntern
+from src.models.user import User
+from src.models.associations import UserAG
+from src.main import db
 
-import utils
+from src.utils import requires_auth
 
 bp = Blueprint("ag_api", __name__)
 
@@ -23,7 +23,7 @@ regex_match_description = r'^(?!^.{141})([A-Za-z0-9]+([A-Za-z0-9_\s-]*[A-Za-z0-9
 
 
 @bp.route("/", methods=["POST"])
-@utils.requires_auth()
+@requires_auth()
 def add_ag():
     """
     Create a new AG. The request body has to inclurde the following:
@@ -68,7 +68,7 @@ def add_ag():
 
 
 @bp.route("/id/<ag_id>", methods=["GET"])
-@utils.requires_auth()
+@requires_auth()
 def get_ag_by_id(ag_id):
     """
     Query an AG specified by its id
@@ -86,7 +86,7 @@ def get_ag_by_id(ag_id):
 
 
 @bp.route("/name/<name>", methods=["GET"])
-@utils.requires_auth()
+@requires_auth()
 def get_ag_by_name(name):
     """
     Query an AG specified by its unique name
@@ -104,7 +104,7 @@ def get_ag_by_name(name):
 
 
 @bp.route("/<ag_id>/invite", methods=["POST"])
-@utils.requires_auth()
+@requires_auth()
 def add_user_to_ag(ag_id):
     """
     Invite (a) user(s) to a specific AG.
@@ -143,7 +143,7 @@ def add_user_to_ag(ag_id):
 
 
 @bp.route("/<ag_id>", methods=["PUT"])
-@utils.requires_auth()
+@requires_auth()
 def change_ag_values(ag_id):
     """
     Change values of an AG.
@@ -186,7 +186,7 @@ def change_ag_values(ag_id):
 
 
 @bp.route("/", methods=["GET"])
-@utils.requires_auth()
+@requires_auth()
 def get_all_ags():
     count = request.args.get('count', default=5, type=int)
     offset = request.args.get('offset', default=0, type=int)

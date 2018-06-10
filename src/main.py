@@ -7,7 +7,8 @@ from flask_marshmallow import Marshmallow
 from flask import render_template, request, redirect, url_for, flash, g
 
 app = Flask(__name__)
-app.config.from_json(os.path.join(os.getcwd(), os.environ["CONFIG"]))
+config = os.environ.get("LAB_CONFIG", default="config/dev.cfg")
+app.config.from_envvar(os.path.abspath(config))
 app.secret_key = app.secret_key.encode()
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
@@ -26,7 +27,7 @@ from src.blueprints import auth
 from src.blueprints import ag
 from src.blueprints import cal
 from src.blueprints import pizza
-import src.utils
+from src.utils import after_this_request
 
 
 @app.after_request
@@ -57,7 +58,7 @@ def auth_middleware():
     if g.session.authenticated:
         g.user = User.query.get(g.session.user_id)
 
-    @src.utils.after_this_request
+    @after_this_request
     def set_cookie(response):
         response.set_cookie("sid", g.session.get_string_cookie(),
                             httponly=True, expires=g.session.expires)

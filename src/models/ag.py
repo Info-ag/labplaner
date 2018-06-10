@@ -1,5 +1,4 @@
-from app import db
-from app import ma
+from src.main import db, ma
 
 
 class AG(db.Model):

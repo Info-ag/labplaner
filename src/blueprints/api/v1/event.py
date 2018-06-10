@@ -4,14 +4,14 @@ from flask import Blueprint, request, jsonify, g
 from sqlalchemy.sql import exists
 from werkzeug.exceptions import NotFound, Unauthorized
 
-import utils
+from src.utils import requires_auth
 
-from models.event import Event, EventSchema
-from models.ag import AG
-from models.date import Date
-from models.associations import UserAG
+from src.models.event import Event, EventSchema
+from src.models.ag import AG
+from src.models.date import Date
+from src.models.associations import UserAG
 
-from app import db
+from src.main import db
 
 bp = Blueprint("event_api", __name__)
 
@@ -20,7 +20,7 @@ events_schema = EventSchema(many=True)
 
 
 @bp.route("/", methods=["POST"])
-@utils.requires_auth()
+@requires_auth()
 def add_event():
     ag_id = request.values.get("ag")
 
