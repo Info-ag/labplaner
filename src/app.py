@@ -25,6 +25,7 @@ from blueprints.api.v1 import date as date_api
 from blueprints import auth
 from blueprints import ag
 from blueprints import cal
+from blueprints import pizza
 import utils
 
 
@@ -70,6 +71,7 @@ app.register_blueprint(date_api.bp, url_prefix="/api/v1/date")
 app.register_blueprint(auth.bp, url_prefix="/auth")
 app.register_blueprint(ag.bp, url_prefix="/ag")
 app.register_blueprint(cal.bp, url_prefix="/cal")
+app.register_blueprint(pizza.bp, url_prefix="/pizza")
 
 
 @app.route('/')
@@ -82,4 +84,4 @@ def index():
 
 
 if __name__ == '__main__':
-    app.run(host='172.24.1.169', port=5000, debug=True)
+    app.run(host='127.0.0.1', port=5000, debug=True)
