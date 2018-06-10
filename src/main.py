@@ -13,20 +13,20 @@ db = SQLAlchemy(app)
 ma = Marshmallow(app)
 migrate = Migrate(app, db)
 
-from models.user import Session, User
+from src.models.user import Session, User
 
 db.create_all()
 
-from blueprints.api.v1 import api
-from blueprints.api.v1 import user
-from blueprints.api.v1 import ag as ag_api
-from blueprints.api.v1 import event as event_api
-from blueprints.api.v1 import date as date_api
-from blueprints import auth
-from blueprints import ag
-from blueprints import cal
-from blueprints import pizza
-import utils
+from src.blueprints.api.v1 import api
+from src.blueprints.api.v1 import user
+from src.blueprints.api.v1 import ag as ag_api
+from src.blueprints.api.v1 import event as event_api
+from src.blueprints.api.v1 import date as date_api
+from src.blueprints import auth
+from src.blueprints import ag
+from src.blueprints import cal
+from src.blueprints import pizza
+import src.utils
 
 
 @app.after_request
@@ -57,7 +57,7 @@ def auth_middleware():
     if g.session.authenticated:
         g.user = User.query.get(g.session.user_id)
 
-    @utils.after_this_request
+    @src.utils.after_this_request
     def set_cookie(response):
         response.set_cookie("sid", g.session.get_string_cookie(),
                             httponly=True, expires=g.session.expires)
@@ -81,7 +81,3 @@ def index():
         return redirect(url_for("auth.login_get"))
 
     return render_template('index.html', title="Dashboard")
-
-
-if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=5000, debug=True)
