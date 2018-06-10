@@ -8,7 +8,7 @@ from flask import render_template, request, redirect, url_for, flash, g
 
 app = Flask(__name__)
 config = os.environ.get("LAB_CONFIG", default="config/dev.cfg")
-app.config.from_envvar(os.path.abspath(config))
+app.config.from_pyfile(os.path.abspath(config))
 app.secret_key = app.secret_key.encode()
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
