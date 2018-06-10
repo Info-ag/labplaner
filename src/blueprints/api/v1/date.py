@@ -4,12 +4,12 @@ from sqlalchemy.sql import exists
 from werkzeug.exceptions import NotFound
 from flask import Blueprint, jsonify, g
 
-import utils
+from src.utils import requires_auth
 
-from app import db
+from src.main import db
 
-from models.associations import UserAG
-from models.date import Date, DateSchema
+from src.models.associations import UserAG
+from src.models.date import Date, DateSchema
 
 bp = Blueprint("date_api", __name__)
 
@@ -18,7 +18,7 @@ dates_schema = DateSchema(many=True)
 
 
 @bp.route("/id/<date_id>", methods=["GET"])
-@utils.requires_auth()
+@requires_auth()
 def get_date_by_id(date_id):
     """
         Query an date specified by its id

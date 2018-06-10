@@ -1,4 +1,4 @@
-from app import db
+from src.main import db
 
 
 class UserAG(db.Model):

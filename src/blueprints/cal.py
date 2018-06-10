@@ -1,6 +1,6 @@
 from flask import Blueprint, flash, g, redirect, render_template, url_for
-from models.user import User, Session
-from app import db
+from src.models.user import User, Session
+from src.main import db
 
 bp = Blueprint("cal", __name__)
 
