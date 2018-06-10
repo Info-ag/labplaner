@@ -32,6 +32,7 @@ class UserDate(db.Model):
 
     date_id = db.Column(db.Integer, db.ForeignKey('dates.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    event_id = db.Column(db.Integer, db.ForeignKey('events.id'))
 
     def __repr__(self):
         return f"<UserDate {self.id}>"
