@@ -22,7 +22,7 @@ $("#form-create-event").submit(function (event) {
     console.log(formData);
     $.ajax({
         type: 'POST',
-        url: "/api/v1/event/",
+        url: eventUrl,
         data: formData,
         dataType: "json",
         cache: false,

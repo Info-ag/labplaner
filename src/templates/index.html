@@ -12,11 +12,7 @@
                 </div>
                 <div class="column col-12">
                     <button id="write-selection-in-database" type="button" class="btn loading">Update</button>
-		</div>
-
-
-
-
+		        </div>
             </div>
         </div>
     </div>
@@ -56,6 +52,11 @@
         </div>
     </div>
 
+    <script>
+    var selfEventsUrl = "{{url_for('user_api.get_events_for_user')}}";
+    var selfGetDatesUrl = "{{url_for('user_api.get_dates')}}";
+    var selfSetDatesUrl = "{{url_for('user_api.set_dates')}}";
+    </script>
 <script src="/static/js/jquery.min.js"></script>    
 <script src="/static/js/cal.js"></script>
 <script src="/static/js/dashboard.js">

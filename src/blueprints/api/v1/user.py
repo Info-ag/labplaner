@@ -13,7 +13,7 @@ from src.models.associations import UserDate, UserAG
 from src.models.date import Date
 from src.models.event import Event, EventSchema
 
-bp = Blueprint("user_api", __name__)
+bp = Blueprint('user_api', __name__)
 
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
@@ -22,22 +22,22 @@ event_schema = EventSchema()
 events_schema = EventSchema(many=True)
 
 
-@bp.route("/", methods=["POST"])
+@bp.route('/', methods=['POST'])
 def add_user():
     try:
-        username = request.values["username"]
+        username = request.values['username']
         if db.session.query(User).filter_by(username=username).scalar() is not None:
             return BadRequest(description='Username already exists')
-        email = request.values["email"]
+        email = request.values.get('email')
         if db.session.query(User).filter_by(email=email).scalar() is not None:
             return BadRequest(description='Email already exists')
-        password = request.values["password"]
+        password = request.values.get('password')
         if len(password) < 8:
             return BadRequest(description='Keylength too short')
         user = User()
-        user.username = request.values["username"]
-        user.email = request.values["email"]
-        user.set_password(request.values["password"])
+        user.username = request.values['username']
+        user.email = request.values['email']
+        user.set_password(request.values['password'])
 
         db.session.add(user)
         db.session.commit()
@@ -47,13 +47,13 @@ def add_user():
         return BadRequest()
 
 
-@bp.route("/id/<uid>", methods=["GET"])
+@bp.route('/id/<uid>', methods=['GET'])
 def get_user_by_id(uid):
     user = User.query.get(uid)
     return user_schema.jsonify(user)
 
 
-@bp.route("/username/<username>", methods=["GET"])
+@bp.route('/username/<username>', methods=['GET'])
 def get_user_by_username(username):
     user = User.query.filter_by(username=username).scalar()
     return user_schema.jsonify(user)
@@ -64,11 +64,11 @@ def query_by_username(query: str, count=5):
         count = 20
 
     users: list = User.query.filter(
-        User.username.ilike("%" + "%".join(query[i:i + 1] for i in range(0, len(query), 1)) + "%")).all()
+        User.username.ilike('%' + '%'.join(query[i:i + 1] for i in range(0, len(query), 1)) + '%')).all()
     return users_schema.jsonify(users[:len(users) if len(users) < count else count])
 
 
-@bp.route("/", methods=["GET"])
+@bp.route('/', methods=['GET'])
 def get_all_users():
     if request.args.get('query', default=None, type=str) is not None:
         return query_by_username(
@@ -80,7 +80,7 @@ def get_all_users():
     return users_schema.jsonify(all_users[:len(all_users) if len(all_users) < count else count])
 
 
-@bp.route("/self/dates", methods=["POST"])
+@bp.route('/self/dates', methods=['POST'])
 @requires_auth()
 def set_dates():
     user = g.user
@@ -88,9 +88,9 @@ def set_dates():
     UserDate.query.filter_by(user_id=g.session.user_id).delete()
     db.session.commit()
 
-    dates = request.values.getlist("dates[]")
+    dates = request.values.getlist('dates[]')
     for _date in dates:
-        d = datetime.datetime.strptime(_date, "%a %b %d %Y")
+        d = datetime.datetime.strptime(_date, '%a %b %d %Y')
         if not db.session.query(Date).filter_by(day=d.isoformat()[:10]).scalar():
             date_obj = Date()
             date_obj.day = d
@@ -105,10 +105,10 @@ def set_dates():
 
     src.algorithm.do_your_work()
 
-    return jsonify({"status": "success", "redirect": "/"}), 200
+    return jsonify({'status': 'success', 'redirect': '/'}), 200
 
 
-@bp.route("/self/dates", methods=["GET"])
+@bp.route('/self/dates', methods=['GET'])
 @requires_auth()
 def get_dates():
     user = User.query.filter_by(id=g.session.user_id).scalar()
@@ -116,7 +116,7 @@ def get_dates():
     return user_dates_schema.jsonify(user)
 
 
-@bp.route("/self/events", methods=["GET"])
+@bp.route('/self/events', methods=['GET'])
 @requires_auth()
 def get_events_for_user():
     ags = UserAG.query.filter_by(user_id=g.session.user_id)
@@ -124,7 +124,7 @@ def get_events_for_user():
     for ag in ags:
         events = Event.query.filter_by(ag_id=ag.ag_id)
         for event in events:
-            event_schema.context = {"event_id": event.id}
+            event_schema.context = {'event_id': event.id}
             event_list['events'].append(event_schema.dump(event)[0])
 
     return jsonify(event_list)

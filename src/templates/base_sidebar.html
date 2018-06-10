@@ -24,11 +24,11 @@
                             <ul class="menu menu-nav">
                                 {% for ag in g.user.ags %}
                                     <li class="menu-item">
-                                        <a href="/ag/{{ ag.name }}">{{ ag.display_name }}</a>
+                                        <a href="{{url_for('ag.ag_dashboard', ag_name=ag.name)}}">{{ ag.display_name }}</a>
                                     </li>
                                 {% endfor %}
                                 <li class="menu-item">
-                                    <a href="/ag/add">+ Add</a>
+                                    <a href="{{url_for('ag.create_ag')}}">+ Add</a>
                                 </li>
                             </ul>
                         </div>
@@ -41,13 +41,13 @@
                         <div class="accordion-body">
                             <ul class="menu menu-nav">
                                 <li class="menu-item">
-                                    <a href="/cal">Calendar</a>
+                                    <a href="{{url_for('cal.get')}}">Calendar</a>
                                 </li>
                                 <li class="menu-item">
                                     <a href="/me">Settings</a>
                                 </li>
                                 <li class="menu-item">
-                                    <a href="/auth/logout">Logout</a>
+                                    <a href="{{url_for('auth.logout')}}">Logout</a>
                                 </li>
                             </ul>
                         </div>

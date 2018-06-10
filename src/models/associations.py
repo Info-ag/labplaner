@@ -7,12 +7,12 @@ class UserAG(db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     ag_id = db.Column(db.Integer, db.ForeignKey('ags.id'))
-    role = db.Column(db.String(11), nullable=False, default="NONE")
+    role = db.Column(db.String(11), nullable=False, default='NONE')
 
-    # either "MENTOR", "PARTICIPANT" or "NONE"
+    # either 'MENTOR', 'PARTICIPANT' or 'NONE'
 
     def __repr__(self):
-        return f"<UserAG {self.id}>"
+        return f'<UserAG {self.id}>'
 
 
 class EventDate(db.Model):
@@ -23,7 +23,7 @@ class EventDate(db.Model):
     event_id = db.Column(db.Integer, db.ForeignKey('events.id'))
 
     def __repr__(self):
-        return f"<EventDate {self.id}>"
+        return f'<EventDate {self.id}>'
 
 
 class UserDate(db.Model):
@@ -35,4 +35,4 @@ class UserDate(db.Model):
     event_id = db.Column(db.Integer, db.ForeignKey('events.id'))
 
     def __repr__(self):
-        return f"<UserDate {self.id}>"
+        return f'<UserDate {self.id}>'

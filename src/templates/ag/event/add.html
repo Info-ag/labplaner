@@ -41,5 +41,8 @@
     </div>
 {% endblock %}
 {% block scripts %}
+    <script>
+        eventUrl = "{{url_for('event_api.add_event')}}";
+    </script>
     <script src="/static/js/pages/ag/event/add.js"></script>
 {% endblock %}

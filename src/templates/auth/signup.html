@@ -76,8 +76,8 @@
                                 <p class="form-input-hint">All fields marked with an asterix (*) are required
                                     fields.</p>
                                 <div class="form-group float-right">
-                                    <a class="btn btn-link" href="{{ url_for("auth.login_get") }}">Already have an
-                                        account?</a>
+                                    <a class="btn btn-link" href="{{ url_for("auth.login_get", next=next) }}">Already have an
+                                            account?</a>
                                     <button id="signup" type="submit" value="Enter" class="btn active">Signup</button>
                                 </div>
                             </fieldset>
@@ -89,5 +89,9 @@
     </section>
 {% endblock %}
 {% block scripts %}
+    <script>
+        loginUrl = "{{url_for('auth.login_get', next=next)}}";
+        queryUsernameUrl = "{{url_for('user_api.get_user_by_username', username='')}}"
+    </script>
     <script src="/static/js/pages/auth/signup.js"></script>
 {% endblock %}

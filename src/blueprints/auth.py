@@ -2,40 +2,46 @@ from flask import Blueprint, request, jsonify, g, redirect, render_template, fla
 from src.models.user import User, Session
 from src.main import db
 
-bp = Blueprint("auth", __name__)
+bp = Blueprint('auth', __name__)
 
 
-@bp.route("/signup", methods=["GET"])
+@bp.route('/signup', methods=['GET'])
 def signup_get():
     if g.session.authenticated:
         flash(u'You are already logged in', 'success')
-        return redirect("/")
+        next_url = request.values.get('next', default='/')
+        return redirect(next_url)
+    next_url = request.values.get('next', default='/')
+    return render_template('auth/signup.html', title='Signup', next = next_url)
+        
 
-    return render_template('auth/signup.html', title="Signup")
 
-
-@bp.route("/login", methods=["GET"])
+@bp.route('/login', methods=['GET'])
 def login_get():
     if g.session.authenticated:
         flash(u'You are already logged in', 'success')
-        return redirect("/")
+        next_url = request.values.get('next', default='/')
+        return redirect(next_url)
 
-    return render_template('auth/login.html', title="Login")
+    
+    next_url = request.values.get('next', default='/')
+    return render_template('auth/login.html', title='Login', next=next_url)
 
 
-@bp.route("/login", methods=["POST"])
+@bp.route('/login', methods=['POST'])
 def login():
+    next_url = request.values.get('next', default='/')
     if g.session.authenticated:
-        return jsonify({"redirect": "/"}), 200
+        return jsonify({'redirect': next_url}), 200
 
     try:
-        email = request.values["email"]
-        if "@" in email:
+        email = request.values['email']
+        if '@' in email:
             user = User.query.filter_by(email=email).one()
         else:
             user = User.query.filter_by(username=email).one()
 
-        if user and user.check_password(request.values.get("password")):
+        if user and user.check_password(request.values.get('password')):
             g.session.revoked = True
             db.session.merge(g.session)
             db.session.commit()
@@ -44,13 +50,15 @@ def login():
             db.session.add(_session)
             db.session.commit()
             g.session = _session
-            return jsonify({"redirect": "/"}), 200
-        return jsonify({"Status": "Failed", "reason": "password"}), 406
+            return jsonify({'redirect': next_url}), 200
+        return jsonify({'Status': 'Failed', 'reason': 'password'}), 406
     except:
-        return jsonify({"Status": "Failed", "reason": "email"}), 406
+        return jsonify({'Status': 'Failed', 'reason': 'email'}), 406
 
 
-@bp.route("/logout")
+
+
+@bp.route('/logout')
 def logout():
     if g.session.authenticated:
         g.session.revoked = True
@@ -62,4 +70,4 @@ def logout():
         db.session.commit()
         g.session = _session
 
-    return redirect("/")
+    return redirect('/')

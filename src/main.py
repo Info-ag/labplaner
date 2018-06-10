@@ -7,7 +7,7 @@ from flask_marshmallow import Marshmallow
 from flask import render_template, request, redirect, url_for, flash, g
 
 app = Flask(__name__)
-config = os.environ.get("LAB_CONFIG", default="config/dev.cfg")
+config = os.environ.get('LAB_CONFIG', default='config/dev.cfg')
 app.config.from_pyfile(os.path.abspath(config))
 app.secret_key = app.secret_key.encode()
 db = SQLAlchemy(app)
@@ -24,7 +24,7 @@ from src.blueprints import auth
 from src.blueprints import ag
 from src.blueprints import cal
 from src.blueprints import pizza
-from src.utils import after_this_request
+from src.utils import after_this_request, requires_auth
 
 
 @app.after_request
@@ -36,7 +36,7 @@ def call_after_request_callbacks(response):
 
 @app.before_request
 def auth_middleware():
-    sid = request.cookies.get("sid", default="")
+    sid = request.cookies.get('sid', default='')
     if sid:
         session_result = Session.verify(sid)
         if session_result:
@@ -57,25 +57,22 @@ def auth_middleware():
 
     @after_this_request
     def set_cookie(response):
-        response.set_cookie("sid", g.session.get_string_cookie(),
+        response.set_cookie('sid', g.session.get_string_cookie(),
                             httponly=True, expires=g.session.expires)
 
 
-app.register_blueprint(api.bp, url_prefix="/api/v1")
-app.register_blueprint(user.bp, url_prefix="/api/v1/user")
-app.register_blueprint(ag_api.bp, url_prefix="/api/v1/ag")
-app.register_blueprint(event_api.bp, url_prefix="/api/v1/event")
-app.register_blueprint(date_api.bp, url_prefix="/api/v1/date")
-app.register_blueprint(auth.bp, url_prefix="/auth")
-app.register_blueprint(ag.bp, url_prefix="/ag")
-app.register_blueprint(cal.bp, url_prefix="/cal")
-app.register_blueprint(pizza.bp, url_prefix="/pizza")
+app.register_blueprint(api.bp, url_prefix='/api/v1')
+app.register_blueprint(user.bp, url_prefix='/api/v1/user')
+app.register_blueprint(ag_api.bp, url_prefix='/api/v1/ag')
+app.register_blueprint(event_api.bp, url_prefix='/api/v1/event')
+app.register_blueprint(date_api.bp, url_prefix='/api/v1/date')
+app.register_blueprint(auth.bp, url_prefix='/auth')
+app.register_blueprint(ag.bp, url_prefix='/ag')
+app.register_blueprint(cal.bp, url_prefix='/cal')
+app.register_blueprint(pizza.bp, url_prefix='/pizza')
 
 
 @app.route('/')
+@requires_auth()
 def index():
-    if not g.session.authenticated:
-        flash(u'You need to be logged in', 'error')
-        return redirect(url_for("auth.login_get"))
-
-    return render_template('index.html', title="Dashboard")
+    return render_template('index.html', title='Dashboard')

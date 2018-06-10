@@ -21,7 +21,7 @@ $(signUpForm).submit(function (event) {
         }).done(function () {
             $.ajax({
                 type: 'POST',
-                url: '/auth/login',
+                url: loginUrl,
                 data: formData,
                 dataType: "json",
                 cache: false
@@ -77,7 +77,7 @@ function doneTyping() {
     if (!$username.val()) return;
     $.ajax({
         type: 'GET',
-        url: '/api/v1/user/username/' + $username.val(),
+        url: queryUsernameUrl + $username.val(),
         data: "{}",
         dataType: "json",
         cache: false,

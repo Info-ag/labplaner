@@ -51,7 +51,7 @@ function doneTyping() {
     if (!$name.val()) return;
     $.ajax({
         type: 'GET',
-        url: '/api/v1/ag/name/' + $name.val(),
+        url: queryNameUrl + $name.val(),
         data: "{}",
         dataType: "json",
         cache: false,

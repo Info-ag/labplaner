@@ -13,27 +13,27 @@ from src.models.associations import UserAG
 
 from src.main import db
 
-bp = Blueprint("event_api", __name__)
+bp = Blueprint('event_api', __name__)
 
 event_schema = EventSchema()
 events_schema = EventSchema(many=True)
 
 
-@bp.route("/", methods=["POST"])
+@bp.route('/', methods=['POST'])
 @requires_auth()
 def add_event():
-    ag_id = request.values.get("ag")
+    ag_id = request.values.get('ag')
 
     if db.session.query(exists().where(AG.id == ag_id)).scalar():
         if db.session.query(exists().where(UserAG.user_id == g.session.user_id and UserAG.ag_id == ag_id)).scalar():
             user_ag = UserAG.query.filter_by(user_id=g.session.user_id, ag_id=ag_id).scalar()
-            if user_ag.role == "MENTOR":
-                display_name = request.values.get("display_name")
-                description = request.values.get("description")
+            if user_ag.role == 'MENTOR':
+                display_name = request.values.get('display_name')
+                description = request.values.get('description')
                 if len(display_name) == 0 or len(display_name) > 48:
-                    return jsonify({"reason": "display_name"}), 400
+                    return jsonify({'reason': 'display_name'}), 400
                 if len(description) > 280:
-                    return jsonify({"reason": "description"}), 400
+                    return jsonify({'reason': 'description'}), 400
 
                 event = Event()
                 event.display_name = display_name
@@ -43,9 +43,9 @@ def add_event():
 
                 db.session.add(event)
 
-                dates = request.values.getlist("dates[]")
+                dates = request.values.getlist('dates[]')
                 for _date in dates:
-                    d = datetime.datetime.strptime(_date, "%a %b %d %Y").date()
+                    d = datetime.datetime.strptime(_date, '%a %b %d %Y').date()
                     if db.session.query(exists().where(Date.day == d)).scalar():
                         u_date = Date.query.filter_by(day=d).scalar()
                         u_date.users.append(g.user)
@@ -59,31 +59,31 @@ def add_event():
                         db.session.add(date_obj)
 
                 db.session.commit()
-                return jsonify({"status": "success", "redirect": "/"}), 200
+                return jsonify({'status': 'success', 'redirect': '/'}), 200
 
         return Unauthorized()
     return NotFound()
 
 
-@bp.route("/id/<evid>", methods=["GET"])
+@bp.route('/id/<evid>', methods=['GET'])
 def get_event_by_id(evid):
     event = Event.query.get(evid)
     return event_schema.jsonify(event)
 
 
-@bp.route("/name/<name>", methods=["GET"])
+@bp.route('/name/<name>', methods=['GET'])
 def get_event_by_name(name):
     event = Event.query.filter_by(name=name).scalar()
     return event_schema.jsonify(event)
 
 
-@bp.route("/month/<month>", methods=["GET"])
+@bp.route('/month/<month>', methods=['GET'])
 def get_events_by_month(month):
     events = Date.query.filter((Date.events != None) | (Date.events != 0)).filter(Date.day.month == int(month))
     return event_schema.jsonify(events)
 
 
-@bp.route("/", methods=["GET"])
+@bp.route('/', methods=['GET'])
 def get_all_events():
     all_events = Event.query.all()
     result = events_schema.dump(all_events)

@@ -1,6 +1,6 @@
 from functools import wraps
 
-from flask import g
+from flask import g, redirect, url_for, request
 from werkzeug.exceptions import Unauthorized
 
 
@@ -9,7 +9,7 @@ def requires_auth():
         @wraps(f)
         def wrapped(*args, **kwargs):
             if not g.session.authenticated:
-                return Unauthorized()
+                return redirect(url_for('auth.login_get', next = request.url))
             else:
                 return f(*args, **kwargs)
         return wrapped
@@ -21,3 +21,4 @@ def after_this_request(f):
         g.after_request_callbacks = []
     g.after_request_callbacks.append(f)
     return f
+  

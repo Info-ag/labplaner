@@ -10,11 +10,11 @@ class AG(db.Model):
     display_name = db.Column(db.String(48), unique=True, nullable=False)
     description = db.Column(db.String(140), nullable=False)
 
-    users = db.relationship("User", secondary="users_ags")
-    events = db.relationship("Event")
+    users = db.relationship('User', secondary='users_ags')
+    events = db.relationship('Event')
 
     def __repr__(self):
-        return f"<AG {self.name}>"
+        return f'<AG {self.name}>'
 
 
 class AGSchema(ma.Schema):
@@ -22,7 +22,7 @@ class AGSchema(ma.Schema):
     events = ma.Nested('EventSchema', many=True, exclude=('ag',))
 
     class Meta:
-        fields = ("id", "name", "display_name", "description", "color")
+        fields = ('id', 'name', 'display_name', 'description', 'color')
 
 
 class AGSchemaIntern(ma.Schema):
@@ -30,4 +30,4 @@ class AGSchemaIntern(ma.Schema):
     events = ma.Nested('EventSchema', many=True, exclude=('ag',))
 
     class Meta:
-        fields = ("id", "name", "display_name", "description", "users", "events", "color")
+        fields = ('id', 'name', 'display_name', 'description', 'users', 'events', 'color')

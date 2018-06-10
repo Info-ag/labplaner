@@ -19,7 +19,7 @@ generateCalendar('calendar-anker');
 
 $.ajax({
 type: 'GET',
-url: "/api/v1/user/self/events",
+url: selfEventsUrl,
 data: {},
 dataType: "json",
 cache: false,
@@ -34,7 +34,7 @@ beforeSend: function () {
 
 $.ajax({
 type: 'GET',
-url: "/api/v1/user/self/dates",
+url: selfGetDatesUrl,
 data: {},
 dataType: "json",
 cache: false,
@@ -60,7 +60,7 @@ $("#write-selection-in-database").on("click", function(){
 function writeSelectionInDatabase(anker){
     $.ajax({
         type: 'POST',
-        url: "/api/v1/user/self/dates",
+        url: selfSetDatesUrl,
         data: {"dates" : returnCalendarSelected(anker)},
         dataType: "json",
         cache: false,

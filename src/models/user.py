@@ -21,9 +21,9 @@ class User(db.Model):
     email = db.Column(db.String(48), unique=True, nullable=False)
     password = db.Column(db.LargeBinary, nullable=False)
 
-    ags = db.relationship(AG, secondary="users_ags")
-    dates = db.relationship(Date, secondary="users_dates")
-    sessions = db.relationship("Session")
+    ags = db.relationship(AG, secondary='users_ags')
+    dates = db.relationship(Date, secondary='users_dates')
+    sessions = db.relationship('Session')
 
     def __repr__(self):
         return f'<User {self.username}>'
@@ -38,27 +38,27 @@ class User(db.Model):
 class UserSchema(ma.Schema):
     ags = ma.Nested(AGSchema, many=True, exclude=('users',))
     dates = ma.Nested(DateSchema, many=True, exclude=('user',))
-    picture = ma.Method("get_picture_for_user")
-    ag_role = ma.Method("get_role_for_ag")
+    picture = ma.Method('get_picture_for_user')
+    ag_role = ma.Method('get_role_for_ag')
 
     def get_picture_for_user(self, obj: User):
-        return "https://www.gravatar.com/avatar/" + hashlib.md5(obj.email.lower().encode()).hexdigest() + "?d=mm"
+        return 'https://www.gravatar.com/avatar/' + hashlib.md5(obj.email.lower().encode()).hexdigest() + '?d=mm'
 
     def get_role_for_ag(self, obj: User):
-        ag_id = self.context.get("ag_id")
+        ag_id = self.context.get('ag_id')
         if ag_id and db.session.query(exists().where(UserAG.user_id == obj.id and UserAG.ag_id == ag_id)).scalar():
             user_ag: UserAG = UserAG.query.filter_by(user_id=obj.id, ag_id=ag_id).scalar()
             return user_ag.role
         else:
-            return "NONE"
+            return 'NONE'
 
     class Meta:
-        fields = ('id', 'username', "ags", "picture", "ag_role", 'dates')
+        fields = ('id', 'username', 'ags', 'picture', 'ag_role', 'dates')
 
 
 class UserSchemaSelf(UserSchema):
     class Meta:
-        fields = ('id', 'username', "ags", "picture", "ag_role", "email")
+        fields = ('id', 'username', 'ags', 'picture', 'ag_role', 'email')
 
 
 class UserSchemaDates(ma.Schema):
@@ -71,7 +71,7 @@ class UserSchemaDates(ma.Schema):
 class Session(db.Model):
     __tablename__ = 'sessions'
     id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     expires = db.Column(db.DateTime, nullable=False)
     token = db.Column(db.String(64), nullable=False)
     public_token = db.Column(db.String(16), unique=True, nullable=False)
@@ -91,25 +91,25 @@ class Session(db.Model):
         self.expires = datetime.today() + timedelta(days=days)
 
     def get_string_cookie(self):
-        """
+        '''
         Generate a custom string cookie that includes both the public as well as the private token.
         :return: Cookie string
-        """
+        '''
         dig = hmac.new(app.secret_key, msg=self.token.encode('utf-8'), digestmod=hashlib.sha256).digest()
         str_dig = base64.b64encode(dig).decode()
         return f'{self.public_token}+{str_dig}'
 
     @staticmethod
     def verify(cookie: str):
-        """
+        '''
         Check if the provided cookie is part of a valid session.
-        :param cookie: String cookie: "public_token+hash(token)"
+        :param cookie: String cookie: 'public_token+hash(token)'
         :return: a Session object when the session cookie was valid, False if
             the session cookie was invalid
-        """
+        '''
         if cookie:
             # get public token from cookie string
-            pub = cookie.split("+")[0]
+            pub = cookie.split('+')[0]
             # check if a session with the public token exists
             if db.session.query(exists().where(Session.public_token == pub)).scalar():
                 # get the session from the db

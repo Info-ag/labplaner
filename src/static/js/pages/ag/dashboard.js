@@ -23,7 +23,7 @@ descriptionButton.on("click", function () {
 function submit(data) {
     $.ajax({
         type: 'PUT',
-        url: "/api/v1/ag/" + id,
+        url: changeValuesUrl + id,
         data: data,
         dataType: "json",
         cache: false,
