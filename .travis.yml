@@ -10,12 +10,8 @@ python:
         - "3.6"
 env:
         global:
-                - FLASK_APP="src/main.py"
-                - FLASK_DEBUG=1
-                - CONFIG="config/development.json"
+                - LAB_CONFIG="config/dev.cfg"
 install:
         - pip install -r requirements.txt
 script:
-        - CONFIG=config/development.json python -m flask db init
-        - python -m flask db merge -m "init"
-        - python -m flask db upgrade
+        - echo "test"

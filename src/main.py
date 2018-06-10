@@ -15,9 +15,6 @@ ma = Marshmallow(app)
 migrate = Migrate(app, db)
 
 from src.models.user import Session, User
-
-db.create_all()
-
 from src.blueprints.api.v1 import api
 from src.blueprints.api.v1 import user
 from src.blueprints.api.v1 import ag as ag_api
