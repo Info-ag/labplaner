@@ -131,8 +131,8 @@ def get_events_for_user():
 def get_inviteable_user(ag_name):
     if db.session.query(exists().where(AG.name == ag_name)).scalar():
         query = request.values.get('query')
-        ag_id = db.session.query(Ag).filter_by(name = ag_name).first().id
-        users = db.session.query(User).join(UserAg, and_(UserAg.ag_id == ag_id, UserAg.user_id == User.id), isouter = True).filter(and_(UserAg.ag_id == None, User.username.like(f'%{query}%')))
+        ag_id = db.session.query(AG).filter_by(name = ag_name).first().id
+        users = db.session.query(User).join(UserAG, and_(UserAG.ag_id == ag_id, UserAG.user_id == User.id), isouter = True).filter(and_(UserAG.ag_id == None, User.username.like(f'%{query}%')))
         return users_schema.jsonify(users)
     
     else:
