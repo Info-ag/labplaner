@@ -6,6 +6,7 @@ from werkzeug.exceptions import NotFound, Unauthorized, BadRequest, Forbidden
 
 from app import db
 import utils
+import algorithm
 
 from models.user import User, UserSchema, UserSchemaDates
 from models.associations import UserDate, UserAG
@@ -101,6 +102,8 @@ def set_dates():
 
         db.session.add(u)
     db.session.commit()
+
+    algorithm.do_your_work()
 
     return jsonify({"status": "success", "redirect": "/"}), 200
 
