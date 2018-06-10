@@ -3,6 +3,7 @@ import json
 
 from flask import Blueprint, request, jsonify, g
 from werkzeug.exceptions import NotFound, Unauthorized, BadRequest, Forbidden
+from sqlalchemy import exists, and_
 
 from app import db
 import utils
@@ -11,6 +12,7 @@ from models.user import User, UserSchema, UserSchemaDates
 from models.associations import UserDate, UserAG
 from models.date import Date
 from models.event import Event, EventSchema
+from models.ag import AG
 
 bp = Blueprint("user_api", __name__)
 

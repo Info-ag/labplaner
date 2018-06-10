@@ -44,4 +44,8 @@
 {% endblock %}
 {% block scripts %}
     <script src="/static/js/pages/ag/invite.js"></script>
+    <script>
+        var inviteUrl = "{{url_for('user_api.get_inviteable_user', ag_name = ag.data.name)}}";
+
+    </script>
 {% endblock %}

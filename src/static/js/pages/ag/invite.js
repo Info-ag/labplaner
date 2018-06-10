@@ -30,7 +30,7 @@ usernameInput.on("input", function () {
         }
         $.ajax({
             type: 'GET',
-            url: '/api/v1/user/?query=' + usernameInput.val() + "&count=5",
+            url: inviteUrl + '?query=' + usernameInput.val() + "&count=5",
             data: "{}",
             dataType: "json",
             cache: false,
