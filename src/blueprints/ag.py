@@ -4,7 +4,7 @@ from werkzeug.exceptions import NotFound, Unauthorized
 from models.associations import UserAG
 from models.ag import AG, AGSchema, AGSchemaIntern
 from app import db
-
+import utils
 bp = Blueprint("ag", __name__)
 
 ag_schema = AGSchema()
@@ -14,18 +14,14 @@ ags_schema = AGSchema(many=True)
 
 
 @bp.route("/add", methods=["GET"])
+@utils.requires_auth()
 def create_ag():
-    if not g.session.authenticated:
-        flash(u'You need to be logged in', 'error')
-        return redirect(url_for("auth.login"))
-
     return render_template('ag/add.html', title="Create AG")
 
 
 @bp.route("/<ag_name>", methods=["GET"])
+@utils.requires_auth()
 def ag_dashboard(ag_name):
-    if not g.session.authenticated:
-        return Unauthorized()
 
     if db.session.query(exists().where(AG.name == ag_name)).scalar():
         ag: AG = AG.query.filter_by(name=ag_name).scalar()
@@ -43,10 +39,8 @@ def ag_dashboard(ag_name):
 
 
 @bp.route("/<ag_name>/invite", methods=["GET"])
+@utils.requires_auth()
 def invite_ag(ag_name):
-    if not g.session.authenticated:
-        return Unauthorized()
-
     if db.session.query(exists().where(AG.name == ag_name)).scalar():
         ag: AG = AG.query.filter_by(name=ag_name).scalar()
         if db.session.query(exists().where(UserAG.user_id == g.session.user_id and UserAG.ag_id == ag.id)).scalar():
@@ -63,10 +57,8 @@ def invite_ag(ag_name):
 # Events
 
 @bp.route("/<ag_name>/event/add", methods=["GET"])
+@utils.requires_auth()
 def create_event(ag_name):
-    if not g.session.authenticated:
-        return Unauthorized()
-
     if db.session.query(exists().where(AG.name == ag_name)).scalar():
         ag: AG = AG.query.filter_by(name=ag_name).scalar()
         if db.session.query(exists().where(UserAG.user_id == g.session.user_id and UserAG.ag_id == ag.id)).scalar():

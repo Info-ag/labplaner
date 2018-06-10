@@ -76,7 +76,7 @@
                                 <p class="form-input-hint">All fields marked with an asterix (*) are required
                                     fields.</p>
                                 <div class="form-group float-right">
-                                    <a class="btn btn-link" href="{{ url_for("auth.login_get") }}">Already have an
+                                    <a class="btn btn-link" href="{{ url_for("auth.login_get", next=next) }}">Already have an
                                         account?</a>
                                     <button id="signup" type="submit" value="Enter" class="btn active">Signup</button>
                                 </div>
@@ -90,4 +90,7 @@
 {% endblock %}
 {% block scripts %}
     <script src="/static/js/pages/auth/signup.js"></script>
+    <script>
+    loginUrl = "{{url_for('auth.login_get', next=next)}}";
+    </script>
 {% endblock %}

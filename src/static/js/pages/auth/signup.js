@@ -21,7 +21,7 @@ $(signUpForm).submit(function (event) {
         }).done(function () {
             $.ajax({
                 type: 'POST',
-                url: '/auth/login',
+                url: loginUrl,
                 data: formData,
                 dataType: "json",
                 cache: false
