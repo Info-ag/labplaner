@@ -119,3 +119,39 @@ def has_conflicts(dates):
 def chunks(it, size):
     it = iter(it)
     return iter(lambda: tuple(islice(it, size)), ())
+
+
+
+
+
+def alg(ev1, ev2):
+    """
+    :param ev1 is an event_id
+    :param ev2 is an event_id
+    """
+    ev1_user_count = []
+    users_dates = db.session.query(UserDates).filter_by(event_id=ev1).all()
+    for user_date in users_dates:
+        if user_date.date_id in ev1_user_count:
+            ev1_user_count[user_date.date_id] += 1
+        else:
+            ev1_user_count[user_date.date_id] = 1
+
+    
+def best_date_for_event(event_id):
+     """
+     :param event_id specific id for an event
+     """
+     dic = {}
+     users_dates = db.session.query(UserDates).filter_by(event_id=event_id).all()
+     for user_date in users_dates:
+         if user_date.date_id in dic:
+             dic[user_date.date_id] += 1
+         else:
+             dic[user_date.date_id] = 1
+
+    return max(dic)
+    
+
+
+
