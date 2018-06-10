@@ -23,17 +23,17 @@ You might want to setup the MySQL Database: (No you dont yet)
 export variables(Linux/Mac OS only)
 
 ``` 
-export FLASK_APP="app.py"
+export FLASK_APP=src/app.py
 export FLASK_DEBUG=1
-export CONFIG="config/development.json"
+export CONFIG=config/development.json
 ```
 
 export variables(Windows)
 
 ``` 
-SET FLASK_APP="app.py"
+SET FLASK_APP=src/app.py
 SET FLASK_DEBUG=1
-SET CONFIG="config/development.json"
+SET CONFIG=config/development.json
 ```
 Prepare the database:
 ```bash
