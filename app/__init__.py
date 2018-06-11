@@ -16,7 +16,7 @@ ma = Marshmallow(app)
 migrate = Migrate(app, db)
 
 from app.models.user import Session, User
-from app.utils import after_this_request
+from app.utils import after_this_request, requires_auth
 @app.errorhandler(404)
 def not_found(error):
     return NotFound()
@@ -78,5 +78,6 @@ app.register_blueprint(pizza.bp, url_prefix='/pizza')
 
 
 @app.route('/')
+@requires_auth()
 def index():
     return render_template('index.html', title='Dashboard')

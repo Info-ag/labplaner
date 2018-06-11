@@ -13,7 +13,7 @@ class AG(db.Model):
 
     all_users = db.relationship('User', secondary='users_ags')
 
-    #users = db.relationship('User', secondary='users_ags', primaryjoin=and_(UserAG.user_id == User.id, id == UserAG.ag_id, UserAG.role != "NONE"))
+    users = db.relationship('User', secondary='users_ags', secondaryjoin='UserAG.role != "NONE"', viewonly=True)
     events = db.relationship('Event')
 
     def __repr__(self):
