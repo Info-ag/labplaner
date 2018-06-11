@@ -13,38 +13,21 @@ What you need:
 Make sure the requirements are installed using `pip`:
 ```bash
 python3 -m pip install -r requirements.txt
+# or
+pip3 install -r requirements.txt
 ```
 
-You might want to setup the MySQL Database: (No you dont yet)
+You may want to set the configuration file:
 ```bash
-./setupdb.sh
+export LAB_CONFIG=config/dev.cfg
+# dev is default
+# on Windows:
+set LAB_CONFIG=config/dev.cfg
 ```
 
-export variables(Linux/Mac OS only)
-
-``` 
-export FLASK_APP=src/app.py
-export FLASK_DEBUG=1
-export CONFIG=config/development.json
-```
-
-export variables(Windows)
-
-``` 
-SET FLASK_APP=src/app.py
-SET FLASK_DEBUG=1
-SET CONFIG=config/development.json
-```
-Prepare the database:
+You can run the server by executing `run.py`:
 ```bash
-python3.6 -m flask db init
-python3.6 -m flask db merge -m "init"
-python3.6 -m flask db upgrade
-```
-
-Finally, you can run the server:
-```bash
-python3.6 -m flask run
+python3 run.py
 ```
 
 ## Development

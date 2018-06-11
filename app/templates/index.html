@@ -1,0 +1,95 @@
+{% extends "base_sidebar.html" %}
+{% block content %}
+    <div id="invites" class="container">
+        <h3 class="s-title">
+            <a href="#invites" class="anchor" aria-hidden="true">#</a>
+            <span class="badge" data-badge="{{g.user.invites|length}}">
+                Invites
+            </span>
+        </h3>
+        <div class="docs-note">
+            <ul class="menu">
+                <li class="divider" data-content="INVITED">
+                </li>
+                {% for ag in g.user.invites %}
+                    <li class="menu-item">
+                        <a href="#">
+                            <div class="menu-badge">
+                                <a href="{{url_for('ag_api.accept_invitation', ag_name=ag.name)}}" class="btn btn-action btn-success">
+                                    <i class="icon icon-check"></i>
+                                </a>
+                                <a href="{{url_for('ag_api.decline_invitation', ag_name=ag.name)}}" class="btn btn-action btn-error">
+                                    <i class="icon icon-cross"></i>
+                                </a>
+                            </div>
+                            <a href="{{url_for('ag.ag_dashboard', ag_name=ag.name)}}">
+                                {{ ag.display_name }}
+                            </a>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div id="upcoming" class="container">
+        <h3 class="s-title">
+            <a href="#upcoming" class="anchor" aria-hidden="true">#</a>
+            Upcoming
+        </h3>
+        <div class="docs-note">
+            <div class="columns">
+                <div class="column col-12 col-md-12" id="calendar-anker">
+                    
+                </div>
+                <div class="column col-12">
+                    <button id="write-selection-in-database" type="button" class="btn loading">Update</button>
+		        </div>
+            </div>
+        </div>
+    </div>
+    <div id="messages" class="container">
+        <h3 class="s-title">
+            <a href="#messages" class="anchor" aria-hidden="true">#</a>
+            <span class="badge" data-badge="2">
+                Messages
+            </span>
+        </h3>
+        <div class="docs-note">
+            <ul class="menu">
+                <li class="divider" data-content="UNREAD">
+                </li>
+                <li class="menu-item">
+                    <a href="#">
+                        {% for ag in g.user.ags %}
+                            <div class="menu-badge">
+                                <label class="label label-primary">2</label>
+                            </div>
+                            <a href="/ag/{{ ag.name }}/messages">
+                                {{ ag.display_name }}
+                            </a>
+                        {% endfor %}
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="invites" class="container">
+        <h3 class="s-title">
+            <a href="#invites" class="anchor" aria-hidden="true">#</a>
+            Invites
+        </h3>
+        <div class="docs-note">
+            No invites pending.
+        </div>
+    </div>
+
+    <script>
+    var selfEventsUrl = "{{url_for('user_api.get_events_for_user')}}";
+    var selfGetDatesUrl = "{{url_for('user_api.get_dates')}}";
+    var selfSetDatesUrl = "{{url_for('user_api.set_dates')}}";
+    </script>
+<script src="/static/js/jquery.min.js"></script>    
+<script src="/static/js/cal.js"></script>
+<script src="/static/js/dashboard.js">
+</script>
+{% endblock %}

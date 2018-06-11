@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block body %}
+    <div class="docs-container off-canvas off-canvas-sidebar-show">
+        <div class="docs-navbar">
+            <a class="off-canvas-toggle btn btn-link btn-action" href="#sidebar">
+                <i class="icon icon-menu"></i>
+            </a>
+        </div>
+
+        <div id="sidebar" class="docs-sidebar off-canvas-sidebar">
+            <div class="docs-brand">
+                <a href="{{url_for('index')}}" class="docs-logo">
+                    <h2>Lab-Planer</h2>
+                </a>
+            </div>
+            <div class="docs-nav">
+                <div class="accordion-container">
+                    <div class="accordion">
+                        <input checked id="docs-accordion-1" name="docs-accordion-checkbox" hidden="" type="checkbox">
+                        <label class="accordion-header c-hand" for="docs-accordion-1">
+                            AGs
+                        </label>
+                        <div class="accordion-body">
+                            <ul class="menu menu-nav">
+                                {% for ag in g.user.ags %}
+                                    <li class="menu-item">
+                                        <a href="{{url_for('ag.ag_dashboard', ag_name=ag.name)}}">{{ ag.display_name }}</a>
+                                    </li>
+                                {% endfor %}
+                                <li class="menu-item">
+                                    <a href="{{url_for('ag.create_ag')}}">+ Add</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="accordion">
+                        <input checked id="docs-accordion-2" name="docs-accordion-checkbox" hidden="" type="checkbox">
+                        <label class="accordion-header c-hand" for="docs-accordion-2">
+                            Account
+                        </label>
+                        <div class="accordion-body">
+                            <ul class="menu menu-nav">
+                                <li class="menu-item">
+                                    <a href="{{url_for('cal.get')}}">Calendar</a>
+                                </li>
+                                <li class="menu-item">
+                                    <a href="/me">Settings</a>
+                                </li>
+                                <li class="menu-item">
+                                    <a href="{{url_for('auth.logout')}}">Logout</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <a class="off-canvas-overlay" href="#close"></a>
+
+        <div id="content" class="docs-content off-canvas-content">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+{% endblock %}

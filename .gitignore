@@ -2,8 +2,9 @@
 migrations
 
 config/production.json
+config/prod.cfg
 
-
+tags
 .idea
 
 # Byte-compiled / optimized / DLL files
@@ -111,3 +112,4 @@ ENV/
 # IntelliJ
 .idea
 .vscode/launch.json
+.vscode/settings.json

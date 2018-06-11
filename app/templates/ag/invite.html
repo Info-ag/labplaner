@@ -1,0 +1,55 @@
+{% extends "base_sidebar.html" %}
+{% block head %}
+    {{ super() }}
+    <script src="/static/js/jquery.min.js"></script>
+{% endblock %}
+{% block content %}
+    <section id="content" style="padding-top:80px">
+        <section class="hero hero-fill d-block">
+            <div class="container grid-xs p-2" style="background: white">
+                <div class="columns">
+                    <div class="column">
+                        <div class="text-center my-2">
+                            <h3>Invite
+                                <small class="label">{{ ag.data.display_name }}</small>
+                            </h3>
+                        </div>
+                        <ul class="step my-2">
+                            <li class="step-item">
+                                <a>Create AG</a>
+                            </li>
+                            <li class="step-item active">
+                                <a>Invite People</a>
+                            </li>
+                        </ul>
+                        <form id="invite-form" action="{{url_for('ag_api.add_user_to_ag', ag_id=ag.data.id)}}" method="post">
+                            <div class="form-autocomplete my-2">
+                                <div class="form-autocomplete-input form-input has-icon-right">
+                                    <input autocomplete="off" class="form-input" id="usernameInput" type="text" placeholder="typing here">
+                                    <i class="form-icon loading" id="input-loading" style="display: none"></i>
+                                </div>
+                                <ul id="menu-anker" class="menu" style="display: none">
+                                </ul>
+                            </div>
+                            <div class="form-group float-right">
+                                <a href="{{url_for('ag.ag_dashboard', ag_name=ag.data.name)}}" class="btn btn-link">Not now...</a>
+                                <button type="submit" id="invite" class="btn active">Invite</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </section>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        var inviteUrl = "{{url_for('ag_api.get_inviteable_user', ag_name = ag.data.name)}}";
+    </script>
+    <script src="/static/js/pages/ag/invite.js"></script>
+    <script>
+        var inviteUrl = "{{url_for('user_api.get_inviteable_user', ag_name = ag.data.name)}}";
+
+    </script>
+{% endblock %}
