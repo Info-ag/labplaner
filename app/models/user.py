@@ -4,14 +4,12 @@ import hashlib
 import base64
 from datetime import datetime, timedelta
 import bcrypt
-from sqlalchemy.sql import exists
+from sqlalchemy.sql import exists, and_
 
-from src.main import app, ma, db
-
-from src.models.ag import AG, AGSchema
-from src.models.date import Date, DateSchema
-from src.models.event import Event
-from src.models.associations import UserAG, UserDate
+from app import app, ma, db
+from app.models.ag import AGSchema, AG
+from app.models.associations import UserAG 
+from app.models.date import DateSchema
 
 
 class User(db.Model):
@@ -21,8 +19,10 @@ class User(db.Model):
     email = db.Column(db.String(48), unique=True, nullable=False)
     password = db.Column(db.LargeBinary, nullable=False)
 
-    ags = db.relationship(AG, secondary='users_ags')
-    dates = db.relationship(Date, secondary='users_dates')
+    all_ags = db.relationship('AG', secondary='users_ags')
+    ags = db.relationship('AG', secondary='users_ags', primaryjoin=and_(id == UserAG.user_id, AG.id == UserAG.ag_id, UserAG.role != "NONE"))
+    invites = db.relationship('AG', secondary='users_ags', primaryjoin=and_(id == UserAG.user_id, AG.id == UserAG.ag_id, UserAG.status == "INVITED"))
+    dates = db.relationship('Date', secondary='users_dates')
     sessions = db.relationship('Session')
 
     def __repr__(self):
@@ -121,5 +121,5 @@ class Session(db.Model):
         return False
 
 
-def __repr__(self):
-    return f'<Session {self.id}>'
+    def __repr__(self):
+        return f'<Session {self.id}>'

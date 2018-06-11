@@ -80,7 +80,7 @@
 {% endblock %}
 {% block scripts %}
     <script>
-        var queryNameUrl = "{{url_for('ag_api.get_ag_by_name', name='')}}";
+        var queryNameUrl = "{{url_for('ag_api.get_ag_by_name', ag_name='')}}";
     </script>
     <script src="/static/js/pages/ag/add.js"></script>
 {% endblock %}

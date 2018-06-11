@@ -1,5 +1,36 @@
 {% extends "base_sidebar.html" %}
 {% block content %}
+    <div id="invites" class="container">
+        <h3 class="s-title">
+            <a href="#invites" class="anchor" aria-hidden="true">#</a>
+            <span class="badge" data-badge="{{g.user.invites|length}}">
+                Invites
+            </span>
+        </h3>
+        <div class="docs-note">
+            <ul class="menu">
+                <li class="divider" data-content="INVITED">
+                </li>
+                {% for ag in g.user.invites %}
+                    <li class="menu-item">
+                        <a href="#">
+                            <div class="menu-badge">
+                                <a href="{{url_for('ag_api.accept_invitation', ag_name=ag.name)}}" class="btn btn-action btn-success">
+                                    <i class="icon icon-check"></i>
+                                </a>
+                                <a href="{{url_for('ag_api.decline_invitation', ag_name=ag.name)}}" class="btn btn-action btn-error">
+                                    <i class="icon icon-cross"></i>
+                                </a>
+                            </div>
+                            <a href="{{url_for('ag.ag_dashboard', ag_name=ag.name)}}">
+                                {{ ag.display_name }}
+                            </a>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
     <div id="upcoming" class="container">
         <h3 class="s-title">
             <a href="#upcoming" class="anchor" aria-hidden="true">#</a>

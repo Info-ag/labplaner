@@ -1,6 +1,6 @@
-from src.main import db, ma
+from app import db, ma
 
-from src.models.event import EventSchema
+from app.models.event import EventSchema
 
 
 class Date(db.Model):

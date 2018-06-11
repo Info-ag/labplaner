@@ -1,15 +1,15 @@
 import re
 
-from flask import Blueprint, request, jsonify, g
+from flask import Blueprint, request, jsonify, g, url_for, flash, redirect
 from sqlalchemy.sql import exists, and_
-from werkzeug.exceptions import NotFound, BadRequest, Forbidden
+from werkzeug.exceptions import NotFound, BadRequest, Forbidden, PreconditionFailed
 
-from src.models.ag import AG, AGSchema, AGSchemaIntern
-from src.models.user import User, UserSchema
-from src.models.associations import UserAG
-from src.main import db
+from app.models.ag import AG, AGSchema, AGSchemaIntern
+from app.models.user import User, UserSchema
+from app.models.associations import UserAG
+from app import db
 
-from src.utils import requires_auth, requires_mentor, requires_ag
+from app.utils import requires_auth, requires_mentor, requires_ag, requires_member_association
 
 from config.regex import ag_regex
 
@@ -58,12 +58,13 @@ def add_ag():
     user_ag = UserAG()
     user_ag.user_id = g.session.user_id
     user_ag.ag_id = ag.id
+    user_ag.status = 'ACTIVE'
     user_ag.role = 'MENTOR'
 
     db.session.add(user_ag)
     db.session.commit()
 
-    return jsonify({'status': 'success', 'redirect': f'/ag/{name}/invite'}), 200
+    return jsonify({'status': 'success', 'redirect': url_for('ag.invite_ag', ag_name=ag.name)}), 200
 
 
 @bp.route('/id/<ag_id>', methods=['GET'])
@@ -116,7 +117,9 @@ def add_user_to_ag(ag_id, ag, user_ag):
                 continue
 
             new_user_ag = UserAG()
-            new_user_ag.role = 'PARTICIPANT'
+            new_user_ag.role = 'NONE'
+            new_user_ag.status = 'INVITED'
+
             new_user_ag.user_id = user.id
             new_user_ag.ag_id = ag.id
 
@@ -181,3 +184,32 @@ def get_inviteable_user(ag_name, ag):
     query = request.values.get('query', default='')
     users = db.session.query(User).join(UserAG, and_(UserAG.ag_id == ag.id, UserAG.user_id == User.id), isouter = True).filter(and_(UserAG.ag_id == None, User.username.like(f'%{query}%')))
     return users_schema.jsonify(users)
+
+@bp.route('ag/invitation/<ag_name>/accept')
+@requires_auth()
+@requires_member_association()
+def accept_invitation(ag_name, ag, user_ag):
+    if user_ag.role != "NONE" or user_ag.status != "INVITED":
+        flash(f'This invitartion is invalid')
+        return redirect(url_for('index'))
+    user_ag.role = "PARTICIPANT"
+    user_ag.status = "ACTIVE"
+    db.session.add(user_ag)
+    db.session.commit()
+    flash(f'You successfully accepted the invitation to {ag.display_name}')
+    return redirect(url_for('ag.ag_dashboard', ag_name=ag_name))
+    
+
+@bp.route('ag/invitation/<ag_name>/decline')
+@requires_auth()
+@requires_member_association()
+def decline_invitation(ag_name, ag, user_ag):
+    print( user_ag.role)
+    if user_ag.role != "NONE" or user_ag.status != "INVITED":
+        flash(f'This invitartion is invalid')
+        return redirect(url_for('index'))
+    user_ag.status = "DECLINED"
+    db.session.add(user_ag)
+    db.session.commit()
+    flash(f'You successfully declined the invitation to {ag.display_name}')
+    return redirect(url_for('index'))

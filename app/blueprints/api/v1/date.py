@@ -4,12 +4,12 @@ from sqlalchemy.sql import exists
 from werkzeug.exceptions import NotFound
 from flask import Blueprint, jsonify, g
 
-from src.utils import requires_auth
+from app.utils import requires_auth
 
-from src.main import db
+from app import db
 
-from src.models.associations import UserAG
-from src.models.date import Date, DateSchema
+from app.models.associations import UserAG
+from app.models.date import Date, DateSchema
 
 bp = Blueprint('date_api', __name__)
 

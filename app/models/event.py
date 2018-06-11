@@ -1,6 +1,6 @@
-from src.main import db, ma
+from app import db, ma
 
-from src.models.ag import AG, AGSchema
+from app.models.ag import AGSchema
 
 
 class Event(db.Model):
@@ -12,7 +12,7 @@ class Event(db.Model):
     date = db.Column(db.Date, nullable=True)
     ag_id = db.Column(db.Integer, db.ForeignKey('ags.id'))
 
-    ag = db.relationship(AG)
+    ag = db.relationship('AG')
     dates = db.relationship('Date', secondary='events_dates')
 
 

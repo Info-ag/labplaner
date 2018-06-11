@@ -1,7 +1,6 @@
 from flask import Blueprint, flash, g, redirect, render_template, url_for
-from src.models.user import User, Session
-from src.main import db
-from src.utils import requires_auth
+from app import db
+from app.utils import requires_auth
 bp = Blueprint('pizza', __name__)
 
 

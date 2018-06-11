@@ -1,5 +1,6 @@
-from src.main import db, ma
-
+from app import db, ma
+from sqlalchemy import and_
+from app.models.associations import UserAG 
 
 class AG(db.Model):
     __tablename__ = 'ags'
@@ -10,7 +11,9 @@ class AG(db.Model):
     display_name = db.Column(db.String(48), unique=True, nullable=False)
     description = db.Column(db.String(140), nullable=False)
 
-    users = db.relationship('User', secondary='users_ags')
+    all_users = db.relationship('User', secondary='users_ags')
+
+    #users = db.relationship('User', secondary='users_ags', primaryjoin=and_(UserAG.user_id == User.id, id == UserAG.ag_id, UserAG.role != "NONE"))
     events = db.relationship('Event')
 
     def __repr__(self):

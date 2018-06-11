@@ -1,10 +1,10 @@
 from flask import Blueprint, g, redirect, render_template, url_for, flash
 from sqlalchemy.sql import exists
 from werkzeug.exceptions import NotFound, Unauthorized
-from src.models.associations import UserAG
-from src.models.ag import AG, AGSchema, AGSchemaIntern
-from src.main import db
-from src.utils import requires_auth, requires_mentor, requires_membership
+from app.models.associations import UserAG
+from app.models.ag import AG, AGSchema, AGSchemaIntern
+from app import db
+from app.utils import requires_auth, requires_mentor, requires_membership
 
 from config.regex import ag_regex
 
@@ -23,6 +23,7 @@ def create_ag():
 
 
 @bp.route('/<ag_name>', methods=['GET'])
+@requires_auth()
 @requires_membership()
 def ag_dashboard(ag_name, ag, user_ag):
     schema = AGSchemaIntern()
@@ -32,6 +33,7 @@ def ag_dashboard(ag_name, ag, user_ag):
 
 
 @bp.route('/<ag_name>/invite', methods=['GET'])
+@requires_auth()
 @requires_mentor()
 def invite_ag(ag_name, ag, user_ag):
     return render_template('ag/invite.html', ag=ag_schema_intern.dump(ag), title=f'Invite {ag.display_name}')
@@ -40,11 +42,13 @@ def invite_ag(ag_name, ag, user_ag):
 # Events
 
 @bp.route('/<ag_name>/event/add', methods=['GET'])
+@requires_auth()
 @requires_mentor()
 def create_event(ag_name, ag, user_ag):
     return render_template('ag/event/add.html', ag=ag_schema_intern.dump(ag), title=f'New Event {ag.display_name}')
 
 @bp.route('/<ag_name>/settings', methods=['GET'])
+@requires_auth()
 @requires_mentor()
 def ag_settings(ag_name, ag, user_ag):
     return render_template('ag/settings.html', title='Create AG')

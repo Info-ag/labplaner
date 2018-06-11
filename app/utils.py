@@ -2,12 +2,11 @@ from functools import wraps
 
 from flask import g, redirect, url_for, request
 from sqlalchemy import exists
-from src.main import db
-from src.models.ag import AG
-from src.models.associations import UserAG
+from app import db
+from app.models.ag import AG
+from app.models.associations import UserAG
 
 from werkzeug.exceptions import Unauthorized, NotFound
-import inspect
 
 
 def requires_auth():
@@ -40,7 +39,7 @@ def requires_existing_ag():
             elif db.session.query(exists().where(AG.name == ag_name)).scalar() and ag_name is not None:
                 ag: AG = AG.query.filter_by(name=ag_name).scalar()
             else:
-                return NotFound(description="AG could not be found") 
+                return NotFound(description='AG could not be found') 
             kwargs.setdefault('ag', ag)
             return f(*args, **kwargs)
         return wrapped
@@ -58,7 +57,7 @@ def requires_ag():
             elif ag_name is not None:
                 ag: AG = AG.query.filter_by(name=ag_name).scalar()
             else:
-                return NotFound(description="AG could not be found")
+                return NotFound(description='AG could not be found')
             kwargs.setdefault('ag', ag)
             return f(*args, **kwargs)
         return wrapped
@@ -77,6 +76,18 @@ def requires_member():
         return wrapped
     return wrapper
 
+def requires_member_association():
+    def wrapper(f):
+        @wraps(f)
+        @requires_member()
+        def wrapped(*args, **kwargs):
+            ag = kwargs.get('ag')
+            user_ag = UserAG.query.filter_by(user_id=g.session.user_id, ag_id=ag.id).scalar()
+            kwargs.setdefault('user_ag', user_ag)
+            return f(*args, **kwargs)
+        return wrapped
+    return wrapper
+
 def requires_membership():
     def wrapper(f):
         @wraps(f)
@@ -84,7 +95,7 @@ def requires_membership():
         def wrapped(*args, **kwargs):
             ag = kwargs.get('ag')
             user_ag = UserAG.query.filter_by(user_id=g.session.user_id, ag_id=ag.id).scalar()
-            if(user_ag.role != "NONE"):
+            if(user_ag.role != 'NONE'):
                 kwargs.setdefault('user_ag', user_ag)
                 return f(*args, **kwargs)
             else:
@@ -101,7 +112,8 @@ def requires_mentor():
             if user_ag.role == 'MENTOR':
                 return f(*args, **kwargs)
             else:
-                return Unauthorized(description="you need to be mentor")
+                return Unauthorized(description='you need to be mentor')
         return wrapped
     return wrapper
+
 

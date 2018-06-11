@@ -1,4 +1,4 @@
-from src.main import db
+from app import db
 
 
 class UserAG(db.Model):
@@ -8,6 +8,7 @@ class UserAG(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     ag_id = db.Column(db.Integer, db.ForeignKey('ags.id'))
     role = db.Column(db.String(11), nullable=False, default='NONE')
+    status = db.Column(db.String(11), nullable=False, default='NONE')
 
     # either 'MENTOR', 'PARTICIPANT' or 'NONE'
 

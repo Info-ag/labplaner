@@ -4,14 +4,14 @@ import json
 from flask import Blueprint, request, jsonify, g
 from werkzeug.exceptions import NotFound, Unauthorized, BadRequest, Forbidden
 
-from src.main import db
-from src.utils import requires_auth
-import src.algorithm
+from app import db
+from app.utils import requires_auth
+import app.algorithm
 
-from src.models.user import User, UserSchema, UserSchemaDates
-from src.models.associations import UserDate, UserAG
-from src.models.date import Date
-from src.models.event import Event, EventSchema
+from app.models.user import User, UserSchema, UserSchemaDates
+from app.models.associations import UserDate, UserAG
+from app.models.date import Date
+from app.models.event import Event, EventSchema
 
 bp = Blueprint('user_api', __name__)
 
@@ -103,7 +103,7 @@ def set_dates():
         db.session.add(u)
     db.session.commit()
 
-    src.algorithm.do_your_work()
+    app.algorithm.do_your_work()
 
     return jsonify({'status': 'success', 'redirect': '/'}), 200
 

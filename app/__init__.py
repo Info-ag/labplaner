@@ -1,12 +1,13 @@
+
 import os
-from flask import Flask
+from flask import Flask, render_template, request, redirect, url_for, flash, g
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_marshmallow import Marshmallow
-
-from flask import render_template, request, redirect, url_for, flash, g
-
+from werkzeug.exceptions import NotFound
 app = Flask(__name__)
+
+
 config = os.environ.get('LAB_CONFIG', default='config/dev.cfg')
 app.config.from_pyfile(os.path.abspath(config))
 app.secret_key = app.secret_key.encode()
@@ -14,17 +15,11 @@ db = SQLAlchemy(app)
 ma = Marshmallow(app)
 migrate = Migrate(app, db)
 
-from src.models.user import Session, User
-from src.blueprints.api.v1 import api
-from src.blueprints.api.v1 import user
-from src.blueprints.api.v1 import ag as ag_api
-from src.blueprints.api.v1 import event as event_api
-from src.blueprints.api.v1 import date as date_api
-from src.blueprints import auth
-from src.blueprints import ag
-from src.blueprints import cal
-from src.blueprints import pizza
-from src.utils import after_this_request, requires_auth
+from app.models.user import Session, User
+from app.utils import after_this_request
+@app.errorhandler(404)
+def not_found(error):
+    return NotFound()
 
 
 @app.after_request
@@ -61,6 +56,16 @@ def auth_middleware():
                             httponly=True, expires=g.session.expires)
 
 
+
+from app.blueprints.api.v1 import api
+from app.blueprints.api.v1 import user
+from app.blueprints.api.v1 import ag as ag_api
+from app.blueprints.api.v1 import event as event_api
+from app.blueprints.api.v1 import date as date_api
+from app.blueprints import auth
+from app.blueprints import ag
+from app.blueprints import cal
+from app.blueprints import pizza
 app.register_blueprint(api.bp, url_prefix='/api/v1')
 app.register_blueprint(user.bp, url_prefix='/api/v1/user')
 app.register_blueprint(ag_api.bp, url_prefix='/api/v1/ag')
@@ -73,6 +78,5 @@ app.register_blueprint(pizza.bp, url_prefix='/pizza')
 
 
 @app.route('/')
-@requires_auth()
 def index():
     return render_template('index.html', title='Dashboard')
