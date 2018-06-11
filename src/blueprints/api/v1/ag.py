@@ -9,7 +9,7 @@ from src.models.user import User, UserSchema
 from src.models.associations import UserAG
 from src.main import db
 
-from src.utils import requires_auth
+from src.utils import requires_auth, requires_mentor, requires_ag
 
 from config.regex import ag_regex
 
@@ -68,43 +68,38 @@ def add_ag():
 
 @bp.route('/id/<ag_id>', methods=['GET'])
 @requires_auth()
-def get_ag_by_id(ag_id):
+@requires_ag()
+def get_ag_by_id(ag_id, ag):
     '''
     Query an AG specified by its id
     :param ag_id: A specific id
     :return: JSON representation of the AG
     '''
-    if db.session.query(exists().where(AG.id == ag_id)).scalar():
-        ag = AG.query.get(ag_id).scalar()
-        if db.session.query(exists().where(UserAG.user_id == g.session.user_id and UserAG.ag_id == ag_id)).scalar():
-            return ag_schema_intern.jsonify(ag), 200
-        else:
-            return ag_schema.jsonify(ag), 200
+    if db.session.query(exists().where(UserAG.user_id == g.session.user_id and UserAG.ag_id == ag_id)).scalar():
+        return ag_schema_intern.jsonify(ag), 200
     else:
-        return NotFound()
+        return ag_schema.jsonify(ag), 200
 
 
-@bp.route('/name/<name>', methods=['GET'])
+@bp.route('/name/<ag_name>', methods=['GET'])
 @requires_auth()
-def get_ag_by_name(name):
+@requires_ag()
+def get_ag_by_name(ag_name, ag):
     '''
     Query an AG specified by its unique name
     :param name: A specific AG name
     :return: JSON representation of the AG
     '''
-    if db.session.query(exists().where(AG.name == name)).scalar():
-        ag = AG.query.filter_by(name=name).scalar()
-        if db.session.query(exists().where(UserAG.user_id == g.session.user_id and UserAG.ag_id == ag.id)).scalar():
-            return ag_schema_intern.jsonify(ag), 200
-        else:
-            return ag_schema.jsonify(ag), 200
+    if db.session.query(exists().where(UserAG.user_id == g.session.user_id and UserAG.ag_id == ag.id)).scalar():
+        return ag_schema_intern.jsonify(ag), 200
     else:
-        return NotFound()
+        return ag_schema.jsonify(ag), 200
 
 
 @bp.route('/<ag_id>/invite', methods=['POST'])
 @requires_auth()
-def add_user_to_ag(ag_id):
+@requires_mentor()
+def add_user_to_ag(ag_id, ag, user_ag):
     '''
     Invite (a) user(s) to a specific AG.
     The request body has to include the following:
@@ -112,38 +107,28 @@ def add_user_to_ag(ag_id):
     :param ag_id: The id of the AG
     :return: Redirect to the next step if all went as expected
     '''
-    if db.session.query(exists().where(AG.id == ag_id)).scalar():
-        if db.session.query(exists().where(UserAG.user_id == g.session.user_id and UserAG.ag_id == ag_id)).scalar():
-            user_ag = UserAG.query.filter_by(user_id=g.session.user_id, ag_id=ag_id).scalar()
-            if user_ag.role == 'MENTOR':
-                ag: AG = AG.query.filter_by(id=ag_id).scalar()
-                for username in request.values.getlist('users[]'):
-                    if db.session.query(exists().where(User.username == username)).scalar():
-                        user: User = User.query.filter_by(username=username).scalar()
-                        print(user)
+    for username in request.values.getlist('users[]'):
+        if db.session.query(exists().where(User.username == username)).scalar():
+            user: User = User.query.filter_by(username=username).scalar()
+            print(user)
 
-                        if db.session.query(UserAG.query.filter_by(user_id=user.id, ag_id=ag.id).exists()).scalar():
-                            continue
+            if db.session.query(UserAG.query.filter_by(user_id=user.id, ag_id=ag.id).exists()).scalar():
+                continue
 
-                        new_user_ag = UserAG()
-                        new_user_ag.role = 'PARTICIPANT'
-                        new_user_ag.user_id = user.id
-                        new_user_ag.ag_id = ag.id
+            new_user_ag = UserAG()
+            new_user_ag.role = 'PARTICIPANT'
+            new_user_ag.user_id = user.id
+            new_user_ag.ag_id = ag.id
 
-                        db.session.add(new_user_ag)
+            db.session.add(new_user_ag)
 
-                db.session.commit()
-                return jsonify({'redirect': f'/ag/{ag.name}'}), 200
-        # Either there is no relationship between the ag and the authenticated user
-        # or the user is not a mentor of the ag.
-        return Forbidden()
-    else:
-        return NotFound()
-
+    db.session.commit()
+    return jsonify({'redirect': f'/ag/{ag.name}'}), 200
 
 @bp.route('/<ag_id>', methods=['PUT'])
 @requires_auth()
-def change_ag_values(ag_id):
+@requires_mentor()
+def change_ag_values(ag_id, ag, user_ag):
     '''
     Change values of an AG.
     The request body may include the following:
@@ -152,36 +137,27 @@ def change_ag_values(ag_id):
     :param ag_id: AG id for which ag the provided values should be changed
     :return:
     '''
-    if db.session.query(exists().where(AG.id == ag_id)).scalar():
-        if db.session.query(exists().where(UserAG.user_id == g.session.user_id and UserAG.ag_id == ag_id)).scalar():
-            user_ag = UserAG.query.filter_by(user_id=g.session.user_id, ag_id=ag_id).scalar()
-            if user_ag.role == 'MENTOR':
-                ag: AG = AG.query.filter_by(id=ag_id).scalar()
+    ag: AG = AG.query.filter_by(id=ag_id).scalar()
 
-                display_name = request.values.get('display_name')
-                description = request.values.get('description')
+    display_name = request.values.get('display_name', default=None)
+    description = request.values.get('description', default=None)
 
-                value_changed = False
+    value_changed = False
 
-                if bool(re.match(regex_match_display_name, display_name)):
-                    ag.display_name = display_name
-                    value_changed = True
-                if bool(re.match(regex_match_description, description)):
-                    ag.description = description
-                    value_changed = True
+    if display_name is not None and bool(re.match(ag_regex.display_name, display_name)):
+        ag.display_name = display_name
+        value_changed = True
+    if description is not None and bool(re.match(ag_regex.description, description)):
+        ag.description = description
+        value_changed = True
 
-                if value_changed:
-                    db.session.merge(ag)
-                    db.session.commit()
-                    return jsonify({'status': 'success'}), 200
-                else:
-                    return BadRequest()
-
-        # Either there is no relationship between the ag and the authenticated user
-        # or the user is not a mentor of the ag.
-        return Forbidden()
+    if value_changed:
+        db.session.merge(ag)
+        db.session.commit()
+        return jsonify({'status': 'success'}), 200
     else:
-        return NotFound()
+        return BadRequest()
+
 
 
 @bp.route('/', methods=['GET'])
@@ -200,12 +176,8 @@ def get_all_ags():
 
 @bp.route('<ag_name>/user/inviteable', methods=['GET'])
 @requires_auth()
-def get_inviteable_user(ag_name):
-    if db.session.query(exists().where(AG.name == ag_name)).scalar():
-        query = request.values.get('query')
-        ag_id = db.session.query(AG).filter_by(name = ag_name).first().id
-        users = db.session.query(User).join(UserAG, and_(UserAG.ag_id == ag_id, UserAG.user_id == User.id), isouter = True).filter(and_(UserAG.ag_id == None, User.username.like(f'%{query}%')))
-        return users_schema.jsonify(users)
-    
-    else:
-        return NotFound()
+@requires_ag()
+def get_inviteable_user(ag_name, ag):
+    query = request.values.get('query', default='')
+    users = db.session.query(User).join(UserAG, and_(UserAG.ag_id == ag.id, UserAG.user_id == User.id), isouter = True).filter(and_(UserAG.ag_id == None, User.username.like(f'%{query}%')))
+    return users_schema.jsonify(users)

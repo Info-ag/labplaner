@@ -31,15 +31,18 @@ def after_this_request(f):
 def requires_existing_ag():
     def wrapper(f):
         @wraps(f)
-        @requires_auth()
         def wrapped(*args, **kwargs):
             ag_name = kwargs.get('ag_name', None)
-            if db.session.query(exists().where(AG.name == ag_name)).scalar() and ag_name is not None:
+            ag_id = kwargs.get('ag_id', None)
+            if db.session.query(exists().where(AG.id == ag_id)).scalar() and ag_id is not None:
+                ag: AG = AG.query.filter_by(id=ag_id).scalar()
+
+            elif db.session.query(exists().where(AG.name == ag_name)).scalar() and ag_name is not None:
                 ag: AG = AG.query.filter_by(name=ag_name).scalar()
-                kwargs.setdefault('ag', ag)
-                return f(*args, **kwargs)
             else:
-                return NotFound()
+                return NotFound(description="AG could not be found") 
+            kwargs.setdefault('ag', ag)
+            return f(*args, **kwargs)
         return wrapped
     return wrapper
 
@@ -49,7 +52,13 @@ def requires_ag():
         @requires_existing_ag()
         def wrapped(*args, **kwargs):
             ag_name = kwargs.get('ag_name', None)
-            ag: AG = AG.query.filter_by(name=ag_name).scalar()
+            ag_id = kwargs.get('ag_id', None)
+            if ag_id is not None:
+                ag: AG = AG.query.filter_by(id=ag_id).scalar()
+            elif ag_name is not None:
+                ag: AG = AG.query.filter_by(name=ag_name).scalar()
+            else:
+                return NotFound(description="AG could not be found")
             kwargs.setdefault('ag', ag)
             return f(*args, **kwargs)
         return wrapped
@@ -92,7 +101,7 @@ def requires_mentor():
             if user_ag.role == 'MENTOR':
                 return f(*args, **kwargs)
             else:
-                return Unauthorized()
+                return Unauthorized(description="you need to be mentor")
         return wrapped
     return wrapper
 
