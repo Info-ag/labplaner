@@ -40,6 +40,7 @@ class UserSchema(ma.Schema):
     dates = ma.Nested(DateSchema, many=True, exclude=('user',))
     picture = ma.Method('get_picture_for_user')
     ag_role = ma.Method('get_role_for_ag')
+    ag_status = ma.Method('get_status_for_ag')
 
     def get_picture_for_user(self, obj: User):
         return 'https://www.gravatar.com/avatar/' + hashlib.md5(obj.email.lower().encode()).hexdigest() + '?d=mm'
@@ -52,8 +53,16 @@ class UserSchema(ma.Schema):
         else:
             return 'NONE'
 
+    def get_status_for_ag(self, obj: User):
+        ag_id = self.context.get('ag_id')
+        if ag_id and db.session.query(exists().where(UserAG.user_id == obj.id and UserAG.ag_id == ag_id)).scalar():
+            user_ag: UserAG = UserAG.query.filter_by(user_id=obj.id, ag_id=ag_id).scalar()
+            return user_ag.status
+        else:
+            return 'NONE'
+
     class Meta:
-        fields = ('id', 'username', 'ags', 'picture', 'ag_role', 'dates')
+        fields = ('id', 'username', 'ags', 'picture', 'ag_role', 'ag_status' ,'dates')
 
 
 class UserSchemaSelf(UserSchema):

@@ -1,12 +1,13 @@
 from functools import wraps
 
 from flask import g, redirect, url_for, request
-from sqlalchemy import exists
+from sqlalchemy import exists, and_, or_
 from app import db
 from app.models.ag import AG
 from app.models.associations import UserAG
+from app.models.user import User
 
-from werkzeug.exceptions import Unauthorized, NotFound
+from werkzeug.exceptions import Unauthorized, NotFound, BadRequest
 
 
 def requires_auth():
@@ -63,13 +64,39 @@ def requires_ag():
         return wrapped
     return wrapper
 
+def requires_gracefully_not_member():
+    def wrapper(f):
+        @wraps(f)
+        @requires_ag()
+        def wrapped(*args, **kwargs):
+            ag = kwargs.get('ag')
+            if not db.session.query(exists().where(and_(UserAG.user_id == g.session.user_id, UserAG.ag_id == ag.id))).scalar() or db.session.query(exists().where(and_(UserAG.user_id == g.session.user_id, UserAG.ag_id == ag.id, UserAG.role == "NONE", or_(UserAG.status == "LEFT", UserAG.status == "DECLINED")))).scalar():
+                return f(*args, **kwargs)
+            else:
+                return BadRequest(description='you already have some kind of relation to this AG')
+        return wrapped
+    return wrapper
+
+def requires_not_member():
+    def wrapper(f):
+        @wraps(f)
+        @requires_ag()
+        def wrapped(*args, **kwargs):
+            ag = kwargs.get('ag')
+            if not db.session.query(exists().where(and_(UserAG.user_id == g.session.user_id, UserAG.ag_id == ag.id))).scalar() :
+                return f(*args, **kwargs)
+            else:
+                return BadRequest(description='you already have some kind of relation to this AG')
+        return wrapped
+    return wrapper
+
 def requires_member():
     def wrapper(f):
         @wraps(f)
         @requires_ag()
         def wrapped(*args, **kwargs):
             ag = kwargs.get('ag')
-            if db.session.query(exists().where(UserAG.user_id == g.session.user_id and UserAG.ag_id == ag.id)).scalar():
+            if db.session.query(exists().where(and_(UserAG.user_id == g.session.user_id, UserAG.ag_id == ag.id))).scalar():
                 return f(*args, **kwargs)
             else:
                 return Unauthorized()
@@ -117,3 +144,23 @@ def requires_mentor():
     return wrapper
 
 
+def get_membership(user_id, ag_id):
+    user_ag = UserAG.query.filter_by(user_id=user_id, ag_id=ag_id).scalar()
+    return user_ag
+
+def get_ag_by_name(ag_name):
+    ag = db.session.query(AG).filter_by(name=ag_name).scalar()
+    return ag
+
+def get_ag_by_id(ag_id):
+    ag = db.session.query(AG).filter_by(id=ag_id).scalar()
+    return ag
+
+def get_user_by_username(username):
+    user = db.session.query(User).filter_by(username=username).scalar()
+    return user
+
+def get_user_by_id(user_id):
+    user = db.session.query(User).filter_by(id=user_id).scalar()
+    return user 
+    

@@ -1,0 +1,82 @@
+{% extends "base_sidebar.html" %}
+{% block head %}
+    {{ super() }}
+    <script src="/static/js/jquery.min.js"></script>
+{% endblock %}
+{% block content %}
+    <div id="ags" class="container">
+        <h4 class="s-subtitle">AGs</h4>
+        <div class="ags">
+            <div class="docs-note">
+                <table class="table table-striped table-hover">
+                    <thead>
+                    <tr>
+                        <th>AG name</th>
+                        <th>Description</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {% for ag in ags.data %}
+                            <tr>
+                                <td>{{ ag.display_name }}</td>
+                                <td>{{ ag.description }}</td>
+                                {% if ag.association is defined %}
+                                    <td>{{ ag.association.role }}</td>
+                                    <td>{{ ag.association.status }}</td>
+                                    {% if ag.association.role == "NONE" %}
+                                        {% if ag.association.status == "DECLINED" %}
+                                            <td>
+                                                <a href="{{url_for('ag_api.apply_ag', ag_name = ag.name)}}">
+                                                    <i class="icon icon-share"></i>
+                                                </a>
+                                            </td>
+                                        {% elif ag.association.status == "INVITED" %}
+                                            <td>    
+                                                <a href="{{url_for('ag_api.accept_invitation', ag_name=ag.name)}}" class="btn btn-action btn-success">
+                                                    <i class="icon icon-check"></i>
+                                                </a>
+                                                <a href="{{url_for('ag_api.decline_invitation', ag_name=ag.name)}}" class="btn btn-action btn-error">
+                                                    <i class="icon icon-cross"></i>
+                                                </a>
+                                            </td>
+                                        {% elif ag.association.status == "APPLIED" %}
+                                            <td>
+                                                <a href="{{url_for('ag_api.cancell_application', ag_name=ag.name)}}" class="btn btn-action btn-error">
+                                                    <i class="icon icon-cross"></i>
+                                                </a>
+                                            </td>
+                                        {% elif ag.association.status == "REJECTED" %}
+                                            <td>REJECTED</td>
+                                        {% elif ag.association.status == "LEFT" %}
+                                            <td>
+                                                <a href="{{url_for('ag_api.apply_ag', ag_name = ag.name)}}">
+                                                    <i class="icon icon-share"></i>
+                                                </a>
+                                            </td>
+                                        {% endif %}
+                                            
+                                    {% else %}
+                                        <td></td>
+                                    {% endif %}
+                                {% else %}
+                                    <td></td>
+                                    <td></td>
+                                    <td>
+                                        <a href="{{url_for('ag_api.apply_ag', ag_name = ag.name)}}">
+                                            <i class="icon icon-share"></i>
+                                        </a>
+                                    </td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+      </div>
+{% endblock %}
+{% block scripts %}
+{% endblock %}

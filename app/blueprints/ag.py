@@ -51,4 +51,18 @@ def create_event(ag_name, ag, user_ag):
 @requires_auth()
 @requires_mentor()
 def ag_settings(ag_name, ag, user_ag):
-    return render_template('ag/settings.html', title='Create AG')
+    schema = AGSchemaIntern()
+    schema.context = {'ag_id': ag.id}
+    return render_template('ag/settings.html', title='Create AG', ag=schema.dump(ag))
+
+@bp.route('/discover', methods=['GET'])
+def discover():
+    ags = db.session.query(AG).all()
+    schema = AGSchema(many=True)
+    return render_template('ag/discover.html', ags=ags_schema.dump(ags))
+
+@bp.route('<ag_name>/events/<event_name>/edit')
+@requires_auth()
+@requires_mentor()
+def edit_event():
+    pass
