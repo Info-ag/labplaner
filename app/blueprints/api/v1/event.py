@@ -11,7 +11,7 @@ from app.models.ag import AG
 from app.models.date import Date
 from app.models.associations import UserAG
 
-from app import db
+from app.models import db
 
 bp = Blueprint('event_api', __name__)
 

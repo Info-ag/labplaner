@@ -1,4 +1,5 @@
-from app import db, ma
+from app import ma
+from app.models import db
 
 from app.models.ag import AGSchema
 

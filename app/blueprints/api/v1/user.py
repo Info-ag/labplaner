@@ -5,7 +5,7 @@ from flask import Blueprint, request, jsonify, g
 from werkzeug.exceptions import NotFound, Unauthorized, BadRequest, Forbidden
 from sqlalchemy import exists, and_
 
-from app import db
+from app.models import db
 from app.utils import requires_auth
 import app.algorithm
 

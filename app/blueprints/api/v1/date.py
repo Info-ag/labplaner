@@ -6,7 +6,7 @@ from flask import Blueprint, jsonify, g
 
 from app.utils import requires_auth
 
-from app import db
+from app.models import db
 
 from app.models.associations import UserAG
 from app.models.date import Date, DateSchema

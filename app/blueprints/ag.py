@@ -3,7 +3,7 @@ from sqlalchemy.sql import exists
 from werkzeug.exceptions import NotFound, Unauthorized
 from app.models.associations import UserAG
 from app.models.ag import AG, AGSchema, AGSchemaIntern
-from app import db
+from app.models import db
 from app.utils import requires_auth, requires_mentor, requires_membership
 
 from config.regex import ag_regex

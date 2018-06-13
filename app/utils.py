@@ -2,7 +2,7 @@ from functools import wraps
 
 from flask import g, redirect, url_for, request
 from sqlalchemy import exists, and_, or_
-from app import db
+from app.models import db
 from app.models.ag import AG
 from app.models.associations import UserAG
 from app.models.user import User

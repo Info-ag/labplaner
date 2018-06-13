@@ -1,4 +1,5 @@
-from app import db, ma
+from app import ma
+from app.models import db
 from sqlalchemy import and_
 from app.models.associations import UserAG 
 from flask import g

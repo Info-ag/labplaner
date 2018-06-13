@@ -1,22 +1,36 @@
-
 import os
 from flask import Flask, render_template, request, redirect, url_for, flash, g
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_marshmallow import Marshmallow
 from werkzeug.exceptions import NotFound
-app = Flask(__name__)
 
+app = Flask(__name__)
 
 config = os.environ.get('LAB_CONFIG', default='config/dev.cfg')
 app.config.from_pyfile(os.path.abspath(config))
 app.secret_key = app.secret_key.encode()
-db = SQLAlchemy(app)
 ma = Marshmallow(app)
-migrate = Migrate(app, db)
 
 from app.models.user import Session, User
 from app.utils import after_this_request, requires_auth
+
+from app.blueprints.api import v1
+from app.blueprints.api.v1 import user
+from app.blueprints.api.v1 import ag as ag_api
+from app.blueprints.api.v1 import event as event_api
+from app.blueprints.api.v1 import date as date_api
+from app.blueprints import auth
+from app.blueprints import ag
+from app.blueprints import cal
+from app.blueprints import pizza
+
+from app.models import db
+
+db.init_app(app)
+db.create_all(app=app)
+
+
 @app.errorhandler(404)
 def not_found(error):
     return NotFound()
@@ -56,17 +70,7 @@ def auth_middleware():
                             httponly=True, expires=g.session.expires)
 
 
-
-from app.blueprints.api.v1 import api
-from app.blueprints.api.v1 import user
-from app.blueprints.api.v1 import ag as ag_api
-from app.blueprints.api.v1 import event as event_api
-from app.blueprints.api.v1 import date as date_api
-from app.blueprints import auth
-from app.blueprints import ag
-from app.blueprints import cal
-from app.blueprints import pizza
-app.register_blueprint(api.bp, url_prefix='/api/v1')
+app.register_blueprint(v1.bp, url_prefix='/api/v1')
 app.register_blueprint(user.bp, url_prefix='/api/v1/user')
 app.register_blueprint(ag_api.bp, url_prefix='/api/v1/ag')
 app.register_blueprint(event_api.bp, url_prefix='/api/v1/event')

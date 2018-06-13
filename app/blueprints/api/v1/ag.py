@@ -7,7 +7,7 @@ from werkzeug.exceptions import NotFound, BadRequest, Forbidden, PreconditionFai
 from app.models.ag import AG, AGSchema, AGSchemaIntern
 from app.models.user import User, UserSchema
 from app.models.associations import UserAG
-from app import db
+from app.models import db
 
 from app.utils import requires_auth, requires_mentor, requires_ag, requires_member_association, requires_gracefully_not_member, get_user_by_username, get_membership
 

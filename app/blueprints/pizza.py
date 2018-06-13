@@ -1,5 +1,5 @@
 from flask import Blueprint, flash, g, redirect, render_template, url_for
-from app import db
+from app.models import db
 from app.utils import requires_auth
 bp = Blueprint('pizza', __name__)
 

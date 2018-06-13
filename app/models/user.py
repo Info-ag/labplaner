@@ -6,7 +6,8 @@ from datetime import datetime, timedelta
 import bcrypt
 from sqlalchemy.sql import exists, and_
 
-from app import app, ma, db
+from app import app, ma
+from app.models import db
 from app.models.ag import AGSchema, AG
 from app.models.associations import UserAG 
 from app.models.date import DateSchema
