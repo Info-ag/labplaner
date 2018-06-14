@@ -67,9 +67,6 @@
             {% if my_role == "MENTOR" %}
                 <a href="#modal-name" class="btn btn-link"><i class="icon icon-edit"></i></a>
             {% endif %}
-                <a href="{{url_for('ag_api.leave_ag', ag_name = ag.data.name)}}" class="btn btn-link">
-                    <i class="icon icon-cross"></i>
-                </a>
         </h1>
         <p>Description: {{ ag.data.description }}
             {% if my_role == "MENTOR" %}
@@ -93,6 +90,14 @@
                     <th>Username</th>
                     <th>Role</th>
                     <th>Status</th>
+                    <th>
+                        {% if my_role == "MENTOR" %}
+                            Kick
+                        {% else %}
+                            Leave
+                        {% endif %}
+
+                    </th>
                 </tr>
                 </thead>
                 <tbody>
@@ -102,6 +107,17 @@
                         <td>{{ user.username }}</td>
                         <td>{{ user.ag_role }}</td>
                         <td>{{ user.ag_status }}</td>
+                        <td>
+                            {% if my_role == "MENTOR" %}
+                                <a href="{{url_for('ag_api.leave_ag', ag_name = ag.data.name)}}" class="btn btn-link">
+                                    <i class="icon icon-cross"></i>
+                                </a>
+                            {% elif g.session.authenticated == true and g.session.user.id == user.id %}
+                                <a href="{{url_for('ag_api.leave_ag', ag_name = ag.data.name)}}" class="btn btn-link">
+                                    <i class="icon icon-cross"></i>
+                                </a>
+                            {% endif %}
+                        </td>
                     </tr>
                 {% endfor %}
                 </tbody>
