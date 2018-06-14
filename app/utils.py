@@ -15,10 +15,12 @@ def requires_auth():
         @wraps(f)
         def wrapped(*args, **kwargs):
             if not g.session.authenticated:
-                return redirect(url_for('auth.login_get', next = request.url))
+                return redirect(url_for('auth.login_get', next=request.url))
             else:
                 return f(*args, **kwargs)
+
         return wrapped
+
     return wrapper
 
 
@@ -27,6 +29,7 @@ def after_this_request(f):
         g.after_request_callbacks = []
     g.after_request_callbacks.append(f)
     return f
+
 
 def requires_existing_ag():
     def wrapper(f):
@@ -40,11 +43,14 @@ def requires_existing_ag():
             elif db.session.query(exists().where(AG.name == ag_name)).scalar() and ag_name is not None:
                 ag: AG = AG.query.filter_by(name=ag_name).scalar()
             else:
-                return NotFound(description='AG could not be found') 
+                return NotFound(description='AG could not be found')
             kwargs.setdefault('ag', ag)
-            return f(*args, **kwargs)
+            return f(*args, **kwargs, success=True)
+
         return wrapped
+
     return wrapper
+
 
 def requires_ag():
     def wrapper(f):
@@ -61,8 +67,11 @@ def requires_ag():
                 return NotFound(description='AG could not be found')
             kwargs.setdefault('ag', ag)
             return f(*args, **kwargs)
+
         return wrapped
+
     return wrapper
+
 
 def requires_gracefully_not_member():
     def wrapper(f):
@@ -70,12 +79,19 @@ def requires_gracefully_not_member():
         @requires_ag()
         def wrapped(*args, **kwargs):
             ag = kwargs.get('ag')
-            if not db.session.query(exists().where(and_(UserAG.user_id == g.session.user_id, UserAG.ag_id == ag.id))).scalar() or db.session.query(exists().where(and_(UserAG.user_id == g.session.user_id, UserAG.ag_id == ag.id, UserAG.role == "NONE", or_(UserAG.status == "LEFT", UserAG.status == "DECLINED")))).scalar():
+            if not db.session.query(exists().where(
+                    and_(UserAG.user_id == g.session.user_id, UserAG.ag_id == ag.id))).scalar() or db.session.query(
+                    exists().where(
+                            and_(UserAG.user_id == g.session.user_id, UserAG.ag_id == ag.id, UserAG.role == "NONE",
+                                 or_(UserAG.status == "LEFT", UserAG.status == "DECLINED")))).scalar():
                 return f(*args, **kwargs)
             else:
                 return BadRequest(description='you already have some kind of relation to this AG')
+
         return wrapped
+
     return wrapper
+
 
 def requires_not_member():
     def wrapper(f):
@@ -83,12 +99,16 @@ def requires_not_member():
         @requires_ag()
         def wrapped(*args, **kwargs):
             ag = kwargs.get('ag')
-            if not db.session.query(exists().where(and_(UserAG.user_id == g.session.user_id, UserAG.ag_id == ag.id))).scalar() :
+            if not db.session.query(
+                    exists().where(and_(UserAG.user_id == g.session.user_id, UserAG.ag_id == ag.id))).scalar():
                 return f(*args, **kwargs)
             else:
                 return BadRequest(description='you already have some kind of relation to this AG')
+
         return wrapped
+
     return wrapper
+
 
 def requires_member():
     def wrapper(f):
@@ -96,12 +116,16 @@ def requires_member():
         @requires_ag()
         def wrapped(*args, **kwargs):
             ag = kwargs.get('ag')
-            if db.session.query(exists().where(and_(UserAG.user_id == g.session.user_id, UserAG.ag_id == ag.id))).scalar():
+            if db.session.query(
+                    exists().where(and_(UserAG.user_id == g.session.user_id, UserAG.ag_id == ag.id))).scalar():
                 return f(*args, **kwargs)
             else:
                 return Unauthorized()
+
         return wrapped
+
     return wrapper
+
 
 def requires_member_association():
     def wrapper(f):
@@ -112,8 +136,11 @@ def requires_member_association():
             user_ag = UserAG.query.filter_by(user_id=g.session.user_id, ag_id=ag.id).scalar()
             kwargs.setdefault('user_ag', user_ag)
             return f(*args, **kwargs)
+
         return wrapped
+
     return wrapper
+
 
 def requires_membership():
     def wrapper(f):
@@ -122,13 +149,16 @@ def requires_membership():
         def wrapped(*args, **kwargs):
             ag = kwargs.get('ag')
             user_ag = UserAG.query.filter_by(user_id=g.session.user_id, ag_id=ag.id).scalar()
-            if(user_ag.role != 'NONE'):
+            if (user_ag.role != 'NONE'):
                 kwargs.setdefault('user_ag', user_ag)
                 return f(*args, **kwargs)
             else:
                 return Unauthorized()
+
         return wrapped
+
     return wrapper
+
 
 def requires_mentor():
     def wrapper(f):
@@ -140,7 +170,9 @@ def requires_mentor():
                 return f(*args, **kwargs)
             else:
                 return Unauthorized(description='you need to be mentor')
+
         return wrapped
+
     return wrapper
 
 
@@ -148,19 +180,22 @@ def get_membership(user_id, ag_id):
     user_ag = UserAG.query.filter_by(user_id=user_id, ag_id=ag_id).scalar()
     return user_ag
 
+
 def get_ag_by_name(ag_name):
     ag = db.session.query(AG).filter_by(name=ag_name).scalar()
     return ag
+
 
 def get_ag_by_id(ag_id):
     ag = db.session.query(AG).filter_by(id=ag_id).scalar()
     return ag
 
+
 def get_user_by_username(username):
     user = db.session.query(User).filter_by(username=username).scalar()
     return user
 
+
 def get_user_by_id(user_id):
     user = db.session.query(User).filter_by(id=user_id).scalar()
-    return user 
-    
+    return user

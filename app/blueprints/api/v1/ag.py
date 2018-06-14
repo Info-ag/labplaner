@@ -70,7 +70,7 @@ def add_ag():
 @bp.route('/id/<ag_id>', methods=['GET'])
 @requires_auth()
 @requires_ag()
-def get_ag_by_id(ag_id, ag):
+def get_ag_by_id(ag_id, ag, success=False):
     '''
     Query an AG specified by its id
     :param ag_id: A specific id
