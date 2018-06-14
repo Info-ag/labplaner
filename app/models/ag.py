@@ -1,8 +1,9 @@
 from app import ma
 from app.models import db
 from sqlalchemy import and_
-from app.models.associations import UserAG 
+from app.models.associations import UserAG
 from flask import g
+
 
 class AG(db.Model):
     __tablename__ = 'ags'
@@ -15,10 +16,23 @@ class AG(db.Model):
 
     users = db.relationship('User', secondary='users_ags', order_by='UserAG.role')
 
-    actual_users = db.relationship('User', secondary='users_ags', primaryjoin='and_(User.id == UserAG.user_id, AG.id == UserAG.ag_id, UserAG.role != "NONE")', viewonly=True)
-    invited_users = db.relationship('User', secondary='users_ags', primaryjoin='and_(User.id == UserAG.user_id, AG.id == UserAG.ag_id, UserAG.role == "NONE", UserAG.status == "INVITED")', viewonly=True)
-    applied_users = db.relationship('User', secondary='users_ags', primaryjoin='and_(User.id == UserAG.user_id, AG.id == UserAG.ag_id, UserAG.role == "NONE", UserAG.status == "APPLIED")', viewonly=True)
-    mentors = db.relationship('User', secondary='users_ags', primaryjoin='and_(User.id == UserAG.user_id, AG.id == UserAG.ag_id, UserAG.role == "MENTOR", UserAG.status == "ACTIVE")', viewonly=True)
+    actual_users = db.relationship('User',
+                                   secondary='users_ags',
+                                   primaryjoin='and_(User.id == UserAG.user_id, AG.id == UserAG.ag_id, UserAG.role != "NONE")',
+                                   viewonly=True)
+    invited_users = db.relationship('User',
+                                    secondary='users_ags',
+                                    primaryjoin='and_(User.id == UserAG.user_id, AG.id == UserAG.ag_id, UserAG.role == "NONE", UserAG.status == "INVITED")',
+                                    viewonly=True)
+    applied_users = db.relationship('User',
+                                    secondary='users_ags',
+                                    primaryjoin='and_(User.id == UserAG.user_id, AG.id == UserAG.ag_id, UserAG.role == "NONE", UserAG.status == "APPLIED")',
+                                    viewonly=True)
+    mentors = db.relationship('User',
+                              secondary='users_ags',
+                              primaryjoin='and_(User.id == UserAG.user_id, AG.id == UserAG.ag_id, UserAG.role == "MENTOR", UserAG.status == "ACTIVE")',
+                              viewonly=True)
+
     events = db.relationship('Event')
 
     def __repr__(self):
@@ -29,6 +43,7 @@ class AGSchema(ma.Schema):
     users = ma.Nested('UserSchema', many=True, exclude=('ags',))
     events = ma.Nested('EventSchema', many=True, exclude=('ag',))
     association = ma.Method('get_association', many=True)
+
     def get_association(self, obj: AG):
         if not g.session.authenticated:
             return None
@@ -46,5 +61,8 @@ class AGSchemaIntern(ma.Schema):
     actual_users = ma.Nested('UserSchema', many=True, exclude=('ags',))
     invited_users = ma.Nested('UserSchema', many=True, exclude=('ags',))
     applied_users = ma.Nested('UserSchema', many=True, exclude=('ags',))
+
     class Meta:
-        fields = ('id', 'name', 'display_name', 'description', 'users', 'events', 'color', 'actual_users', 'invited_users', 'applied_users')
+        fields = (
+            'id', 'name', 'display_name', 'description', 'users', 'events', 'color', 'actual_users', 'invited_users',
+            'applied_users')

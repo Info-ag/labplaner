@@ -9,7 +9,7 @@ from sqlalchemy.sql import exists, and_
 from app import app, ma
 from app.models import db
 from app.models.ag import AGSchema, AG
-from app.models.associations import UserAG 
+from app.models.associations import UserAG
 from app.models.date import DateSchema
 
 
@@ -21,8 +21,10 @@ class User(db.Model):
     password = db.Column(db.LargeBinary, nullable=False)
 
     all_ags = db.relationship('AG', secondary='users_ags')
-    ags = db.relationship('AG', secondary='users_ags', primaryjoin=and_(id == UserAG.user_id, AG.id == UserAG.ag_id, UserAG.role != "NONE"))
-    invites = db.relationship('AG', secondary='users_ags', primaryjoin=and_(id == UserAG.user_id, AG.id == UserAG.ag_id, UserAG.status == "INVITED"))
+    ags = db.relationship('AG', secondary='users_ags',
+                          primaryjoin=and_(id == UserAG.user_id, AG.id == UserAG.ag_id, UserAG.role != "NONE"))
+    invites = db.relationship('AG', secondary='users_ags',
+                              primaryjoin=and_(id == UserAG.user_id, AG.id == UserAG.ag_id, UserAG.status == "INVITED"))
     dates = db.relationship('Date', secondary='users_dates')
     sessions = db.relationship('Session')
 
@@ -63,7 +65,7 @@ class UserSchema(ma.Schema):
             return 'NONE'
 
     class Meta:
-        fields = ('id', 'username', 'ags', 'picture', 'ag_role', 'ag_status' ,'dates')
+        fields = ('id', 'username', 'ags', 'picture', 'ag_role', 'ag_status', 'dates')
 
 
 class UserSchemaSelf(UserSchema):
@@ -129,7 +131,6 @@ class Session(db.Model):
                         return session
 
         return False
-
 
     def __repr__(self):
         return f'<Session {self.id}>'
