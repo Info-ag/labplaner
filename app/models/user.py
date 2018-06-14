@@ -17,8 +17,9 @@ class User(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
     username = db.Column(db.String(16), unique=True, nullable=False)
-    email = db.Column(db.String(48), unique=True, nullable=False)
+    email = db.Column(db.String(48), unique=True, nullable=True)
     password = db.Column(db.LargeBinary, nullable=False)
+    guest = db.Column(db.Boolean, nullable=False, default=False)
 
     all_ags = db.relationship('AG', secondary='users_ags')
     ags = db.relationship('AG', secondary='users_ags',
@@ -85,6 +86,7 @@ class Session(db.Model):
     id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     expires = db.Column(db.DateTime, nullable=False)
+    session_only = db.Column(db.Boolean, nullable=False, default=True)
     token = db.Column(db.String(64), nullable=False)
     public_token = db.Column(db.String(16), unique=True, nullable=False)
     authenticated = db.Column(db.Boolean, default=False)

@@ -35,7 +35,7 @@ def login():
         return jsonify({'redirect': next_url}), 200
 
     try:
-        email = request.values['email']
+        email = request.values.get('email')
         if '@' in email:
             user = User.query.filter_by(email=email).one()
         else:
@@ -47,6 +47,8 @@ def login():
             db.session.commit()
 
             _session = Session(user)
+            print(request.values.get("remember"))
+            _session.session_only = not bool(request.values.get("remember", default=True))
             db.session.add(_session)
             db.session.commit()
             g.session = _session

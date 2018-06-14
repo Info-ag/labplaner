@@ -26,7 +26,7 @@ events_schema = EventSchema(many=True)
 @bp.route('/', methods=['POST'])
 def add_user():
     try:
-        username = request.values['username']
+        username = request.values.get('username')
         if db.session.query(User).filter_by(username=username).scalar() is not None:
             return BadRequest(description='Username already exists')
         email = request.values.get('email')
@@ -36,9 +36,9 @@ def add_user():
         if len(password) < 8:
             return BadRequest(description='Keylength too short')
         user = User()
-        user.username = request.values['username']
-        user.email = request.values['email']
-        user.set_password(request.values['password'])
+        user.username = request.values.get('username')
+        user.email = request.values.get('email')
+        user.set_password(request.values.get('password'))
 
         db.session.add(user)
         db.session.commit()

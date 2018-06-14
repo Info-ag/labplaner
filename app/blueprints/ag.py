@@ -6,7 +6,7 @@ from app.models.ag import AG, AGSchema, AGSchemaIntern
 from app.models import db
 from app.utils import requires_auth, requires_mentor, requires_membership
 
-from config.regex import ag_regex
+from config.regex import AGRegex
 
 bp = Blueprint('ag', __name__)
 
@@ -19,7 +19,7 @@ ags_schema = AGSchema(many=True)
 @requires_auth()
 def create_ag():
     return render_template('ag/add.html', title='Create AG',
-                                            ag_regex=ag_regex)
+                           ag_regex=AGRegex)
 
 
 @bp.route('/<ag_name>', methods=['GET'])

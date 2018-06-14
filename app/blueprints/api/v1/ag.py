@@ -11,7 +11,7 @@ from app.models import db
 
 from app.utils import requires_auth, requires_mentor, requires_ag, requires_member_association, requires_gracefully_not_member, get_user_by_username, get_membership
 
-from config.regex import ag_regex
+from config.regex import AGRegex
 
 bp = Blueprint('ag_api', __name__)
 
@@ -37,12 +37,12 @@ def add_ag():
     display_name = request.values.get('display_name')
     description = request.values.get('description')
 
-    if db.session.query(exists().where(AG.name == name)).scalar() or not bool(re.match(ag_regex.name, name)):
+    if db.session.query(exists().where(AG.name == name)).scalar() or not bool(re.match(AGRegex.name, name)):
         return jsonify({'reason': 'name'}), 400
     if db.session.query(exists().where(AG.display_name == display_name)).scalar() or not bool(
-            re.match(ag_regex.display_name, display_name)):
+            re.match(AGRegex.display_name, display_name)):
         return jsonify({'reason': 'display_name'}), 400
-    if not bool(re.match(ag_regex.description, description)):
+    if not bool(re.match(AGRegex.description, description)):
         return jsonify({'reason': 'description'}), 400
 
     ag: AG = AG()
@@ -70,7 +70,7 @@ def add_ag():
 @bp.route('/id/<ag_id>', methods=['GET'])
 @requires_auth()
 @requires_ag()
-def get_ag_by_id(ag_id, ag, success=False):
+def get_ag_by_id(ag_id, ag):
     '''
     Query an AG specified by its id
     :param ag_id: A specific id
@@ -154,10 +154,10 @@ def change_ag_values(ag_id, ag, user_ag):
 
     value_changed = False
 
-    if display_name is not None and bool(re.match(ag_regex.display_name, display_name)):
+    if display_name is not None and bool(re.match(AGRegex.display_name, display_name)):
         ag.display_name = display_name
         value_changed = True
-    if description is not None and bool(re.match(ag_regex.description, description)):
+    if description is not None and bool(re.match(AGRegex.description, description)):
         ag.description = description
         value_changed = True
 

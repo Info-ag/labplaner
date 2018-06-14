@@ -1,7 +1,5 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for, flash, g
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
+from flask import Flask, render_template, request, g
 from flask_marshmallow import Marshmallow
 from werkzeug.exceptions import NotFound
 
@@ -29,7 +27,6 @@ from app.models import db
 
 db.init_app(app)
 db.create_all(app=app)
-
 
 @app.errorhandler(404)
 def not_found(error):
@@ -66,8 +63,13 @@ def auth_middleware():
 
     @after_this_request
     def set_cookie(response):
-        response.set_cookie('sid', g.session.get_string_cookie(),
-                            httponly=True, expires=g.session.expires)
+        if g.session.session_only:
+            response.set_cookie('sid', g.session.get_string_cookie(),
+                                httponly=True)
+        else:
+            response.set_cookie('sid', g.session.get_string_cookie(),
+                                httponly=True, expires=g.session.expires)
+
 
 
 app.register_blueprint(v1.bp, url_prefix='/api/v1')

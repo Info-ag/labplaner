@@ -45,7 +45,7 @@ def requires_existing_ag():
             else:
                 return NotFound(description='AG could not be found')
             kwargs.setdefault('ag', ag)
-            return f(*args, **kwargs, success=True)
+            return f(*args, **kwargs)
 
         return wrapped
 
