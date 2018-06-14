@@ -3,7 +3,7 @@ let data = {
     "selectable" : []
 }
 let config = {
-    "large" : true,
+    "large" : false,
     "select" : {
         "selectable" : true,
         "onlyFuture" : true,

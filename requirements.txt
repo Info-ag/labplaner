@@ -2,8 +2,9 @@ werkzeug
 sqlalchemy
 flask
 flask-sqlalchemy
+flask-mail
+flask-migrate
+flask_script
 flask_marshmallow
 marshmallow-sqlalchemy
-flask-migrate
 bcrypt
-flask_script

@@ -1,12 +1,10 @@
 import secrets
-import hmac
 import hashlib
-import base64
 from datetime import datetime, timedelta
 import bcrypt
 from sqlalchemy.sql import exists, and_
 
-from app import app, ma
+from app import ma
 from app.models import db
 from app.models.ag import AGSchema, AG
 from app.models.associations import UserAG
@@ -20,6 +18,9 @@ class User(db.Model):
     email = db.Column(db.String(48), unique=True, nullable=True)
     password = db.Column(db.LargeBinary, nullable=False)
     guest = db.Column(db.Boolean, nullable=False, default=False)
+    email_confirmed = db.Column(db.Boolean, nullable=False, default=False)
+    confirmation_token = db.Column(db.String(32), nullable=True, unique=True)
+    password_token = db.Column(db.String(32), nullable=True, unique=True)
 
     all_ags = db.relationship('AG', secondary='users_ags')
     ags = db.relationship('AG', secondary='users_ags',
@@ -28,6 +29,9 @@ class User(db.Model):
                               primaryjoin=and_(id == UserAG.user_id, AG.id == UserAG.ag_id, UserAG.status == "INVITED"))
     dates = db.relationship('Date', secondary='users_dates')
     sessions = db.relationship('Session')
+
+    def __init__(self):
+        self.confirmation_token = secrets.token_hex(32)
 
     def __repr__(self):
         return f'<User {self.username}>'
@@ -87,8 +91,7 @@ class Session(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     expires = db.Column(db.DateTime, nullable=False)
     session_only = db.Column(db.Boolean, nullable=False, default=True)
-    token = db.Column(db.String(64), nullable=False)
-    public_token = db.Column(db.String(16), unique=True, nullable=False)
+    token = db.Column(db.String(64), nullable=False, unique=True)
     authenticated = db.Column(db.Boolean, default=False)
     revoked = db.Column(db.Boolean, nullable=False, default=False)
 
@@ -101,36 +104,21 @@ class Session(db.Model):
             self.authenticated = False
 
         self.token = secrets.token_hex(64)
-        self.public_token = secrets.token_hex(16)
         self.expires = datetime.today() + timedelta(days=days)
 
     def get_string_cookie(self):
-        '''
-        Generate a custom string cookie that includes both the public as well as the private token.
-        :return: Cookie string
-        '''
-        dig = hmac.new(app.secret_key, msg=self.token.encode('utf-8'), digestmod=hashlib.sha256).digest()
-        str_dig = base64.b64encode(dig).decode()
-        return f'{self.public_token}+{str_dig}'
+        return f'{self.token}'
 
     @staticmethod
     def verify(cookie: str):
-        '''
-        Check if the provided cookie is part of a valid session.
-        :param cookie: String cookie: 'public_token+hash(token)'
-        :return: a Session object when the session cookie was valid, False if
-            the session cookie was invalid
-        '''
         if cookie:
             # get public token from cookie string
-            pub = cookie.split('+')[0]
             # check if a session with the public token exists
-            if db.session.query(exists().where(Session.public_token == pub)).scalar():
+            if db.session.query(exists().where(Session.token == cookie)).scalar():
                 # get the session from the db
-                session = Session.query.filter_by(public_token=pub).scalar()
+                session = Session.query.filter_by(token=cookie).scalar()
                 if session.expires > datetime.now() and not session.revoked:
-                    if secrets.compare_digest(session.get_string_cookie(), cookie):
-                        return session
+                    return session
 
         return False
 

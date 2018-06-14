@@ -14,6 +14,8 @@ from app.models.associations import UserDate, UserAG
 from app.models.date import Date
 from app.models.event import Event, EventSchema
 
+import app.mail as mail
+
 bp = Blueprint('user_api', __name__)
 
 user_schema = UserSchema()
@@ -43,8 +45,12 @@ def add_user():
         db.session.add(user)
         db.session.commit()
 
+        mail.confirmation_mail(user)
+
         return user_schema.jsonify(user), 200
-    except:
+    except Exception as e:
+        print(e)
+        print("test")
         return BadRequest()
 
 
@@ -129,4 +135,3 @@ def get_events_for_user():
             event_list['events'].append(event_schema.dump(event)[0])
 
     return jsonify(event_list)
-

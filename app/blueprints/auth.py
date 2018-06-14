@@ -1,4 +1,7 @@
+from sqlalchemy.sql import exists
+from werkzeug.exceptions import BadRequest
 from flask import Blueprint, request, jsonify, g, redirect, render_template, flash
+
 from app.models.user import User, Session
 from app.models import db
 
@@ -12,8 +15,7 @@ def signup_get():
         next_url = request.values.get('next', default='/')
         return redirect(next_url)
     next_url = request.values.get('next', default='/')
-    return render_template('auth/signup.html', title='Signup', next = next_url)
-        
+    return render_template('auth/signup.html', title='Signup', next=next_url)
 
 
 @bp.route('/login', methods=['GET'])
@@ -23,7 +25,6 @@ def login_get():
         next_url = request.values.get('next', default='/')
         return redirect(next_url)
 
-    
     next_url = request.values.get('next', default='/')
     return render_template('auth/login.html', title='Login', next=next_url)
 
@@ -57,6 +58,20 @@ def login():
         return jsonify({'Status': 'Failed', 'reason': 'email'}), 406
 
 
+@bp.route('/confirm')
+def confirm():
+    token = request.args.get('token')
+    if token and db.session.query(exists().where(User.confirmation_token == token)).scalar():
+        user = User.query.filter_by(confirmation_token=token).one()
+        user.email_confirmed = True
+        user.confirmation_token = None
+        db.session.merge(user)
+        db.session.commit()
+
+        return redirect('/')
+
+    else:
+        return BadRequest()
 
 
 @bp.route('/logout')

@@ -3,6 +3,7 @@ migrations
 
 config/production.json
 config/prod.cfg
+config/secret.cfg
 
 tags
 .idea

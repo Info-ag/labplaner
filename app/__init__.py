@@ -24,9 +24,12 @@ from app.blueprints import cal
 from app.blueprints import pizza
 
 from app.models import db
+from app.mail import mail
 
 db.init_app(app)
 db.create_all(app=app)
+
+mail.init_app(app)
 
 @app.errorhandler(404)
 def not_found(error):
