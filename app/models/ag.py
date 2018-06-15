@@ -102,16 +102,12 @@ class AGSchemaIntern(ma.Schema):
     def get_read_messages(self, obj: AG):
         if not g.session.authenticated:
             return None
-        print('test')
         ag_id = obj.id
         ag_message = db.session.query(AGMessage).join(UserAGMessage, and_(AGMessage.ag_id == ag_id, UserAGMessage.user_id == g.session.user_id, UserAGMessage.message_id == AGMessage.id, UserAGMessage.read == 1)).all()
         if len(ag_message) > 1:
             ag_messages_Schema = AGMessageSchema(many=True, exclude=('users',))
         else:
             ag_messages_Schema = AGMessageSchema(many=True, exclude=('users',))
-
-        print(ag_messages_Schema.dump(ag_message))
-        print('test')
         return ag_messages_Schema.dump(ag_message)
         
 

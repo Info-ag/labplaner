@@ -112,14 +112,13 @@ def add_user_to_ag(ag_id, ag, user_ag):
     for username in request.values.getlist('users[]'):
         if db.session.query(exists().where(User.username == username)).scalar():
             user: User = User.query.filter_by(username=username).scalar()
-            print(user)
 
             new_user_ag = db.session.query(UserAG).filter_by(user_id=user.id, ag_id=ag.id).scalar()
             if new_user_ag:
-                if (new_user_ag.status == "LEFT" or new_user_ag.status == "REJECTED") and new_user_ag.role == "NONE":
+                if (new_user_ag.status == 'LEFT' or new_user_ag.status == 'REJECTED') and new_user_ag.role == 'NONE':
                     new_user_ag.role = 'NONE'
                     new_user_ag.status = 'INVITED'
-                elif new_user_ag.status == "APPLIED" and new_user_ag.role == "NONE":
+                elif new_user_ag.status == 'APPLIED' and new_user_ag.role == 'NONE':
                     new_user_ag.role = 'PARTICIPANT'
                     new_user_ag.status = 'ACTIVE'
                 else:
@@ -190,19 +189,18 @@ def get_all_ags():
 @requires_ag()
 def get_inviteable_user(ag_name, ag):
     query = request.values.get('query', default='')
-    users = db.session.query(User).join(UserAG, and_(UserAG.ag_id == ag.id, UserAG.user_id == User.id), isouter = True).filter(or_((and_(UserAG.ag_id == None, User.username.like(f'%{query}%'))), (and_(UserAG.ag_id == ag.id, UserAG.role == "NONE", or_(UserAG.status == "LEFT", UserAG.status == "REJECTED", UserAG.status == "APPLIED"), User.username.like(f'%{query}%')))))
-    print(users)
+    users = db.session.query(User).join(UserAG, and_(UserAG.ag_id == ag.id, UserAG.user_id == User.id), isouter = True).filter(or_((and_(UserAG.ag_id == None, User.username.like(f'%{query}%'))), (and_(UserAG.ag_id == ag.id, UserAG.role == 'NONE', or_(UserAG.status == 'LEFT', UserAG.status == 'REJECTED', UserAG.status == 'APPLIED'), User.username.like(f'%{query}%')))))
     return users_schema.jsonify(users)
 
 @bp.route('invitation/<ag_name>/accept')
 @requires_auth()
 @requires_member_association()
 def accept_invitation(ag_name, ag, user_ag):
-    if user_ag.role != "NONE" or user_ag.status != "INVITED":
+    if user_ag.role != 'NONE' or user_ag.status != 'INVITED':
         flash(f'This invitartion is invalid', 'error')
         return redirect(url_for('index'))
-    user_ag.role = "PARTICIPANT"
-    user_ag.status = "ACTIVE"
+    user_ag.role = 'PARTICIPANT'
+    user_ag.status = 'ACTIVE'
     db.session.add(user_ag)
     db.session.commit()
     flash(f'You successfully accepted the invitation to {ag.display_name}', 'success')
@@ -213,10 +211,10 @@ def accept_invitation(ag_name, ag, user_ag):
 @requires_auth()
 @requires_member_association()
 def decline_invitation(ag_name, ag, user_ag):
-    if user_ag.role != "NONE" or user_ag.status != "INVITED":
+    if user_ag.role != 'NONE' or user_ag.status != 'INVITED':
         flash(f'This invitartion is invalid', 'error')
         return redirect(url_for('index'))
-    user_ag.status = "DECLINED"
+    user_ag.status = 'DECLINED'
     db.session.add(user_ag)
     db.session.commit()
     flash(f'You successfully declined the invitation to {ag.display_name}', 'success')
@@ -227,8 +225,7 @@ def decline_invitation(ag_name, ag, user_ag):
 @requires_member_association()
 def cancell_invitation(ag_name, user_id, ag, user_ag):
     remove_user_ag = db.session.query(UserAG).filter(and_(UserAG.user_id==user_id,UserAG.ag_id==ag.id)).one()
-    print(vars(remove_user_ag))
-    if remove_user_ag.role != "NONE" or remove_user_ag.status != "INVITED":
+    if remove_user_ag.role != 'NONE' or remove_user_ag.status != 'INVITED':
         flash(f'You cannot cancell an invitation for an actual member', 'error')
         return redirect(url_for('ag.ag_dashboard', ag_name=ag_name))
     db.session.delete(remove_user_ag)
@@ -236,13 +233,13 @@ def cancell_invitation(ag_name, user_id, ag, user_ag):
     flash(f'You have successfully revoked the invitation for the user {remove_user_ag.user_id} for the AG {ag.display_name}', 'success')
     return redirect(url_for('ag.ag_dashboard', ag_name=ag_name))
 
-@bp.route('<ag_name>/submit_setting', methods=["GET"])
+@bp.route('<ag_name>/submit_setting', methods=['GET'])
 @requires_auth()
 @requires_mentor()
 def update_users(ag_name, user_ag, ag):
     for user_id in request.values:
         role = request.values.get(user_id)
-        if role == "MENTOR":
+        if role == 'MENTOR':
             for user_id in request.values:
                 role = request.values.get(user_id)
                 edit_user_ag = db.session.query(UserAG).filter(and_(UserAG.user_id==user_id,UserAG.ag_id==ag.id)).one()
@@ -258,13 +255,13 @@ def update_users(ag_name, user_ag, ag):
 @requires_auth()
 @requires_gracefully_not_member()
 def apply_ag(ag_name, ag):
-    user_ag = db.session.query(UserAG).filter_by(user_id=g.session.user_id, ag_id=ag.id, role="NONE").filter(or_(UserAG.status=="LEFT", UserAG.status == "DECLINED")).scalar()
+    user_ag = db.session.query(UserAG).filter_by(user_id=g.session.user_id, ag_id=ag.id, role='NONE').filter(or_(UserAG.status=='LEFT', UserAG.status == 'DECLINED')).scalar()
     if user_ag is None:
         user_ag = UserAG()
         user_ag.user_id = g.user.id
         user_ag.ag_id = ag.id
-    user_ag.role = "NONE"
-    user_ag.status = "APPLIED"
+    user_ag.role = 'NONE'
+    user_ag.status = 'APPLIED'
     db.session.add(user_ag)
     db.session.commit()
     flash(f'You successfully applied to the AG {ag.display_name}')
@@ -274,8 +271,7 @@ def apply_ag(ag_name, ag):
 @requires_auth()
 @requires_member_association()
 def cancell_application(ag_name, ag, user_ag):
-    print(user_ag.role)
-    if(user_ag.role != "NONE" or user_ag.status != "APPLIED"):
+    if(user_ag.role != 'NONE' or user_ag.status != 'APPLIED'):
         flash(f'You cannot cancell a application of an actual membership to the AG {ag.display_name}')
         return redirect(url_for('ag.discover'))
     db.session.delete(user_ag)
@@ -289,9 +285,9 @@ def cancell_application(ag_name, ag, user_ag):
 def accept_application(ag_name, username, ag, user_ag):
     user = get_user_by_username(username)
     applied_user_ag = get_membership(ag_id=ag.id, user_id=user.id)
-    if applied_user_ag is not None and applied_user_ag.role == "NONE" and applied_user_ag.status == "APPLIED":
-        applied_user_ag.role = "PARTICIPANT"
-        applied_user_ag.status = "ACTIVE"
+    if applied_user_ag is not None and applied_user_ag.role == 'NONE' and applied_user_ag.status == 'APPLIED':
+        applied_user_ag.role = 'PARTICIPANT'
+        applied_user_ag.status = 'ACTIVE'
         db.session.add(applied_user_ag)
         db.session.commit()
         flash(f'You successfully accepted the application of {user.username}', 'success')
@@ -305,9 +301,9 @@ def accept_application(ag_name, username, ag, user_ag):
 def reject_application(ag_name, username, ag, user_ag):
     user = get_user_by_username(username)
     applied_user_ag = get_membership(ag_id=ag.id, user_id=user.id)
-    if applied_user_ag.role == "NONE" and applied_user_ag.status == "APPLIED":
-        applied_user_ag.role = "NONE"
-        applied_user_ag.status = "REJECTED"
+    if applied_user_ag.role == 'NONE' and applied_user_ag.status == 'APPLIED':
+        applied_user_ag.role = 'NONE'
+        applied_user_ag.status = 'REJECTED'
         db.session.add(applied_user_ag)
         db.session.commit()
         flash(f'You successfully rejected the application of {user.username}', 'success')
@@ -319,11 +315,11 @@ def reject_application(ag_name, username, ag, user_ag):
 @requires_auth()
 @requires_member_association()
 def leave_ag(ag_name, ag, user_ag):
-    if(user_ag.role == "NONE"):
+    if(user_ag.role == 'NONE'):
         flash('You cannot leave an AG you are not in', 'error')
         return redirect(url_for('ag.ag_dashboard', ag_name=ag_name))
-    user_ag.role = "NONE"
-    user_ag.status = "LEFT"
+    user_ag.role = 'NONE'
+    user_ag.status = 'LEFT'
     db.session.flush()
     if(len(ag.actual_users) == 0):
         db.session.delete(ag)
@@ -333,8 +329,8 @@ def leave_ag(ag_name, ag, user_ag):
         flash(f'You cannot leave an AG, when there is no Mentor left afterwards', 'error')
         return redirect(url_for('ag.ag_dashboard', ag_name=ag_name))
     else:
-        user_ag.role = "NONE"
-        user_ag.status = "LEFT"
+        user_ag.role = 'NONE'
+        user_ag.status = 'LEFT'
         db.session.flush()
         flash(f'You sucessfully left the AG {ag.name}', 'success')
     db.session.commit()
@@ -349,11 +345,11 @@ def kick_user(ag_name, user_name, ag, user_ag):
     
     user = get_user_by_username(user_name)
     edit_user_ag = db.session.query(UserAG).filter_by(user_id=user.id, ag_id=ag.id).scalar()
-    if(edit_user_ag is None or edit_user_ag.role == "NONE"):
+    if(edit_user_ag is None or edit_user_ag.role == 'NONE'):
         flash(f'You cannot kick {user.username} from {ag.display_name}. He is no valid member of this AG')
         return redirect(url_for('ag.ag_dashboard', ag_name=ag_name))
-    edit_user_ag.role = "NONE"
-    edit_user_ag.status = "KICKED"
+    edit_user_ag.role = 'NONE'
+    edit_user_ag.status = 'KICKED'
     db.session.flush()
     if(len(ag.actual_users) == 0):
         db.session.delete(ag)
@@ -376,7 +372,7 @@ def delete_ag(ag_name, ag, user_ag):
     flash(f'You successfully deleted the AG {ag.display_name}', 'success')
     return redirect(url_for('index'))
 
-@bp.route('<ag_name>/messages/write', methods=["POST"])
+@bp.route('<ag_name>/messages/write', methods=['POST'])
 @requires_auth()
 @requires_mentor()
 def write_message(ag_name, ag, user_ag):

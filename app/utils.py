@@ -82,7 +82,7 @@ def requires_gracefully_not_member():
             if not db.session.query(exists().where(
                     and_(UserAG.user_id == g.session.user_id, UserAG.ag_id == ag.id))).scalar() or db.session.query(
                     exists().where(
-                            and_(UserAG.user_id == g.session.user_id, UserAG.ag_id == ag.id, UserAG.role == "NONE",
+                            and_(UserAG.user_id == g.session.user_id, UserAG.ag_id == ag.id, UserAG.role == 'NONE",
                                  or_(UserAG.status == "LEFT", UserAG.status == "DECLINED")))).scalar():
                 return f(*args, **kwargs)
             else:

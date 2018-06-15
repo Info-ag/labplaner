@@ -24,9 +24,9 @@ class User(db.Model):
 
     all_ags = db.relationship('AG', secondary='users_ags')
     ags = db.relationship('AG', secondary='users_ags',
-                          primaryjoin=and_(id == UserAG.user_id, AG.id == UserAG.ag_id, UserAG.role != "NONE"))
+                          primaryjoin=and_(id == UserAG.user_id, AG.id == UserAG.ag_id, UserAG.role != 'NONE'))
     invites = db.relationship('AG', secondary='users_ags',
-                              primaryjoin=and_(id == UserAG.user_id, AG.id == UserAG.ag_id, UserAG.status == "INVITED"))
+                              primaryjoin=and_(id == UserAG.user_id, AG.id == UserAG.ag_id, UserAG.status == 'INVITED'))
     dates = db.relationship('Date', secondary='users_dates')
     sessions = db.relationship('Session')
 

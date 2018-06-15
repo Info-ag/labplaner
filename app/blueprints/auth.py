@@ -48,7 +48,7 @@ def login():
             db.session.commit()
 
             _session = Session(user)
-            _session.session_only = not bool(request.values.get("remember", default=False))
+            _session.session_only = not bool(request.values.get('remember', default=False))
             db.session.add(_session)
             db.session.commit()
             g.session = _session

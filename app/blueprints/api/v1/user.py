@@ -49,7 +49,6 @@ def add_user():
         return user_schema.jsonify(user), 200
     except Exception as e:
         print(e)
-        print("test")
         return BadRequest()
 
 

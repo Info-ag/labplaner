@@ -59,7 +59,7 @@ def ag_settings(ag_name, ag, user_ag):
 def discover():
     ags = db.session.query(AG).all()
     schema = AGSchema(many=True)
-    return render_template('ag/discover.html', ags=ags_schema.dump(ags))
+    return render_template('ag/discover.html', ags=schema.dump(ags))
 
 @bp.route('<ag_name>/events/<event_name>/edit')
 @requires_auth()
@@ -67,12 +67,11 @@ def discover():
 def edit_event():
     pass
 
-@bp.route('<ag_name>/messages/write', methods=["GET"])
+@bp.route('<ag_name>/messages/write', methods=['GET'])
 @requires_auth()
 @requires_mentor()
 def write_message(ag_name, ag, user_ag):
-    print(ag_name)
-    return render_template('ag/write_message.html', title=f"Write Message for {ag.display_name}", message_regex=MessageRegex, ag_name=ag_name)
+    return render_template('ag/write_message.html', title=f'Write Message for {ag.display_name}', message_regex=MessageRegex, ag_name=ag_name)
 
 @bp.route('<ag_name>/messages/view/<message_id>')
 @requires_auth()
