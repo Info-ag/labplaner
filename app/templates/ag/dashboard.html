@@ -67,6 +67,9 @@
             {% if my_role == "MENTOR" %}
                 <a href="#modal-name" class="btn btn-link"><i class="icon icon-edit"></i></a>
             {% endif %}
+            <a href="{{url_for('ag_api.delete_ag', ag_name = ag.data.name)}}" class="btn btn-link">
+                <i class="icon icon-cross"></i>
+            </a>
         </h1>
         <p>Description: {{ ag.data.description }}
             {% if my_role == "MENTOR" %}
@@ -109,10 +112,10 @@
                         <td>{{ user.ag_status }}</td>
                         <td>
                             {% if my_role == "MENTOR" %}
-                                <a href="{{url_for('ag_api.leave_ag', ag_name = ag.data.name)}}" class="btn btn-link">
+                                <a href="{{url_for('ag_api.kick_user', ag_name = ag.data.name, user_name = user.username)}}" class="btn btn-link">
                                     <i class="icon icon-cross"></i>
                                 </a>
-                            {% elif g.session.authenticated == true and g.session.user.id == user.id %}
+                            {% elif g.session.authenticated == true and g.session.user_id == user.id %}
                                 <a href="{{url_for('ag_api.leave_ag', ag_name = ag.data.name)}}" class="btn btn-link">
                                     <i class="icon icon-cross"></i>
                                 </a>
@@ -233,7 +236,53 @@
             </table>
         </div>
     </div>
-   
+    <div id="messages" class="container">
+            <h3 class="s-title">
+                <a href="#messages" class="anchor" aria-hidden="true">#</a>
+                <span class="badge" data-badge="{{ag.data.unread_messages.data|length}}">
+                    Messages
+                </span>
+                <a href="{{url_for('ag.write_message', ag_name = ag.data.name)}}" class="btn btn-link">
+                    <i class="icon icon-plus"></i>
+                </a>
+            </h3>
+            <div class="docs-note">
+                <ul class="menu">
+                    <li class="divider" data-content="UNREAD">
+                    </li>
+                        {% for message in ag.data.unread_messages.data %}
+                    <li class="menu-item">
+                            <div class="menu-badge">
+                                {% if message.read == true %}
+                                    <label class="label label-primary">READ</label>
+                                {% else %}
+                                    <label class="label label-primary">UNREAD</label>
+                                {% endif %}
+                            </div>
+                            <a href="{{url_for('ag.view_message', ag_name=ag.data.name, message_id=message.id)}}">
+                                {{ message.subject }}
+                            </a>
+                    </li>
+                        {% endfor %}
+                    <li class="divider" data-content="READ">
+                    </li>
+                    <li class="menu-item">
+                        {% for message in ag.data.read_messages.data %}
+                            <div class="menu-badge">
+                                {% if message.read == true %}
+                                    <label class="label label-primary">READ</label>
+                                {% else %}
+                                    <label class="label label-primary">UNREAD</label>
+                                {% endif %}
+                            </div>
+                            <a href="{{url_for('ag.view_message', ag_name=ag.data.name, message_id=message.id)}}">
+                                {{ message.subject }}
+                            </a>
+                        {% endfor %}
+                    </li>
+                </ul>
+            </div>
+        </div>
 {% endblock %}
 {% block scripts %}
     <script>

@@ -11,6 +11,8 @@ app.secret_key = app.secret_key.encode()
 ma = Marshmallow(app)
 
 from app.models.user import Session, User
+from app.models.ag import AG, AGSchema
+from app.models.associations import UserAG
 from app.utils import after_this_request, requires_auth
 
 from app.blueprints.api import v1
@@ -89,4 +91,6 @@ app.register_blueprint(pizza.bp, url_prefix='/pizza')
 @app.route('/')
 @requires_auth()
 def index():
-    return render_template('index.html', title='Dashboard')
+    ags = db.session.query(AG).join(UserAG).filter(UserAG.user_id == g.session.user_id)
+    ags_schema = AGSchema(many=True)
+    return render_template('index.html', title='Dashboard', ags=ags_schema.dump(ags))

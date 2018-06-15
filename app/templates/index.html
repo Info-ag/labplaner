@@ -50,7 +50,7 @@
     <div id="messages" class="container">
         <h3 class="s-title">
             <a href="#messages" class="anchor" aria-hidden="true">#</a>
-            <span class="badge" data-badge="2">
+            <span class="badge" data-badge="{{g.user.unread_messages|length}}">
                 Messages
             </span>
         </h3>
@@ -60,9 +60,9 @@
                 </li>
                 <li class="menu-item">
                     <a href="#">
-                        {% for ag in g.user.ags %}
+                        {% for ag in ags.data %}
                             <div class="menu-badge">
-                                <label class="label label-primary">2</label>
+                                <label class="label label-primary">{{ag.unread_messages|length}}</label>
                             </div>
                             <a href="/ag/{{ ag.name }}/messages">
                                 {{ ag.display_name }}

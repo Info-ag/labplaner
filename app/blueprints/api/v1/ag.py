@@ -4,14 +4,15 @@ from flask import Blueprint, request, jsonify, g, url_for, flash, redirect
 from sqlalchemy.sql import exists, and_, or_
 from werkzeug.exceptions import NotFound, BadRequest, Forbidden, PreconditionFailed
 
-from app.models.ag import AG, AGSchema, AGSchemaIntern
+from app.models.ag import AG, AGSchema, AGSchemaIntern, AGMessage
 from app.models.user import User, UserSchema
-from app.models.associations import UserAG
+from app.models.associations import UserAG, UserAGMessage
 from app.models import db
 
-from app.utils import requires_auth, requires_mentor, requires_ag, requires_member_association, requires_gracefully_not_member, get_user_by_username, get_membership
+from app.utils import requires_auth, requires_mentor, requires_ag, requires_member_association, requires_gracefully_not_member, get_user_by_username, get_membership, get_user_by_username
 
-from config.regex import AGRegex
+from config.regex import AGRegex, MessageRegex
+import app.mail as mail
 
 bp = Blueprint('ag_api', __name__)
 
@@ -25,7 +26,7 @@ ags_schema = AGSchema(many=True)
 @requires_auth()
 def add_ag():
     '''
-    Create a new AG. The request body has to inclurde the following:
+    Create a new AG. The request body has to include the following:
         :key: name: AG name used to identify the ag (eg. /ag/<name>)
         :key: display_name: AG name that is human read able
         (can contain spaces etc.)
@@ -338,3 +339,68 @@ def leave_ag(ag_name, ag, user_ag):
         flash(f'You sucessfully left the AG {ag.name}', 'success')
     db.session.commit()
     return redirect(url_for('index'))
+
+
+
+@bp.route('<ag_name>/kick/<user_name>')
+@requires_auth()
+@requires_mentor()
+def kick_user(ag_name, user_name, ag, user_ag):
+    
+    user = get_user_by_username(user_name)
+    edit_user_ag = db.session.query(UserAG).filter_by(user_id=user.id, ag_id=ag.id).scalar()
+    if(edit_user_ag is None or edit_user_ag.role == "NONE"):
+        flash(f'You cannot kick {user.username} from {ag.display_name}. He is no valid member of this AG')
+        return redirect(url_for('ag.ag_dashboard', ag_name=ag_name))
+    edit_user_ag.role = "NONE"
+    edit_user_ag.status = "KICKED"
+    db.session.flush()
+    if(len(ag.actual_users) == 0):
+        db.session.delete(ag)
+        db.session.commit()
+        flash(f'You sucessfully left and deleted the AG {ag.display_name}', 'success')
+        return redirect(url_for('index'))
+    elif(len(ag.mentors) == 0):
+        flash(f'You cannot kick the last Mentor of {ag.display_name}', 'error')
+    else:
+        flash(f'You sucessfully kicked {user.username} from the AG {ag.display_name}', 'success')
+        db.session.commit()
+    return redirect(url_for('ag.ag_dashboard', ag_name=ag_name))
+
+@bp.route('<ag_name>/delete')
+@requires_auth()
+@requires_mentor()
+def delete_ag(ag_name, ag, user_ag):
+    db.session.delete(ag)
+    db.session.commit()
+    flash(f'You successfully deleted the AG {ag.display_name}', 'success')
+    return redirect(url_for('index'))
+
+@bp.route('<ag_name>/messages/write', methods=["POST"])
+@requires_auth()
+@requires_mentor()
+def write_message(ag_name, ag, user_ag):
+    subject = request.values.get('subject')
+    message = request.values.get('message')
+    email = request.values.get('email')
+    if subject is None and not bool(re.match(MessageRegex.subject, subject)):
+        return PreconditionFailed(description='subject')
+    if message is None and not bool(re.match(MessageRegex.message, message)):
+        return PreconditionFailed(description='message')
+    new_message = AGMessage()
+    new_message.subject = subject
+    new_message.message = message
+    new_message.ag_id = ag.id
+    db.session.add(new_message)
+    db.session.flush()
+    for user in ag.actual_users:
+        new_assoc = UserAGMessage()
+        new_assoc.user_id = user.id
+        new_assoc.message_id = new_message.id
+        new_assoc.read = False
+        db.session.add(new_assoc)
+    if email is not None:
+        mail.ag_mail(agmessage=new_message, ag=ag)
+    db.session.commit()
+    flash('Successfully send message', 'success')
+    return redirect(url_for('ag.ag_dashboard', ag_name=ag_name))

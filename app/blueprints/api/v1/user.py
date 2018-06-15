@@ -44,9 +44,8 @@ def add_user():
 
         db.session.add(user)
         db.session.commit()
-
         mail.confirmation_mail(user)
-
+            
         return user_schema.jsonify(user), 200
     except Exception as e:
         print(e)

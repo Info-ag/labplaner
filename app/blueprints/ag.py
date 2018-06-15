@@ -1,12 +1,12 @@
 from flask import Blueprint, g, redirect, render_template, url_for, flash
 from sqlalchemy.sql import exists
 from werkzeug.exceptions import NotFound, Unauthorized
-from app.models.associations import UserAG
-from app.models.ag import AG, AGSchema, AGSchemaIntern
+from app.models.associations import UserAG, UserAGMessage
+from app.models.ag import AG, AGSchema, AGSchemaIntern, AGMessage, AGMessageSchema
 from app.models import db
-from app.utils import requires_auth, requires_mentor, requires_membership
+from app.utils import requires_auth, requires_mentor, requires_membership, requires_ag_message_rights
 
-from config.regex import AGRegex
+from config.regex import AGRegex, MessageRegex
 
 bp = Blueprint('ag', __name__)
 
@@ -66,3 +66,20 @@ def discover():
 @requires_mentor()
 def edit_event():
     pass
+
+@bp.route('<ag_name>/messages/write', methods=["GET"])
+@requires_auth()
+@requires_mentor()
+def write_message(ag_name, ag, user_ag):
+    print(ag_name)
+    return render_template('ag/write_message.html', title=f"Write Message for {ag.display_name}", message_regex=MessageRegex, ag_name=ag_name)
+
+@bp.route('<ag_name>/messages/view/<message_id>')
+@requires_auth()
+@requires_ag_message_rights()
+def view_message(ag_name, message_id, ag, user_ag, ag_message, user_ag_message):
+    message_schema = AGMessageSchema()
+    user_ag_message.read = True
+    db.session.add(user_ag_message)
+    db.session.commit()
+    return render_template('ag/view_message.html', title='View Message', message=message_schema.dump(ag_message), my_role=user_ag.role)

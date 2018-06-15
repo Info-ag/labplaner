@@ -3,11 +3,11 @@ from functools import wraps
 from flask import g, redirect, url_for, request
 from sqlalchemy import exists, and_, or_
 from app.models import db
-from app.models.ag import AG
-from app.models.associations import UserAG
+from app.models.ag import AG, AGMessage
+from app.models.associations import UserAG, UserAGMessage
 from app.models.user import User
 
-from werkzeug.exceptions import Unauthorized, NotFound, BadRequest
+from werkzeug.exceptions import Unauthorized, NotFound, BadRequest, Forbidden
 
 
 def requires_auth():
@@ -175,6 +175,43 @@ def requires_mentor():
 
     return wrapper
 
+def requires_ag_message():
+    def wrapper(f):
+        @wraps(f)
+        @requires_membership()
+        def wrapped(*args, **kwargs):
+            message_id = kwargs.get('message_id')
+            if message_id:
+                ag_message = db.session.query(AGMessage).filter_by(id = message_id).scalar()
+                if ag_message:
+                    kwargs.setdefault('ag_message', ag_message)
+                    return f(*args, **kwargs)
+                else:
+                    return NotFound(description='not able to locate any message with this id')
+            else:
+                return BadRequest(description='you have not specified any message id')
+
+        return wrapped
+
+    return wrapper
+
+def requires_ag_message_rights():
+    def wrapper(f):
+        @wraps(f)
+        @requires_membership()
+        @requires_ag_message()
+        def wrapped(*args, **kwargs):
+            ag_message = kwargs.get('ag_message')
+            user_ag_message = db.session.query(UserAGMessage).filter_by(message_id = ag_message.id, user_id = g.session.user_id).scalar()
+            if user_ag_message:
+                kwargs.setdefault('user_ag_message', user_ag_message)
+                return f(*args, **kwargs)
+            else: 
+                return Forbidden('you have no rights to read this message')
+
+        return wrapped
+
+    return wrapper
 
 def get_membership(user_id, ag_id):
     user_ag = UserAG.query.filter_by(user_id=user_id, ag_id=ag_id).scalar()

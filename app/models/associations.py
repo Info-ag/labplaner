@@ -1,4 +1,6 @@
+from app import ma
 from app.models import db
+from datetime import datetime
 
 
 class UserAG(db.Model):
@@ -37,3 +39,22 @@ class UserDate(db.Model):
 
     def __repr__(self):
         return f'<UserDate {self.id}>'
+
+class UserAGMessage(db.Model):
+    __tablename__ = 'users_ag_messages'
+    id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
+    
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    message_id = db.Column(db.Integer, db.ForeignKey('ag_messages.id'))
+    read = db.Column(db.Boolean, default=False)
+    updated = db.Column(db.DateTime, onupdate=datetime.now())
+    user = db.relationship('User')
+
+
+    def __repr__(self):
+        return f'<UserAGMessage {self.id}>'
+
+class UserAGMessageSchema(ma.Schema):
+    user = ma.Nested('UserSchema')
+    class Meta:
+        fields = ('user_id', 'read', 'updated', 'user')
