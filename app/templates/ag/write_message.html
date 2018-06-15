@@ -14,7 +14,7 @@
                                 <small class="label">Lab-Planer</small>
                             </h3>
                         </div>
-                        <form id="write-message-form" action="{{ url_for('ag_api.write_message', ag_name=ag_name) }}" method="post">
+                        <form id="write-message-form" action="{{ url_for('ag_messages_api.write_message', ag_name=ag_name) }}" method="post">
                             <fieldset id="write-message-form-fieldset">
                                 <div class="form-group">
                                     <label data-tooltip="Maximum 48 characters & 'A-z,0-9,-, ,_' & no '_, ,-' at the front or end"

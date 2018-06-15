@@ -1,3 +1,12 @@
+'''
+All Database models regarding Users
+    --> User, Session
+All Marshmallow Schemas regarding those models
+    --> UserSchemaSelf, UserSchema, UserSchemaDates
+'''
+
+
+
 import secrets
 import hashlib
 from datetime import datetime, timedelta
@@ -30,7 +39,7 @@ class User(db.Model):
     dates = db.relationship('Date', secondary='users_dates')
     sessions = db.relationship('Session')
 
-    unread_messages = db.relationship('UserAGMessage', primaryjoin='and_(User.id == UserAGMessage.user_id, UserAGMessage.read == 0)', viewonly=True) 
+    unread_messages = db.relationship('UserAGMessage', primaryjoin='and_(User.id == UserAGMessage.user_id, UserAGMessage.read == 0)', viewonly=True)
 
     def __init__(self):
         self.confirmation_token = secrets.token_hex(32)

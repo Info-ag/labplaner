@@ -1,9 +1,14 @@
+'''
+Database models regardning AG --> AG, AGMEssage (,Message)
+Marshmallow Schema regarding those database models --> AGSchema, AGSchemaIntern, AGMessageSchema
+'''
+
+from datetime import datetime
+from sqlalchemy import and_
+from flask import g
 from app import ma
 from app.models import db
-from sqlalchemy import and_
-from app.models.associations import UserAG, UserAGMessage, UserAGMessageSchema
-from flask import g
-from datetime import datetime
+from app.models.associations import UserAG, UserAGMessage
 
 
 class AG(db.Model):
@@ -17,35 +22,35 @@ class AG(db.Model):
 
     users = db.relationship('User', secondary='users_ags', order_by='UserAG.role')
 
-    actual_users = db.relationship('User',
-                                   secondary='users_ags',
-                                   primaryjoin='and_(User.id == UserAG.user_id, AG.id == UserAG.ag_id, UserAG.role != "NONE")',
+    actual_users = db.relationship('User',\
+                                   secondary='users_ags',\
+                                   primaryjoin='and_(User.id == UserAG.user_id, AG.id == UserAG.ag_id, UserAG.role != "NONE")',\
                                    viewonly=True)
     invited_users = db.relationship('User',
-                                    secondary='users_ags',
-                                    primaryjoin='and_(User.id == UserAG.user_id, AG.id == UserAG.ag_id, UserAG.role == "NONE", UserAG.status == "INVITED")',
+                                    secondary='users_ags',\
+                                    primaryjoin='and_(User.id == UserAG.user_id, AG.id == UserAG.ag_id, UserAG.role == "NONE", UserAG.status == "INVITED")',\
                                     viewonly=True)
-    applied_users = db.relationship('User',
-                                    secondary='users_ags',
-                                    primaryjoin='and_(User.id == UserAG.user_id, AG.id == UserAG.ag_id, UserAG.role == "NONE", UserAG.status == "APPLIED")',
+    applied_users = db.relationship('User',\
+                                    secondary='users_ags',\
+                                    primaryjoin='and_(User.id == UserAG.user_id, AG.id == UserAG.ag_id, UserAG.role == "NONE", UserAG.status == "APPLIED")',\
                                     viewonly=True)
-    mentors = db.relationship('User',
-                              secondary='users_ags',
-                              primaryjoin='and_(User.id == UserAG.user_id, AG.id == UserAG.ag_id, UserAG.role == "MENTOR", UserAG.status == "ACTIVE")',
+    mentors = db.relationship('User',\
+                              secondary='users_ags',\
+                              primaryjoin='and_(User.id == UserAG.user_id, AG.id == UserAG.ag_id, UserAG.role == "MENTOR", UserAG.status == "ACTIVE")',\
                               viewonly=True)
 
     events = db.relationship('Event')
 
     messages = db.relationship('AGMessage')
 
-    unread_messages = db.relationship('AGMessage',
-                                    secondary='users_ag_messages',
-                                    primaryjoin='and_(UserAGMessage.message_id == AGMessage.id, AG.id == AGMessage.ag_id, UserAGMessage.read == 0, UserAGMessage.user_id == 1)',
+    unread_messages = db.relationship('AGMessage',\
+                                    secondary='users_ag_messages',\
+                                    primaryjoin='and_(UserAGMessage.message_id == AGMessage.id, AG.id == AGMessage.ag_id, UserAGMessage.read == 0, UserAGMessage.user_id == 1)',\
                                     viewonly=True)
 
-    read_messages = db.relationship('AGMessage',
-                                    secondary=f'users_ag_messages',
-                                    primaryjoin=f'and_(UserAGMessage.message_id == AGMessage.id, AG.id == AGMessage.ag_id, UserAGMessage.read == 1, UserAGMessage.user_id == 1)',
+    read_messages = db.relationship('AGMessage',\
+                                    secondary=f'users_ag_messages',\
+                                    primaryjoin=f'and_(UserAGMessage.message_id == AGMessage.id, AG.id == AGMessage.ag_id, UserAGMessage.read == 1, UserAGMessage.user_id == 1)',\
                                     viewonly=True)
 
     def __repr__(self):
@@ -60,7 +65,8 @@ class AGMessage(db.Model):
     message = db.Column(db.String(1000))
     created = db.Column(db.DateTime, default=datetime.now())
 
-    users = db.relationship('UserAGMessage', secondary='users', primaryjoin='and_(AGMessage.id == UserAGMessage.message_id, UserAGMessage.user_id == User.id)', viewonly=True)
+    users = db.relationship('UserAGMessage', secondary='users',\
+                            primaryjoin='and_(AGMessage.id == UserAGMessage.message_id, UserAGMessage.user_id == User.id)', viewonly=True)
 
     def __repr__(self):
         return f'<AGMessage {self.id}>'
@@ -98,7 +104,7 @@ class AGSchemaIntern(ma.Schema):
         ag_message = db.session.query(AGMessage).join(UserAGMessage, and_(AGMessage.ag_id == ag_id, UserAGMessage.user_id == g.session.user_id, UserAGMessage.message_id == AGMessage.id, UserAGMessage.read == 0)).all()
         ag_messages_Schema = AGMessageSchema(many=True)
         return ag_messages_Schema.dump(ag_message)
-        
+
     def get_read_messages(self, obj: AG):
         if not g.session.authenticated:
             return None
@@ -109,7 +115,7 @@ class AGSchemaIntern(ma.Schema):
         else:
             ag_messages_Schema = AGMessageSchema(many=True, exclude=('users',))
         return ag_messages_Schema.dump(ag_message)
-        
+
 
     class Meta:
         fields = (
@@ -127,7 +133,7 @@ class AGMessageSchema(ma.Schema):
     def get_read_status(self, obj: AGMessage):
         if not g.session.authenticated:
             return None
-        user_ag_message = db.session.query(UserAGMessage).filter_by(user_id = g.session.user_id, message_id=obj.id).scalar()
+        user_ag_message = db.session.query(UserAGMessage).filter_by(user_id=g.session.user_id, message_id=obj.id).scalar()
         return user_ag_message.read
 
 
@@ -146,4 +152,3 @@ class Message(db.Model):
 
     def __repr__(self):
         return f'<Message {self.id}>'
-

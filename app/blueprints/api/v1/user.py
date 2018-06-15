@@ -1,13 +1,15 @@
+'''
+All Blueprint routes regarding interacting with users
+'''
+
 import datetime
-import json
 
 from flask import Blueprint, request, jsonify, g
-from werkzeug.exceptions import NotFound, Unauthorized, BadRequest, Forbidden
-from sqlalchemy import exists, and_
+from werkzeug.exceptions import BadRequest
 
 from app.models import db
 from app.utils import requires_auth
-import app.algorithm
+# import app.algorithm
 
 from app.models.user import User, UserSchema, UserSchemaDates
 from app.models.associations import UserDate, UserAG
@@ -45,7 +47,7 @@ def add_user():
         db.session.add(user)
         db.session.commit()
         mail.confirmation_mail(user)
-            
+
         return user_schema.jsonify(user), 200
     except Exception as e:
         print(e)
@@ -95,20 +97,20 @@ def set_dates():
 
     dates = request.values.getlist('dates[]')
     for _date in dates:
-        d = datetime.datetime.strptime(_date, '%a %b %d %Y')
-        if not db.session.query(Date).filter_by(day=d.isoformat()[:10]).scalar():
+        formatted_datetime = datetime.datetime.strptime(_date, '%a %b %d %Y')
+        if not db.session.query(Date).filter_by(day=formatted_datetime.isoformat()[:10]).scalar():
             date_obj = Date()
-            date_obj.day = d
+            date_obj.day = formatted_datetime
             db.session.add(date_obj)
 
-        u = UserDate()
-        u.date_id = db.session.query(Date).filter_by(day=d.isoformat()[:10]).scalar().id
-        u.user_id = user.id
+        user_date = UserDate()
+        user_date.date_id = db.session.query(Date).filter_by(day=formatted_datetime.isoformat()[:10]).scalar().id
+        user_date.user_id = user.id
 
-        db.session.add(u)
+        db.session.add(user_date)
     db.session.commit()
 
-    app.algorithm.do_your_work()
+    # app.algorithm.do_your_work()
 
     return jsonify({'status': 'success', 'redirect': '/'}), 200
 

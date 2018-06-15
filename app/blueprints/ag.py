@@ -1,10 +1,12 @@
-from flask import Blueprint, g, redirect, render_template, url_for, flash
-from sqlalchemy.sql import exists
-from werkzeug.exceptions import NotFound, Unauthorized
-from app.models.associations import UserAG, UserAGMessage
-from app.models.ag import AG, AGSchema, AGSchemaIntern, AGMessage, AGMessageSchema
+'''
+All Blueprint routes regarding rendering ag templates
+'''
+
+from flask import Blueprint, render_template
+from app.models.ag import AG, AGSchema, AGSchemaIntern, AGMessageSchema
 from app.models import db
-from app.utils import requires_auth, requires_mentor, requires_membership, requires_ag_message_rights
+from app.utils import requires_auth
+from app.utils.assocations import requires_mentor, requires_membership, requires_ag_message_rights
 
 from config.regex import AGRegex, MessageRegex
 
@@ -28,7 +30,7 @@ def create_ag():
 def ag_dashboard(ag_name, ag, user_ag):
     schema = AGSchemaIntern()
     schema.context = {'ag_id': ag.id}
-    return render_template('ag/dashboard.html', my_role=user_ag.role, ag=schema.dump(ag),
+    return render_template('ag/dashboard.html', my_role=user_ag.role, ag=schema.dump(ag),\
                             title=ag.display_name)
 
 
@@ -36,7 +38,8 @@ def ag_dashboard(ag_name, ag, user_ag):
 @requires_auth()
 @requires_mentor()
 def invite_ag(ag_name, ag, user_ag):
-    return render_template('ag/invite.html', ag=ag_schema_intern.dump(ag), title=f'Invite {ag.display_name}')
+    return render_template('ag/invite.html', ag=ag_schema_intern.dump(ag),\
+                            title=f'Invite {ag.display_name}')
 
 
 # Events
@@ -45,7 +48,8 @@ def invite_ag(ag_name, ag, user_ag):
 @requires_auth()
 @requires_mentor()
 def create_event(ag_name, ag, user_ag):
-    return render_template('ag/event/add.html', ag=ag_schema_intern.dump(ag), title=f'New Event {ag.display_name}')
+    return render_template('ag/event/add.html', ag=ag_schema_intern.dump(ag),\
+                            title=f'New Event {ag.display_name}')
 
 @bp.route('/<ag_name>/settings', methods=['GET'])
 @requires_auth()
@@ -71,7 +75,8 @@ def edit_event():
 @requires_auth()
 @requires_mentor()
 def write_message(ag_name, ag, user_ag):
-    return render_template('ag/write_message.html', title=f'Write Message for {ag.display_name}', message_regex=MessageRegex, ag_name=ag_name)
+    return render_template('ag/write_message.html', title=f'Write Message for {ag.display_name}',\
+                            message_regex=MessageRegex, ag_name=ag_name)
 
 @bp.route('<ag_name>/messages/view/<message_id>')
 @requires_auth()
@@ -81,4 +86,5 @@ def view_message(ag_name, message_id, ag, user_ag, ag_message, user_ag_message):
     user_ag_message.read = True
     db.session.add(user_ag_message)
     db.session.commit()
-    return render_template('ag/view_message.html', title='View Message', message=message_schema.dump(ag_message), my_role=user_ag.role)
+    return render_template('ag/view_message.html', title='View Message',\
+                            message=message_schema.dump(ag_message), my_role=user_ag.role)

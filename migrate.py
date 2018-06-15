@@ -1,3 +1,7 @@
+'''
+migrate script for the app and database
+'''
+
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 

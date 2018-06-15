@@ -1,6 +1,12 @@
+'''
+All database models, whhich associate two other database models
+    --> UserAG, EventDate, UserDate, UserAGMessage
+All Schemas regarding those database models
+    --> UserAGMessageSchema
+'''
+from datetime import datetime
 from app import ma
 from app.models import db
-from datetime import datetime
 
 
 class UserAG(db.Model):
@@ -43,7 +49,7 @@ class UserDate(db.Model):
 class UserAGMessage(db.Model):
     __tablename__ = 'users_ag_messages'
     id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
-    
+
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     message_id = db.Column(db.Integer, db.ForeignKey('ag_messages.id'))
     read = db.Column(db.Boolean, default=False)

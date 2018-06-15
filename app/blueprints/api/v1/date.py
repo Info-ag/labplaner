@@ -1,3 +1,7 @@
+'''
+All blueprints routes regarding interacting with dates
+'''
+
 from datetime import date
 
 from sqlalchemy.sql import exists
@@ -8,7 +12,6 @@ from app.utils import requires_auth
 
 from app.models import db
 
-from app.models.associations import UserAG
 from app.models.date import Date, DateSchema
 
 bp = Blueprint('date_api', __name__)

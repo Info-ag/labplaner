@@ -1,3 +1,10 @@
+'''
+All Database models regarding events
+    --> Event
+All Marshmallow Schemas regarding those models
+    --> EventSchema
+'''
+
 from app import ma
 from app.models import db
 

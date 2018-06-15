@@ -1,3 +1,7 @@
+'''
+All blueprint routes regarding interacting with events
+'''
+
 import datetime
 
 from flask import Blueprint, request, jsonify, g
@@ -5,12 +9,10 @@ from sqlalchemy.sql import exists
 from werkzeug.exceptions import NotFound, Unauthorized
 
 from app.utils import requires_auth
-
 from app.models.event import Event, EventSchema
 from app.models.ag import AG
 from app.models.date import Date
 from app.models.associations import UserAG
-
 from app.models import db
 
 bp = Blueprint('event_api', __name__)
@@ -25,12 +27,14 @@ def add_event():
     ag_id = request.values.get('ag')
 
     if db.session.query(exists().where(AG.id == ag_id)).scalar():
-        if db.session.query(exists().where(UserAG.user_id == g.session.user_id and UserAG.ag_id == ag_id)).scalar():
+        if db.session.query(exists().where(UserAG.user_id == g.session.user_id and\
+                UserAG.ag_id == ag_id)).scalar():
+
             user_ag = UserAG.query.filter_by(user_id=g.session.user_id, ag_id=ag_id).scalar()
             if user_ag.role == 'MENTOR':
                 display_name = request.values.get('display_name')
                 description = request.values.get('description')
-                if len(display_name) == 0 or len(display_name) > 48:
+                if not display_name or len(display_name) > 48:
                     return jsonify({'reason': 'display_name'}), 400
                 if len(description) > 280:
                     return jsonify({'reason': 'description'}), 400
@@ -45,9 +49,9 @@ def add_event():
 
                 dates = request.values.getlist('dates[]')
                 for _date in dates:
-                    d = datetime.datetime.strptime(_date, '%a %b %d %Y').date()
-                    if db.session.query(exists().where(Date.day == d)).scalar():
-                        u_date = Date.query.filter_by(day=d).scalar()
+                    formatted_datetime = datetime.datetime.strptime(_date, '%a %b %d %Y').date()
+                    if db.session.query(exists().where(Date.day == formatted_datetime)).scalar():
+                        u_date = Date.query.filter_by(day=formatted_datetime).scalar()
                         u_date.users.append(g.user)
                         u_date.events.append(event)
                         continue
@@ -55,7 +59,7 @@ def add_event():
                         date_obj: Date = Date()
                         date_obj.users.append(g.user)
                         date_obj.events.append(event)
-                        date_obj.day = d
+                        date_obj.day = formatted_datetime
                         db.session.add(date_obj)
 
                 db.session.commit()

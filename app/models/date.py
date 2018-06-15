@@ -1,7 +1,11 @@
+'''
+All Database models regarding Dates
+    ---> Date
+All Marshmallow Schemas regarding those models
+    --> DateSchema
+'''
 from app import ma
 from app.models import db
-
-from app.models.event import EventSchema
 
 
 class Date(db.Model):

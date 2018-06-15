@@ -1,3 +1,7 @@
+'''
+basic blueprint route for the api v1
+'''
+
 from flask import Blueprint, request, jsonify, render_template
 from app.models.user import User, UserSchema
 

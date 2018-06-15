@@ -29,22 +29,22 @@
                                     {% if ag.association.role == "NONE" %}
                                         {% if ag.association.status == "DECLINED" %}
                                             <td>
-                                                <a href="{{url_for('ag_api.apply_ag', ag_name = ag.name)}}">
+                                                <a href="{{url_for('ag_applications_api.apply_ag', ag_name = ag.name)}}">
                                                     <i class="icon icon-share"></i>
                                                 </a>
                                             </td>
                                         {% elif ag.association.status == "INVITED" %}
                                             <td>    
-                                                <a href="{{url_for('ag_api.accept_invitation', ag_name=ag.name)}}" class="btn btn-action btn-success">
+                                                <a href="{{url_for('ag_invitations_api.accept_invitation', ag_name=ag.name)}}" class="btn btn-action btn-success">
                                                     <i class="icon icon-check"></i>
                                                 </a>
-                                                <a href="{{url_for('ag_api.decline_invitation', ag_name=ag.name)}}" class="btn btn-action btn-error">
+                                                <a href="{{url_for('ag_invitations_api.decline_invitation', ag_name=ag.name)}}" class="btn btn-action btn-error">
                                                     <i class="icon icon-cross"></i>
                                                 </a>
                                             </td>
                                         {% elif ag.association.status == "APPLIED" %}
                                             <td>
-                                                <a href="{{url_for('ag_api.cancell_application', ag_name=ag.name)}}" class="btn btn-action btn-error">
+                                                <a href="{{url_for('ag_applications_api.cancell_application', ag_name=ag.name)}}" class="btn btn-action btn-error">
                                                     <i class="icon icon-cross"></i>
                                                 </a>
                                             </td>
@@ -52,7 +52,7 @@
                                             <td>REJECTED</td>
                                         {% elif ag.association.status == "LEFT" %}
                                             <td>
-                                                <a href="{{url_for('ag_api.apply_ag', ag_name = ag.name)}}">
+                                                <a href="{{url_for('ag_applications_api.apply_ag', ag_name = ag.name)}}">
                                                     <i class="icon icon-share"></i>
                                                 </a>
                                             </td>
@@ -65,7 +65,7 @@
                                     <td></td>
                                     <td></td>
                                     <td>
-                                        <a href="{{url_for('ag_api.apply_ag', ag_name = ag.name)}}">
+                                        <a href="{{url_for('ag_applications_api.apply_ag', ag_name = ag.name)}}">
                                             <i class="icon icon-share"></i>
                                         </a>
                                     </td>

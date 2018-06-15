@@ -22,7 +22,7 @@
                                 <a>Invite People</a>
                             </li>
                         </ul>
-                        <form id="invite-form" action="{{url_for('ag_api.add_user_to_ag', ag_id=ag.data.id)}}" method="post">
+                        <form id="invite-form" action="{{url_for('ag_invitations_api.add_user_to_ag', ag_id=ag.data.id)}}" method="post">
                             <div class="form-autocomplete my-2">
                                 <div class="form-autocomplete-input form-input has-icon-right">
                                     <input autocomplete="off" class="form-input" id="usernameInput" type="text" placeholder="typing here">
@@ -45,7 +45,7 @@
 
 {% block scripts %}
     <script>
-        var inviteUrl = "{{url_for('ag_api.get_inviteable_user', ag_name = ag.data.name)}}";
+        var inviteUrl = "{{url_for('ag_invitations_api.get_inviteable_user', ag_name = ag.data.name)}}";
     </script>
     <script src="/static/js/pages/ag/invite.js"></script>
 {% endblock %}

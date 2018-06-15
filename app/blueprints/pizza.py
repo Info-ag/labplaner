@@ -1,5 +1,8 @@
-from flask import Blueprint, flash, g, redirect, render_template, url_for
-from app.models import db
+'''
+All blueprints regarding rendering pizza templates(not included yet)
+'''
+
+from flask import Blueprint, render_template
 from app.utils import requires_auth
 bp = Blueprint('pizza', __name__)
 

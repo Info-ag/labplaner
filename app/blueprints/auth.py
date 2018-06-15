@@ -1,9 +1,16 @@
+'''
+All Blueprint routes regardning rendering authentication templates
+    except:
+        /login [POST] --> handeling the login, has nothing todo with rendering a template
+'''
+
 from sqlalchemy.sql import exists
 from werkzeug.exceptions import BadRequest
 from flask import Blueprint, request, jsonify, g, redirect, render_template, flash
 
-from app.models.user import User, Session
 from app.models import db
+
+from app.models.user import User, Session
 
 bp = Blueprint('auth', __name__)
 

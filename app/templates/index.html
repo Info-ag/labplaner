@@ -15,10 +15,10 @@
                     <li class="menu-item">
                         <a href="#">
                             <div class="menu-badge">
-                                <a href="{{url_for('ag_api.accept_invitation', ag_name=ag.name)}}" class="btn btn-action btn-success">
+                                <a href="{{url_for('ag_invitations_api.accept_invitation', ag_name=ag.name)}}" class="btn btn-action btn-success">
                                     <i class="icon icon-check"></i>
                                 </a>
-                                <a href="{{url_for('ag_api.decline_invitation', ag_name=ag.name)}}" class="btn btn-action btn-error">
+                                <a href="{{url_for('ag_invitations_api.decline_invitation', ag_name=ag.name)}}" class="btn btn-action btn-error">
                                     <i class="icon icon-cross"></i>
                                 </a>
                             </div>

@@ -150,7 +150,7 @@
                         <td>{{ user.id }}</td>
                         <td>{{ user.username }}</td>
                         {% if my_role == "MENTOR" %}
-                            <td><a href="{{url_for('ag_api.cancell_invitation', ag_name=ag.data.name, user_id=user.id)}}"><i class="icon icon-cross"></i></a></td>
+                            <td><a href="{{url_for('ag_invitations_api.cancell_invitation', ag_name=ag.data.name, user_id=user.id)}}"><i class="icon icon-cross"></i></a></td>
                         {% endif %}
                     </tr>
                 {% endfor %}
@@ -186,8 +186,8 @@
                     <tr>
                         <td>{{ user.id }}</td>
                         <td>{{ user.username }}</td>
-                        <td><a href="{{url_for('ag_api.reject_application', ag_name=ag.data.name, username=user.username)}}"><i class="icon icon-cross"></i></a></td>
-                        <td><a href="{{url_for('ag_api.accept_application', ag_name=ag.data.name, username=user.username)}}"><i class="icon icon-check"></i></a></td>
+                        <td><a href="{{url_for('ag_applications_api.reject_application', ag_name=ag.data.name, username=user.username)}}"><i class="icon icon-cross"></i></a></td>
+                        <td><a href="{{url_for('ag_applications_api.accept_application', ag_name=ag.data.name, username=user.username)}}"><i class="icon icon-check"></i></a></td>
                         
                     </tr>
                 {% endfor %}

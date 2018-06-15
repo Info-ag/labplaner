@@ -1,3 +1,6 @@
+'''
+module for writing mails
+'''
 from flask import url_for
 from flask_mail import Mail, Message
 
@@ -8,8 +11,7 @@ mail = Mail()
 
 def confirmation_mail(user: User):
     message = Message(subject='Confirm your E-Mail',
-                      body=url_for('auth.confirm', token=user.confirmation_token)
-                      )
+                      body=url_for('auth.confirm', token=user.confirmation_token))
     message.add_recipient(user.email)
     mail.send(message)
 
