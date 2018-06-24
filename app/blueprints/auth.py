@@ -1,8 +1,8 @@
-'''
-All Blueprint routes regardning rendering authentication templates
+"""
+All Blueprint routes regarding rendering authentication templates
     except:
         /login [POST] --> handeling the login, has nothing todo with rendering a template
-'''
+"""
 
 from sqlalchemy.sql import exists
 from werkzeug.exceptions import BadRequest

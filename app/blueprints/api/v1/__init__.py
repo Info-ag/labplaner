@@ -1,6 +1,9 @@
-'''
-basic blueprint route for the api v1
-'''
+"""
+Basic blueprint route for the api v1
+
+This blueprint provides necessary routes for the
+API documentation.
+"""
 
 from flask import Blueprint, request, jsonify, render_template
 from app.models.user import User, UserSchema

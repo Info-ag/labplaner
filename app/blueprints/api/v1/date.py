@@ -1,6 +1,6 @@
-'''
+"""
 All blueprints routes regarding interacting with dates
-'''
+"""
 
 from datetime import date
 
@@ -11,7 +11,6 @@ from flask import Blueprint, jsonify, g
 from app.utils import requires_auth
 
 from app.models import db
-
 from app.models.date import Date, DateSchema
 
 bp = Blueprint('date_api', __name__)
@@ -23,11 +22,11 @@ dates_schema = DateSchema(many=True)
 @bp.route('/id/<date_id>', methods=['GET'])
 @requires_auth()
 def get_date_by_id(date_id):
-    '''
-        Query an date specified by its id
-        :param date_id: A specific id
-        :return: JSON representation of the date
-        '''
+    """Query an date specified by its id
+
+    :param date_id: A specific id
+    :return: JSON representation of the date
+    """
     if db.session.query(exists().where(Date.id == date_id)).scalar():
         date_obj: Date = Date.query.get(date_id).scalar()
         return date_schema.jsonify(date_obj), 200
@@ -44,6 +43,11 @@ def get_date_by_date(date_name):
 
 @bp.route('/', methods=['GET'])
 def get_all_dates():
+    """Retrieve all available dates
+
+    :return: JSON array of all date objects using
+        the DateSchema
+    """
     all_dates = Date.query.all()
     result = dates_schema.dump(all_dates)
     return jsonify(result)

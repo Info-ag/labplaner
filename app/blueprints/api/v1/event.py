@@ -1,6 +1,6 @@
-'''
+"""
 All blueprint routes regarding interacting with events
-'''
+"""
 
 import datetime
 
@@ -24,6 +24,13 @@ events_schema = EventSchema(many=True)
 @bp.route('/', methods=['POST'])
 @requires_auth()
 def add_event():
+    """Add an event to the database
+
+    Events are proposed meetings. A date has a specific AG which
+    it is part of.
+    :return: JSON object with redirect if successful
+        or Unauthorized/NotFound
+    """
     ag_id = request.values.get('ag')
 
     if db.session.query(exists().where(AG.id == ag_id)).scalar():

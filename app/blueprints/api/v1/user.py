@@ -29,6 +29,13 @@ events_schema = EventSchema(many=True)
 
 @bp.route('/', methods=['POST'])
 def add_user():
+    """Create a new user
+
+    This API route is used to sign up a user.
+    username, email and password are validated
+    :return: new user as JSON object
+        BadRequest if validation fails
+    """
     try:
         username = request.values.get('username')
         if db.session.query(User).filter_by(username=username).scalar() is not None:
@@ -90,6 +97,12 @@ def get_all_users():
 @bp.route('/self/dates', methods=['POST'])
 @requires_auth()
 def set_dates():
+    """POST: Set dates for a user
+
+    Requires an array of dates (dates[])
+    :return: JSON with redirect if success
+        TODO error if fail
+    """
     user = g.user
 
     UserDate.query.filter_by(user_id=g.session.user_id).delete()
