@@ -21,9 +21,14 @@ def requires_auth():
     return wrapper
 
 
-def after_this_request(f):
+def after_request(callback):
+    """Add callbacks at the end of the request
+
+    See `app.create_app.call_after_request_callbacks`
+    :param: `callback` function to be called at the end of a request
+    """
     if not hasattr(g, 'after_request_callbacks'):
         g.after_request_callbacks = []
-    g.after_request_callbacks.append(f)
-    return f
-    
+
+    g.after_request_callbacks.append(callback)
+    return callback

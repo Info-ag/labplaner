@@ -10,7 +10,7 @@ from sqlalchemy import exists, and_, or_
 from app.models import db
 from app.models.associations import UserAG, UserAGMessage
 
-from app.utils.ag import requires_ag, requires_ag_message
+from app.util.ag import requires_ag, requires_ag_message
 
 
 
