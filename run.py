@@ -1,11 +1,13 @@
-'''
-run script to start the app
-'''
+#!/usr/bin/env python3
 
-
-#checks if the script got executed as the main program
 if __name__ == '__main__':
-    #import the main app from the file __init__.py in the directory app
-    from app import app
-    #runs the flask app on the port 5000
+    import sys
+    import os
+    from app import create_app
+    
+    root = os.path.abspath(os.path.dirname(sys.argv[0]))
+    # Get project root. This is required to load the correct config
+    # file with relative paths.
+
+    app, db = create_app(root)
     app.run(port=5000)
