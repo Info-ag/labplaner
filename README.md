@@ -4,116 +4,65 @@
 Labplaner is a web application specifically build for the [Life-Science Lab Heidelberg](https://www.life-science-lab.org).  
 It combines multiple polls into one to avoid conflicts and provides you with an optimal date for the next meeting.
 
-## Usage
-Clone or download the repository.  
-What you need:
- - **Python >= 3.6**
- - **MySQL** or SQLite
+## Requirements and Setup
+ - **Python** >= 3.6
+ - **PostgreSQL** or SQLite
+ - **redis**
 
-Make sure the requirements are installed using `pip`:
+You might want to use `virtualenv` to set up a local development enviroment:
 ```bash
-python3 -m pip install -r requirements.txt
-# or
-pip3 install -r requirements.txt
+# install virtualenv
+pip3 install virtualenv
+
+# create a virtual enviroment
+virtualenv venv
+
+. venv/bin/activate
 ```
 
-You may want to set the configuration file:
+Install dependencies:
 ```bash
-export LAB_CONFIG=config/dev.cfg
-# dev is default
-# on Windows:
-set LAB_CONFIG=config/dev.cfg
+pip install -r requirements.txt
 ```
 
-You can run the server by executing `run.py`:
+## Configuration
+Inside the `config` folder, you need the following files:
+ - `base.cfg` for your base configuration, that is shared across `dev`, `test` and `prod`
+ - `dev.cfg` for your development specific configuration
+ - `test.cfg` for your test specific configuration
+ - `prod.cfg` for your production specific configuration
+ - `secret.cfg` *(optional)* for secrets **NEVER INCLUDE THIS IN YOU COMMIT**
+
+You can use the `secret-template.cfg` to create your own `secret.cfg` configuration.
+
+You can change the default location of those config files using the following enviroment variables:
+ - `BASE_CONFIG` (default: `config/base.cfg`)
+ - `CONFIG` (default: `config/dev.cfg`)
+ - `TEST_CONFIG` (default: `config/test.cfg`)
+ - `SECRET` (default: `config/secret.cfg`)
+
+Additional enviroment variables:
+ - `ENV` (default: `development`, can be either `development`, `test`, `production`)
+
+### Run
+Make sure to run `redis-server` and your database implementation, then run huey and the app:
 ```bash
-python3 run.py
+# tasks:
+huey_consumer run_huey:huey
+# main application:
+python run.py
 ```
 
-## Development
-Follow the same steps as in **Usage**. You migth need to `merge` and `upgrade` the database everytime you change the model.
+### Test
+We use `unittest` for testing the application.
 
-For a clean setup run:
-```bash
-./clear-db.sh
-```
-
-### Structure
-```text
-├── LICENSE
-├── README.md
-├── requirements.txt
-├── setupdb.sh                  # Setup MySQL/MariaDB database
-├── clear-db.sh                 # Reset SQLite database
-├── config
-    └── development.json        # Config file while developing
-└── src                         # Main source code
-    ├── app.py                  # Entry point
-    ├── blueprints              # Route
-    │   ├── ag.py
-    │   ├── auth.py
-    │   ├── cal.py
-    │   └── api
-    │       └── v1
-    │           ├── api.py
-    │           ├── user.py
-    │           ├── ag.py
-    │           ├── date.py
-    │           └── event.py
-    ├── dbconfig.py             # DB configuration
-    ├── models                  # DB models
-    │   ├── user.py
-    │   ├── ag.py
-    │   ├── date.py
-    │   ├── event.py
-    │   └── associations.py
-    ├── static                  # Static files
-    │   ├── css
-    │   │   ├── docs.min.css
-    │   │   ├── main.css
-    │   │   ├── spectre-exp.min.css
-    │   │   ├── spectre-icons.min.css
-    │   │   └── spectre.min.css
-    │   └── js
-    │       ├── cal.js
-    │       ├── jquery.min.js
-    │       └── pages
-    │           ├── ag
-    │           │   ├── add.js
-    │           │   ├── dashboard.js
-    │           │   ├── invite.js
-    │           │   └── event
-    │           │      └── add.js
-    │           └── auth
-    │               ├── login.js
-    │               └── signup.js
-    ├── templates               # Jinja Templates
-    │   ├── base.html
-    │   ├── base_sidebar.html
-    │   ├── index.html
-    │   ├── ag
-    │   │   ├── add.html
-    │   │   ├── dashboard.html
-    │   │   ├── invite.html
-    │   │   └── event
-    │   │      └── add.html
-    │   ├── api
-    │   │   └── v1
-    │   │       └── index.html
-    │   ├── auth
-    │   │   ├── login.html
-    │   │   └── signup.html
-    │   └── cal
-    │       └── index.html
-    ├── algorithm.py            # Algorithm for finding the best date
-    └── utils.py                # Helper functions
-```
 
 ### Contribute
 Pull requests are alyways welcome! Feel free to fork the project and improve it.
+
 ## License
 
-   Copyright 2018 Life-Science Lab <Informatik-ag@life-science-lab.net>
+   Copyright 2018-2019 Life-Science Lab <Informatik-ag@life-science-lab.net>
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
