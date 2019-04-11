@@ -1,7 +1,6 @@
 import sys
 import os
 import tempfile
-
 import unittest
 
 from app import create_app
@@ -99,7 +98,7 @@ class TestBasic(AppTest):
         Check if GET / returns 200
         """
         result = self.client.get('/', follow_redirects=True)
-        self.assertEqual(result.get('status_code', 901), 200)
+        self.assertEqual(result.status_code, 200)
 
 
 class TestPermission(AppTest):

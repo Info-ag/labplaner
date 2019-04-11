@@ -5,8 +5,8 @@ database access and serialization.
 We use SQLAlchemy and Marshmallow for our models and schemes.
 
 Style guide:
-    - Use plural form for database names (e.g. 'users', 'ags')
-    - For relationships, use database names in alphabetical order,
+    - Use plural form for table names (e.g. 'users', 'ags')
+    - For relationships, use table names in alphabetical order,
     seperated by an underscore (e.g. 'ags_users', 'dates_events')
     - If possible use `id` for primary key
     - Use [table_name]_id for foreign keys, where table_name ist the
