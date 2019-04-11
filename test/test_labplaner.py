@@ -79,14 +79,14 @@ class TestAuth(AppTest):
         """Test login using username
         """
         result = self.login(TEST_USERNAME, TEST_PASSWORD)
-        assert result.get('status_code', 901) == 200
+        self.assertEqual(result.get('status_code', 901), 200)
 
 
     def test_login_email(self):
         """Test login using email
         """
         result = self.login(TEST_EMAIL, TEST_PASSWORD)
-        assert result.get('status_code', 901) == 200
+        self.assertEqual(result.get('status_code', 901), 200)
 
 
 class TestBasic(AppTest):
@@ -99,7 +99,7 @@ class TestBasic(AppTest):
         Check if GET / returns 200
         """
         result = self.client.get('/', follow_redirects=True)
-        assert result.status_code == 200
+        self.assertEqual(result.get('status_code', 901), 200)
 
 
 class TestPermission(AppTest):
