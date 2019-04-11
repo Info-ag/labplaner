@@ -48,7 +48,7 @@ Additional enviroment variables:
 Make sure to run `redis-server` and your database implementation, then run huey and the app:
 ```bash
 # tasks:
-huey_consumer run_huey:huey
+huey_consumer run_huey.huey
 # main application:
 python run.py
 ```
