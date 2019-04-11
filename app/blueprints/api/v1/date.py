@@ -8,7 +8,7 @@ from sqlalchemy.sql import exists
 from werkzeug.exceptions import NotFound
 from flask import Blueprint, jsonify, g
 
-from app.utils import requires_auth
+from app.util import requires_auth
 
 from app.models import db
 from app.models.date import Date, DateSchema

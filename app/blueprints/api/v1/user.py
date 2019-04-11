@@ -8,7 +8,7 @@ from flask import Blueprint, request, jsonify, g
 from werkzeug.exceptions import BadRequest
 
 from app.models import db
-from app.utils import requires_auth
+from app.util import requires_auth
 # import app.algorithm
 
 from app.models.user import User, UserSchema, UserSchemaDates

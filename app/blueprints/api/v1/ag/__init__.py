@@ -18,10 +18,10 @@ from app.models.ag import AG, AGSchema, AGSchemaIntern
 from app.models.associations import UserAG
 
 # import utilities
-from app.utils import requires_auth
-from app.utils.assocations import requires_mentor, requires_member_association
-from app.utils.ag import requires_ag
-from app.utils.user import get_user_by_username
+from app.util import requires_auth
+from app.util.assocations import requires_mentor, requires_member_association
+from app.util.ag import requires_ag
+from app.util.user import get_user_by_username
 
 # import additional blueprints regarding applications, invitations and messages of ags
 from app.blueprints.api.v1.ag import applications, invitations, messages

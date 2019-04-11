@@ -11,8 +11,8 @@ from app.models import db
 from app.models.ag import AGMessage
 from app.models.associations import UserAGMessage
 
-from app.utils import requires_auth
-from app.utils.assocations import requires_mentor
+from app.util import requires_auth
+from app.util.assocations import requires_mentor
 
 import app.mail as mail
 

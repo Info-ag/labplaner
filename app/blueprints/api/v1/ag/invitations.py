@@ -8,9 +8,9 @@ from app.models import db
 
 from app.models.associations import UserAG
 from app.models.user import User, UserSchema
-from app.utils import requires_auth
-from app.utils.assocations import requires_mentor, requires_member_association
-from app.utils.ag import requires_ag
+from app.util import requires_auth
+from app.util.assocations import requires_mentor, requires_member_association
+from app.util.ag import requires_ag
 
 
 

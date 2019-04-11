@@ -3,7 +3,7 @@ All blueprints regarding rendering pizza templates(not included yet)
 '''
 
 from flask import Blueprint, render_template
-from app.utils import requires_auth
+from app.util import requires_auth
 bp = Blueprint('pizza', __name__)
 
 

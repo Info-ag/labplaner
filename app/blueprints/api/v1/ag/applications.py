@@ -6,9 +6,9 @@ from flask import Blueprint, g, redirect, url_for, flash
 
 from app.models import db
 from app.models.associations import UserAG
-from app.utils import requires_auth
-from app.utils.assocations import requires_gracefully_not_member, requires_member_association, requires_mentor, get_membership
-from app.utils.user import get_user_by_username
+from app.util import requires_auth
+from app.util.assocations import requires_gracefully_not_member, requires_member_association, requires_mentor, get_membership
+from app.util.user import get_user_by_username
 
 bp = Blueprint('ag_applications_api', __name__)
 

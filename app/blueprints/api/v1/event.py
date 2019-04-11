@@ -8,7 +8,7 @@ from flask import Blueprint, request, jsonify, g
 from sqlalchemy.sql import exists
 from werkzeug.exceptions import NotFound, Unauthorized
 
-from app.utils import requires_auth
+from app.util import requires_auth
 from app.models.event import Event, EventSchema
 from app.models.ag import AG
 from app.models.date import Date

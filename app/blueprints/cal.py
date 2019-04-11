@@ -3,7 +3,7 @@ All blueprint routes regardning rendering calendar templates(well just one)
 '''
 
 from flask import Blueprint, render_template
-from app.utils import requires_auth
+from app.util import requires_auth
 bp = Blueprint('cal', __name__)
 
 

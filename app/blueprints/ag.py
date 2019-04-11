@@ -5,8 +5,8 @@ All Blueprint routes regarding rendering ag templates
 from flask import Blueprint, render_template
 from app.models.ag import AG, AGSchema, AGSchemaIntern, AGMessageSchema
 from app.models import db
-from app.utils import requires_auth
-from app.utils.assocations import requires_mentor, requires_membership, requires_ag_message_rights
+from app.util import requires_auth
+from app.util.assocations import requires_mentor, requires_membership, requires_ag_message_rights
 
 from config.regex import AGRegex, MessageRegex
 
