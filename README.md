@@ -13,6 +13,7 @@ You might want to use `virtualenv` to set up a local development enviroment:
 ```bash
 # install virtualenv
 pip3 install virtualenv
+# .. or pip or python -m pip or python3 -m pip
 
 # create a virtual enviroment
 virtualenv venv

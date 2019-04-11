@@ -10,8 +10,6 @@ from app.models import db
 from app.models.ag import AG, AGMessage
 
 
-
-
 def requires_existing_ag():
     def wrapper(f):
         @wraps(f)
