@@ -3,6 +3,7 @@ config/secret*
 
 # Database related stuff
 *.db
+*.rdb
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
