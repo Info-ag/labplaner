@@ -1,26 +1,37 @@
-'''
-All Database models regarding Users
-    --> User, Session
-All Marshmallow Schemas regarding those models
-    --> UserSchemaSelf, UserSchema, UserSchemaDates
-'''
-
-
+"""User database models
+"""
 
 import secrets
 import hashlib
 from datetime import datetime, timedelta
 import bcrypt
+
 from sqlalchemy.sql import exists, and_
 
-from app import ma
 from app.models import db
-from app.models.ag import AGSchema, AG
-from app.models.associations import UserAG
-from app.models.date import DateSchema
 
 
 class User(db.Model):
+    """User database model
+
+    Any user that signs up for the application gets an entry in this
+    database.
+
+    :param id:
+    :param username:
+    :param email:
+    :param password:
+    :param email_confirmed:
+    :param confirmation_token:
+    :param password_token:
+
+    Relationships:
+        - ags_users
+        - dates_users
+        - users_messages
+        - messages.author_id
+        - messages.recepient_id
+    """
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
     

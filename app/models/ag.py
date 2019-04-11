@@ -19,10 +19,16 @@ class AG(db.Model):
     Working groups have a number of users related to them. They can have
     different rules such as mentors or students.
 
+    :param id:
+    :param name:
+    :param display_name:
+    :param description:
+    :param color:
+
     Relationships:
-        - `ags_users`
-        - `ags_events`
-        - `messages`
+        - ags_users
+        - ags_events
+        - messages
     """
     __tablename__ = 'ag'
 

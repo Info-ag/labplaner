@@ -17,8 +17,8 @@ class Date(db.Model):
     users that signed up for that day.
 
     Relationships:
-        - `dates_users`
-        - `dates_events`
+        - dates_users
+        - dates_events
     """
     __tablename__ = 'dates'
 
