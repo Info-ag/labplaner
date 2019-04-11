@@ -125,7 +125,7 @@ def create_app(root_path, minimal=False, test=False):
             for the current request.
             :return: Locale setting for current request
             """
-            return g.locale
+            return request.accept_languages.best_match(['de', 'en'])
 
         ##############
         # API routes #
