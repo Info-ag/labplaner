@@ -64,8 +64,15 @@ class Message(db.Model):
     Messages only have an author. They are either connected to a working
     group (AG) or to an individual user (recepient).
 
+    :param id:
+    :param message:
+    :param time:
+    :param author_id:
+    :param ag_id:
+    :param recepient_id:
+
     Relationships:
-        - `users_messages` status of a message (recepient only)
+        - users_messages: status of a message (recepient only)
     """
     __tablename__ = 'messages'
 
