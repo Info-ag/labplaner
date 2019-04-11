@@ -48,7 +48,6 @@ instance/
 venv/
 ENV/
 
-
 # mypy
 .mypy_cache/
 
@@ -56,3 +55,6 @@ ENV/
 .idea
 .vscode/launch.json
 .vscode/settings.json
+
+# OS stuff
+.DS_Store
