@@ -92,6 +92,8 @@ class RedisSessionInterface(SessionInterface):
         if not session.sid:
             session.sid = secrets.token_hex(64)
 
+        self.redis.set(self.prefix + session.sid, self.serializer.dumps(session))
+
         httponly = self.get_cookie_httponly(app)
         secure = self.get_cookie_secure(app)
         samesite = self.get_cookie_samesite(app)
