@@ -10,7 +10,7 @@ from app.models import db
 
 
 class UserAG(db.Model):
-    __tablename__ = 'users_ags'
+    __tablename__ = 'ags_users'
     id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
@@ -64,3 +64,15 @@ class UserAGMessageSchema(ma.Schema):
     user = ma.Nested('UserSchema')
     class Meta:
         fields = ('user_id', 'read', 'updated', 'user')
+
+
+class UserMessage(db.Model):
+    __tablename__ = 'users_messages'
+    id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
+
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    message_id = db.Column(db.Integer, db.ForeignKey('messages.id'))
+    read = db.Column(db.Boolean, default=False)
+
+    user = db.relationship('User')
+    message = db.relationship('Message')
