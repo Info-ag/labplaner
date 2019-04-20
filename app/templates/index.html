@@ -15,10 +15,10 @@
                     <li class="menu-item">
                         <a href="#">
                             <div class="menu-badge">
-                                <a href="{{url_for('ag_api.accept_invitation', ag_name=ag.name)}}" class="btn btn-action btn-success">
+                                <a href="{{url_for('ag_invitations_api.accept_invitation', ag_name=ag.name)}}" class="btn btn-action btn-success">
                                     <i class="icon icon-check"></i>
                                 </a>
-                                <a href="{{url_for('ag_api.decline_invitation', ag_name=ag.name)}}" class="btn btn-action btn-error">
+                                <a href="{{url_for('ag_invitations_api.decline_invitation', ag_name=ag.name)}}" class="btn btn-action btn-error">
                                     <i class="icon icon-cross"></i>
                                 </a>
                             </div>
@@ -35,6 +35,7 @@
         <h3 class="s-title">
             <a href="#upcoming" class="anchor" aria-hidden="true">#</a>
             Upcoming
+            {{ _('Upcoming') }}
         </h3>
         <div class="docs-note">
             <div class="columns">
@@ -50,7 +51,7 @@
     <div id="messages" class="container">
         <h3 class="s-title">
             <a href="#messages" class="anchor" aria-hidden="true">#</a>
-            <span class="badge" data-badge="2">
+            <span class="badge" data-badge="{{g.user.unread_messages|length}}">
                 Messages
             </span>
         </h3>
@@ -60,9 +61,9 @@
                 </li>
                 <li class="menu-item">
                     <a href="#">
-                        {% for ag in g.user.ags %}
+                        {% for ag in ags.data %}
                             <div class="menu-badge">
-                                <label class="label label-primary">2</label>
+                                <label class="label label-primary">{{ag.unread_messages|length}}</label>
                             </div>
                             <a href="/ag/{{ ag.name }}/messages">
                                 {{ ag.display_name }}
@@ -76,7 +77,7 @@
     <div id="invites" class="container">
         <h3 class="s-title">
             <a href="#invites" class="anchor" aria-hidden="true">#</a>
-            Invites
+            {{ _('Invites') }}
         </h3>
         <div class="docs-note">
             No invites pending.
@@ -90,6 +91,6 @@
     </script>
 <script src="/static/js/jquery.min.js"></script>    
 <script src="/static/js/cal.js"></script>
-<script src="/static/js/dashboard.js">
-</script>
+<script src="/static/js/dashboard.js"></script>
+
 {% endblock %}

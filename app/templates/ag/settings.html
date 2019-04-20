@@ -1,12 +1,40 @@
 {% extends "base_sidebar.html" %}
 {% block head %}
     {{ super() }}
-<!--    <script src="/static/js/jquery.min.js"></script> -->
+    <script src="/static/js/jquery.min.js"></script>
 {% endblock %}
 {% block content %}
     <div id="content" class="container">
         <h4 class="s-subtitle">AG preferences</h4>
-      </div>
+    </div>
+    <form action="{{url_for('ag_api.update_users', ag_name=ag.data.name)}}" method="GET">
+        <div class="docs-note">
+        
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Role</th>
+                </tr>
+                </thead>
+                {% for user in ag.data.actual_users %}
+                    <tr>
+                        <td>{{ user.id }}</td>
+                        <td>{{ user.username }}</td>
+                        <td>
+                            <class="form-group">
+                            <select class="form-select" name="{{user.id}}">
+                                <option {% if user.ag_role == "MENTOR" %} selected="selected" {% endif %} value="MENTOR">MENTOR</option>
+                                <option {% if user.ag_role == "PARTICIPANT" %} selected="selected" {% endif %} value="PARTICIPANT">PARTICIPANT</option>
+                            </select>
+                        </td>
+                    </tr>
+                {% endfor %} 
+            </table>
+        </div>
+        <button id="submit_settings" class="btn btn-primary float-right">save</button>
+    </form>
 {% endblock %}
 {% block scripts %}
 {% endblock %}

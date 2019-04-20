@@ -1,18 +1,22 @@
+'''
+All Blueprint routes regarding interacting with users
+'''
+
 import datetime
-import json
 
 from flask import Blueprint, request, jsonify, g
-from werkzeug.exceptions import NotFound, Unauthorized, BadRequest, Forbidden
-from sqlalchemy import exists, and_
+from werkzeug.exceptions import BadRequest
 
-from app import db
-from app.utils import requires_auth
-import app.algorithm
+from app.models import db
+from app.util import requires_auth
+# import app.algorithm
 
 from app.models.user import User, UserSchema, UserSchemaDates
 from app.models.associations import UserDate, UserAG
 from app.models.date import Date
 from app.models.event import Event, EventSchema
+
+import app.mail as mail
 
 bp = Blueprint('user_api', __name__)
 
@@ -25,8 +29,15 @@ events_schema = EventSchema(many=True)
 
 @bp.route('/', methods=['POST'])
 def add_user():
+    """Create a new user
+
+    This API route is used to sign up a user.
+    username, email and password are validated
+    :return: new user as JSON object
+        BadRequest if validation fails
+    """
     try:
-        username = request.values['username']
+        username = request.values.get('username')
         if db.session.query(User).filter_by(username=username).scalar() is not None:
             return BadRequest(description='Username already exists')
         email = request.values.get('email')
@@ -36,15 +47,17 @@ def add_user():
         if len(password) < 8:
             return BadRequest(description='Keylength too short')
         user = User()
-        user.username = request.values['username']
-        user.email = request.values['email']
-        user.set_password(request.values['password'])
+        user.username = request.values.get('username')
+        user.email = request.values.get('email')
+        user.set_password(request.values.get('password'))
 
         db.session.add(user)
         db.session.commit()
+        mail.confirmation_mail(user)
 
         return user_schema.jsonify(user), 200
-    except:
+    except Exception as e:
+        print(e)
         return BadRequest()
 
 
@@ -84,6 +97,12 @@ def get_all_users():
 @bp.route('/self/dates', methods=['POST'])
 @requires_auth()
 def set_dates():
+    """POST: Set dates for a user
+
+    Requires an array of dates (dates[])
+    :return: JSON with redirect if success
+        TODO error if fail
+    """
     user = g.user
 
     UserDate.query.filter_by(user_id=g.session.user_id).delete()
@@ -91,20 +110,20 @@ def set_dates():
 
     dates = request.values.getlist('dates[]')
     for _date in dates:
-        d = datetime.datetime.strptime(_date, '%a %b %d %Y')
-        if not db.session.query(Date).filter_by(day=d.isoformat()[:10]).scalar():
+        formatted_datetime = datetime.datetime.strptime(_date, '%a %b %d %Y')
+        if not db.session.query(Date).filter_by(day=formatted_datetime.isoformat()[:10]).scalar():
             date_obj = Date()
-            date_obj.day = d
+            date_obj.day = formatted_datetime
             db.session.add(date_obj)
 
-        u = UserDate()
-        u.date_id = db.session.query(Date).filter_by(day=d.isoformat()[:10]).scalar().id
-        u.user_id = user.id
+        user_date = UserDate()
+        user_date.date_id = db.session.query(Date).filter_by(day=formatted_datetime.isoformat()[:10]).scalar().id
+        user_date.user_id = user.id
 
-        db.session.add(u)
+        db.session.add(user_date)
     db.session.commit()
 
-    app.algorithm.do_your_work()
+    # app.algorithm.do_your_work()
 
     return jsonify({'status': 'success', 'redirect': '/'}), 200
 
@@ -129,4 +148,3 @@ def get_events_for_user():
             event_list['events'].append(event_schema.dump(event)[0])
 
     return jsonify(event_list)
-

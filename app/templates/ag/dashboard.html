@@ -67,6 +67,9 @@
             {% if my_role == "MENTOR" %}
                 <a href="#modal-name" class="btn btn-link"><i class="icon icon-edit"></i></a>
             {% endif %}
+            <a href="{{url_for('ag_api.delete_ag', ag_name = ag.data.name)}}" class="btn btn-link">
+                <i class="icon icon-cross"></i>
+            </a>
         </h1>
         <p>Description: {{ ag.data.description }}
             {% if my_role == "MENTOR" %}
@@ -78,7 +81,9 @@
         <h3 class="s-title">
             <a href="#users" class="anchor" aria-hidden="true">#</a>
             Users
-            <a href="{{url_for('ag.invite_ag', ag_name=ag.data.name)}}" class="btn btn-link"><i class="icon icon-plus"></i></a>
+            {% if my_role == "MENTOR" %}
+            <a href="{{url_for('ag.ag_settings', ag_name=ag.data.name)}}" class="btn btn-link"><i class="icon icon-edit"></i></a>
+            {% endif %}
         </h3>
         <div class="docs-note">
             <table class="table table-striped table-hover">
@@ -87,20 +92,119 @@
                     <th>ID</th>
                     <th>Username</th>
                     <th>Role</th>
+                    <th>Status</th>
+                    <th>
+                        {% if my_role == "MENTOR" %}
+                            Kick
+                        {% else %}
+                            Leave
+                        {% endif %}
+
+                    </th>
                 </tr>
                 </thead>
                 <tbody>
-                {% for user in ag.data.users %}
+                {% for user in ag.data.actual_users %}
                     <tr>
                         <td>{{ user.id }}</td>
                         <td>{{ user.username }}</td>
                         <td>{{ user.ag_role }}</td>
+                        <td>{{ user.ag_status }}</td>
+                        <td>
+                            {% if my_role == "MENTOR" %}
+                                <a href="{{url_for('ag_api.kick_user', ag_name = ag.data.name, user_name = user.username)}}" class="btn btn-link">
+                                    <i class="icon icon-cross"></i>
+                                </a>
+                            {% elif g.session.authenticated == true and g.session.user_id == user.id %}
+                                <a href="{{url_for('ag_api.leave_ag', ag_name = ag.data.name)}}" class="btn btn-link">
+                                    <i class="icon icon-cross"></i>
+                                </a>
+                            {% endif %}
+                        </td>
                     </tr>
                 {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
+    <div id="invited-users" class="container">
+        <h3 class="s-title">
+            <a href="#invited-users" class="anchor" aria-hidden="true">#</a>
+            Invited users
+            <a href="{{url_for('ag.invite_ag', ag_name=ag.data.name)}}" class="btn btn-link"><i class="icon icon-plus"></i></a>
+        </h3>
+        <div class="docs-note">
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    {% if my_role == "MENTOR" %}
+                        <th></th>
+                    {% endif %}
+                </tr>
+                </thead>
+                <tbody>
+                {% for user in ag.data.invited_users %}
+                    <tr>
+                        <td>{{ user.id }}</td>
+                        <td>{{ user.username }}</td>
+                        {% if my_role == "MENTOR" %}
+                            <td><a href="{{url_for('ag_invitations_api.cancell_invitation', ag_name=ag.data.name, user_id=user.id)}}"><i class="icon icon-cross"></i></a></td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+                {% if ag.data.invited_users|length == 0%}
+                    <tr>
+                        <td>No pending Invitations</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% if my_role == "MENTOR" %}
+    <div id="applied-users" class="container">
+        <h3 class="s-title">
+            <a href="#applied-users" class="anchor" aria-hidden="true">#</a>
+            Applied users
+        </h3>
+        <div class="docs-note">
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for user in ag.data.applied_users %}
+                    <tr>
+                        <td>{{ user.id }}</td>
+                        <td>{{ user.username }}</td>
+                        <td><a href="{{url_for('ag_applications_api.reject_application', ag_name=ag.data.name, username=user.username)}}"><i class="icon icon-cross"></i></a></td>
+                        <td><a href="{{url_for('ag_applications_api.accept_application', ag_name=ag.data.name, username=user.username)}}"><i class="icon icon-check"></i></a></td>
+                        
+                    </tr>
+                {% endfor %}
+                {% if ag.data.applied_users|length == 0%}
+                    <tr>
+                        <td>No pending Applications</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+    
     <div id="events" class="container">
         <h3 class="s-title">
             <a href="#events" class="anchor" aria-hidden="true">#</a>
@@ -113,6 +217,9 @@
                 <tr>
                     <th>Event</th>
                     <th>Date</th>
+                    {% if my_role == "MENTOR" %}
+                    <th><!--  Empty on purpose --></th>
+                    {% endif %}
                 </tr>
                 </thead>
                 <tbody>
@@ -120,17 +227,66 @@
                     <tr>
                         <td>{{ event.display_name }}</td>
                         <td>{{ event.date }}</td>
+                        {% if my_role == "MENTOR" %}
+                         <a href="{{url_for('ag.edit_event', ag_name=ag.data.name, event_name=event.name)}}" id="edit{{event.display_name}}" class="btn btn-link"><i class="icon icon-edit"></i></a>                
+                        {% endif %}
                     </tr>
                 {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
-   
+    <div id="messages" class="container">
+            <h3 class="s-title">
+                <a href="#messages" class="anchor" aria-hidden="true">#</a>
+                <span class="badge" data-badge="{{ag.data.unread_messages.data|length}}">
+                    Messages
+                </span>
+                <a href="{{url_for('ag.write_message', ag_name = ag.data.name)}}" class="btn btn-link">
+                    <i class="icon icon-plus"></i>
+                </a>
+            </h3>
+            <div class="docs-note">
+                <ul class="menu">
+                    <li class="divider" data-content="UNREAD">
+                    </li>
+                        {% for message in ag.data.unread_messages.data %}
+                    <li class="menu-item">
+                            <div class="menu-badge">
+                                {% if message.read == true %}
+                                    <label class="label label-primary">READ</label>
+                                {% else %}
+                                    <label class="label label-primary">UNREAD</label>
+                                {% endif %}
+                            </div>
+                            <a href="{{url_for('ag.view_message', ag_name=ag.data.name, message_id=message.id)}}">
+                                {{ message.subject }}
+                            </a>
+                    </li>
+                        {% endfor %}
+                    <li class="divider" data-content="READ">
+                    </li>
+                    <li class="menu-item">
+                        {% for message in ag.data.read_messages.data %}
+                            <div class="menu-badge">
+                                {% if message.read == true %}
+                                    <label class="label label-primary">READ</label>
+                                {% else %}
+                                    <label class="label label-primary">UNREAD</label>
+                                {% endif %}
+                            </div>
+                            <a href="{{url_for('ag.view_message', ag_name=ag.data.name, message_id=message.id)}}">
+                                {{ message.subject }}
+                            </a>
+                        {% endfor %}
+                    </li>
+                </ul>
+            </div>
+        </div>
 {% endblock %}
 {% block scripts %}
     <script>
-        changeValuesUrl = "{{url_for('ag_api.change_ag_values', ag_id="")}}";
+        changeValuesUrl = "{{url_for('ag_api.change_ag_values', ag_id='')}}";
     </script>
     <script src="/static/js/pages/ag/dashboard.js"></script>
 {% endblock %}

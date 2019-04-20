@@ -1,83 +1,153 @@
-
 import os
-from flask import Flask, render_template, request, redirect, url_for, flash, g
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
-from flask_marshmallow import Marshmallow
-from werkzeug.exceptions import NotFound
-app = Flask(__name__)
+import warnings
+
+warnings.filterwarnings('ignore', message='greenlet.greenlet size changed')
+# Huey uses greenlets and might produce annoying warnings
+
+from flask import Flask, request, g, redirect, url_for
+
+import config
 
 
-config = os.environ.get('LAB_CONFIG', default='config/dev.cfg')
-app.config.from_pyfile(os.path.abspath(config))
-app.secret_key = app.secret_key.encode()
-db = SQLAlchemy(app)
-ma = Marshmallow(app)
-migrate = Migrate(app, db)
+def create_app(root_path, minimal=False, test=False):
+    """Create new app instance
 
-from app.models.user import Session, User
-from app.utils import after_this_request, requires_auth
-@app.errorhandler(404)
-def not_found(error):
-    return NotFound()
+    :param root_path: absolute path to the project root directory 
+    that contains the `app` directory
+    :param minimal: if set to `True`, the generated app instance will 
+    only include the bare minimum. This is meant to increase 
+    performance as new instance is required for each task.
+    :param test: if set to `True`, all necessary configurations will be
+    applied for testing the application. You might want to change the
+    database by your self:
+        db_id, db_file = tempfile.mkstemp()
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://' + db_file
+        # close database after test
+        os.close(db_id)
+        os.unlink(db_file)
 
+    :return (app, db): Tuple, Flask and SQAlchemy instances
+    """
 
-@app.after_request
-def call_after_request_callbacks(response):
-    for callback in getattr(g, 'after_request_callbacks', ()):
-        callback(response)
-    return response
+    app_name = 'minimal_app' if minimal else __name__
+    app: Flask = Flask(app_name, root_path=root_path)
 
+    # Load configuration files from enviroment variables
+    base = os.environ.get('BASE_CONFIG', default=config.BASE_CONFIG)
+    env = os.environ.get('ENV', default='development').lower()
+    secret = os.environ.get('SECRET', default=config.SECRET_CONFIG)
+    default_config = config.DEV_CONFIG 
+    if env == 'production':
+        default_config = config.PROD_CONFIG
+    
+    config_file = os.environ.get('CONFIG', default=default_config)
+    if test:
+        config_file = os.environ.get('TEST_CONFIG', default=config.TEST_CONFIG)
 
-@app.before_request
-def auth_middleware():
-    sid = request.cookies.get('sid', default='')
-    if sid:
-        session_result = Session.verify(sid)
-        if session_result:
-            g.session = session_result
-        else:
-            _session = Session()
-            db.session.add(_session)
-            db.session.commit()
-            g.session = _session
-    else:
-        _session = Session()
-        db.session.add(_session)
-        db.session.commit()
-        g.session = _session
+    app.config.from_pyfile(os.path.abspath(base))
+    app.config.from_pyfile(os.path.abspath(config_file))
+    if os.path.exists(secret):
+        app.config.from_pyfile(os.path.abspath(secret))
 
-    if g.session.authenticated:
-        g.user = User.query.get(g.session.user_id)
+    # String needs to be encoded
+    app.secret_key = app.secret_key.encode()
 
-    @after_this_request
-    def set_cookie(response):
-        response.set_cookie('sid', g.session.get_string_cookie(),
-                            httponly=True, expires=g.session.expires)
+    # Might be redundant, but important for tasks
+    app.static_url_path = app.config.get('STATIC_FOLDER')
+    app.static_folder = os.path.join(app.root_path, app.static_url_path)
+    app.template_folder = os.path.join(app.root_path, app.config['TEMPLATE_FOLDER']) 
 
+    
+    # Import Database
+    #from app.models.user import Session, User
+    #from app.models.ag import AG
+    """from app.models.relationships import (
+        UserAG, 
+        EventDate, 
+        UserDate, 
+        UserAGMessage
+    )"""
+    from app.models import db
 
+    db.init_app(app)
 
-from app.blueprints.api.v1 import api
-from app.blueprints.api.v1 import user
-from app.blueprints.api.v1 import ag as ag_api
-from app.blueprints.api.v1 import event as event_api
-from app.blueprints.api.v1 import date as date_api
-from app.blueprints import auth
-from app.blueprints import ag
-from app.blueprints import cal
-from app.blueprints import pizza
-app.register_blueprint(api.bp, url_prefix='/api/v1')
-app.register_blueprint(user.bp, url_prefix='/api/v1/user')
-app.register_blueprint(ag_api.bp, url_prefix='/api/v1/ag')
-app.register_blueprint(event_api.bp, url_prefix='/api/v1/event')
-app.register_blueprint(date_api.bp, url_prefix='/api/v1/date')
-app.register_blueprint(auth.bp, url_prefix='/auth')
-app.register_blueprint(ag.bp, url_prefix='/ag')
-app.register_blueprint(cal.bp, url_prefix='/cal')
-app.register_blueprint(pizza.bp, url_prefix='/pizza')
+    if not minimal:
+        # Add additional modules
+        #from app.blueprints.api import v1
+        #from app.blueprints.api.v1 import user as user_api_1
+        #from app.blueprints.api.v1 import ag as ag_api_1
+        #from app.blueprints.api.v1 import event as event_api_1
+        #from app.blueprints.api.v1 import date as date_api_1
+        #from app.blueprints import auth
+        #from app.blueprints import ag
+        #from app.blueprints import cal
+        from app.i18n import babel
+        #from app.models import ma
+        #from app import util
 
+        # TODO import redis session
+        app.session_interface = RedisSessionInterface(app.config)
+        babel.init_app(app)
+        # moment.init_app(app)
+        # Create database models. This is only called in a non minimal 
+        # app insance as it is the one with the first database 
+        # interactions
+        db.create_all(app=app)
 
-@app.route('/')
-@requires_auth()
-def index():
-    return render_template('index.html', title='Dashboard')
+        @app.after_request
+        def call_after_request_callbacks(response):
+            """Helper for callbacks after request
+
+            Some operations (such as setting cookies) need to be 
+            performed at the end of a request when the `response` is 
+            already initialized.
+
+            Actions that need to be performed at the end of a request 
+            need be appended to `g.after_request_callbacks`
+            :param: `response` the response instance
+            """
+            for callback in getattr(g, 'after_request_callbacks', ()):
+                callback(response)
+            return response
+
+        @app.before_request
+        def auth_middleware():
+            """Authenticate user
+
+            TODO: use flask_session and redis
+            Authenticate user and set unique session cookie.
+            """
+            pass
+
+        @babel.localeselector
+        def get_locale():
+            """Locale configuration
+
+            This function is required by babel and specifies the locale 
+            for the current request.
+            :return: Locale setting for current request
+            """
+            return request.accept_languages.best_match(['de', 'en'])
+
+        ##############
+        # API routes #
+        ##############
+        """api_v1_prefix = '/api/v1%s'
+        app.register_blueprint(v1.bp,
+                               url_prefix=api_v1_prefix % '')
+        app.register_blueprint(user_api_1.bp, 
+                               url_prefix=api_v1_prefix % '/user')
+        app.register_blueprint(ag_api_1.bp,
+                               url_prefix=api_v1_prefix % '/ag')
+        app.register_blueprint(event_api_1.bp,
+                               url_prefix=api_v1_prefix % '/event')
+        """
+        ############
+        # Frontend #
+        ############
+        #app.register_blueprint(auth.bp, url_prefix='/auth')
+        #app.register_blueprint(ag.bp, url_prefix='/ag')
+        #app.register_blueprint(cal.bp, url_prefix='/cal')
+        #app.register_blueprint(pizza.bp, url_prefix='/pizza')
+
+    return app, db
