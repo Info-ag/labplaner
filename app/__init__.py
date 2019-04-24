@@ -9,7 +9,7 @@ from flask import Flask, request, g, redirect, url_for
 import config
 
 
-def create_app(root_path, minimal=False, test=False):
+def create_app(root_path, minimal=False, test=False, **kwargs):
     """Create new app instance
 
     :param root_path: absolute path to the project root directory 
@@ -48,6 +48,8 @@ def create_app(root_path, minimal=False, test=False):
     app.config.from_pyfile(os.path.abspath(config_file))
     if os.path.exists(secret):
         app.config.from_pyfile(os.path.abspath(secret))
+
+    app.config.update(kwargs)
 
     # String needs to be encoded
     app.secret_key = app.secret_key.encode()
