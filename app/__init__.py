@@ -84,17 +84,14 @@ def create_app(root_path, minimal=False, test=False, **kwargs):
         #from app.blueprints import ag
         #from app.blueprints import cal
         from app.i18n import babel
+        from app.models.session import RedisSessionInterface
         #from app.models import ma
         #from app import util
 
         # TODO import redis session
-        app.session_interface = RedisSessionInterface(app.config)
+        #app.session_interface = RedisSessionInterface(app.config)
         babel.init_app(app)
         # moment.init_app(app)
-        # Create database models. This is only called in a non minimal 
-        # app insance as it is the one with the first database 
-        # interactions
-        db.create_all(app=app)
 
         @app.after_request
         def call_after_request_callbacks(response):
