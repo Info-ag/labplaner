@@ -6,7 +6,7 @@ It combines multiple polls into one to avoid conflicts and provides you with an 
 
 ## Requirements and Setup
  - **Python** >= 3.6
- - **PostgreSQL** or SQLite
+ - **MySQL** or SQLite
  - **redis**
 
 You might want to use `virtualenv` to set up a local development enviroment:
