@@ -10,4 +10,5 @@ if __name__ == '__main__':
     # file with relative paths.
 
     app, db = create_app(root)
+    db.create_all()
     app.run(port=5000)
