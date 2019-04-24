@@ -1,6 +1,5 @@
 import sys
 import os
-import tempfile
 import unittest
 
 from app import create_app
@@ -18,79 +17,67 @@ class AppTest(unittest.TestCase):
         - client (Flask test client instance)
 
     Methods:
-        - login
-        - logout
+        - test_basic_index_endpoint
+        - test_session
+        - test_auth_register
+        - test_auth_login
+        - test_auth_logout
     """
 
-    def setUp(self):
-        """Setup fixture
+    @classmethod
+    def setUpClass(cls):
+        """Setup class fixture
 
         This method is called each time a test class is created. We use 
         it to setup the database, application and a test client.
         """
-        self.app, self.db = create_app(os.path.dirname(sys.argv[0]), test=True)
-        self._db_id, self._db_file = tempfile.mkstemp()
-        self.app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite://{self._db_file}'
+        path = os.path.dirname(sys.argv[0])
+        config = {
+            'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:',
+        }
+        cls.app, cls.db = create_app(path, test=True, **config)
+
+    @classmethod
+    def tearDownClass(cls):
+        """Tear down class fixture
+
+        This method is called at the end of each test class. If there is
+        any connection that needs to be closed gracefully, this is the
+        time to do so.
+        """
+
+        # Nothing to do
+        pass
+
+    def setUp(self):
+        """Setup fixture
+
+        Unlike setUpClass, this setup fixture is called each time a new
+        test is run.
+        """
+        with self.app.app_context():
+            self.db.create_all()
+
         self.client = self.app.test_client()
-
-
-    def login(self, username, password):
-        """Login fixture
-        """
-        return self.client.post(app.url_for('auth.login'), data=dict(
-                username=username,
-                password=password,
-            ), follows_redirect=True)
-
-
-    def logout(self):
-        """Logout fixture
-        """
-        return client.get('/logout', follows_redirect=True)
 
     def tearDown(self):
         """Tear down fixture
 
-        This method is called at the end of each test. It is recommended
-        to close all connections to the database and unlink the
-        temporary file.
+        Similar to tearDownClass, this is where we can reset our
+        application after tests. However, tearDown is run after each
+        test unlike tearDownClass which is run at the end of a class.
         """
-        os.close(self._db_id)
-        os.unlink(self._db_file)
+        with self.app.app_context():
+            self.db.drop_all()
 
+        # TODO clear session storage (redis)
 
-class TestAuth(AppTest):
-    """Authentication test
+        with self.client.session_transaction() as session:
+            session = {}
 
-    Test the authentication procedure including:
-        - sign up
-        - login
-        - logout
-        - change password
-    """
-
-    TEST_EMAIL = 'test@labplaner.de'
-    TEST_USERNAME = 'testuser'
-    TEST_PASSWORD = 'testpasswod123'
-
-
-    def test_login_username(self):
-        """Test login using username
-        """
-        result = self.login(TEST_USERNAME, TEST_PASSWORD)
-        self.assertEqual(result.get('status_code', 901), 200)
-
-
-    def test_login_email(self):
-        """Test login using email
-        """
-        result = self.login(TEST_EMAIL, TEST_PASSWORD)
-        self.assertEqual(result.get('status_code', 901), 200)
-
-
-class TestBasic(AppTest):
-    """Test basic functionality of the application
-    """
+    #########
+    # Tests #
+    #########
 
     def test_basic_index_endpoint(self):
         """Basic test of index endpoint
@@ -101,9 +88,13 @@ class TestBasic(AppTest):
         self.assertEqual(result.status_code, 200)
 
 
-class TestPermission(AppTest):
-    """Permission test
+    def test_session(self):
+        """Simple session example
 
-    Check if permissions are respected
-    """
-    pass
+        This is how you can check for session functionality.
+        """
+        with self.client.session_transaction() as session:
+            session['name'] = 'Name'
+
+        with self.client.session_transaction() as session:
+            self.assertEqual(session['name'], 'Name')
