@@ -5,11 +5,12 @@ notifications:
         on_success: never
         on_failure: never
 
+dist: xenial
 language: python
 
 python:
     - "3.6"
-    - "3.7-dev"
+    - "3.7"
     - "nightly"
 
 install:
