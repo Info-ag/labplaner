@@ -55,8 +55,15 @@ python run.py
 ```
 
 ### Test
-We use `unittest` for testing the application.
+We use `unittest` and `selenium` for testing labplaner.
+You will have to install `selenium` first (see [Selenium-Python Installation](https://selenium-python.readthedocs.io/installation.html))
 
+#### Run tests
+```
+python -m unittest test/test_labplaner.py   # for backend/flask tests
+python -m unittest test/test_frontend.py    # for selenium tests
+# or any other test file
+```
 
 ### Contribute
 Pull requests are alyways welcome! Feel free to fork the project and improve it.
