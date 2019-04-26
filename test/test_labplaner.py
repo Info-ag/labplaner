@@ -6,7 +6,7 @@ from app import create_app
 
 
 class AppTest(unittest.TestCase):
-    """Application Test super class
+    """Application Test class
 
     This class can be used to test the application. It provides all the 
     necessary functions and fixtures for testing the flask application.
